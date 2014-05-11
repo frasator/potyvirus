@@ -1,0 +1,19 @@
+{
+  "name": "potyvirus",
+  "version": "0.0.0",
+  "description": "",
+  "main": "src/potyvirus.html",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/frasator/potyvirus.git"
+  },
+  "author": "",
+  "license": "GPLv3",
+  "bugs": {
+    "url": "https://github.com/frasator/potyvirus/issues"
+  },
+  "homepage": "https://github.com/frasator/potyvirus"
+}
