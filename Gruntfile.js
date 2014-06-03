@@ -33,6 +33,8 @@ module.exports = function (grunt) {
             dist: {
                 files: [
                     {   expand: true, cwd: './src', src: ['forms/**'], dest: '<%= def.build %>/' },
+                    {   expand: true, cwd: './src', src: ['*.sif'], dest: '<%= def.build %>/' },
+                    {   expand: true, cwd: './src', src: ['*.attr'], dest: '<%= def.build %>/' },
                     {   expand: true, cwd: './<%= def.jsorolla %>', src: ['vendor/**'], dest: '<%= def.build %>/'  },
                     {   expand: true, cwd: './<%= def.jsorolla %>', src: ['styles/**'], dest: '<%= def.build %>/'  },
                     {   expand: true, cwd: './<%= def.jsorolla %>/src/lib', src: ['worker*'], dest: '<%= def.build %>/' },
@@ -54,7 +56,8 @@ module.exports = function (grunt) {
                         'vendor': [
                             '<%= def.build %>/vendor/jquery.qtip*.css',
                             '<%= def.build %>/vendor/bootstrap-*-dist/css/bootstrap.min.css',
-                            '<%= def.build %>/vendor/jquery.simplecolorpicker.css'
+                            '<%= def.build %>/vendor/jquery.simplecolorpicker.css',
+                            '<%= def.build %>/vendor/ext-5-beta/theme-babel/theme-babel-all.css'
                         ],
                         'css': ['<%= def.build %>/styles/css/style.css']
                     },
@@ -81,6 +84,7 @@ module.exports = function (grunt) {
                             '<%= def.build %>/vendor/ChemDoodleWeb*.js',
                             '<%= def.build %>/vendor/jquery.simplecolorpicker.js',
                             '<%= def.build %>/vendor/d3.min.js',
+                            '<%= def.build %>/vendor/ext-5-beta/ext-all.js'
                         ],
                         config: [
                             '<%= def.build %>/cell-maps/nv-config.js',
