@@ -31,6 +31,13 @@
             /*border:0px solid #d3d3d3;*/
         }
     </STYLE>
+
+
+    <!--Importing Web Component's Polyfill -->
+    <script src="../lib/jsorolla/vendor/platform/platform.js"></script>
+
+    <!--Importing Custom Elements -->
+    <link rel="import" href="../lib/jsorolla/src/lib/components/jso-color-picker.html">
 </head>
 <body>
 
@@ -39,7 +46,6 @@
 <link rel="stylesheet" href="../lib/jsorolla/vendor/font-awesome-4.1.0/css/font-awesome.min.css">
 <link type="text/css" rel="stylesheet" href="../lib/jsorolla/vendor/ext-5/theme-babel/theme-babel-all.css">
 <link type="text/css" rel="stylesheet" href="../lib/jsorolla/vendor/jquery.qtip.min.css"/>
-<link type="text/css" rel="stylesheet" href="../lib/jsorolla/vendor/bootstrap-scoped-dist/css/bootstrap.min.css">
 <link type="text/css" rel="stylesheet" href="../lib/jsorolla/vendor/jquery.simplecolorpicker.css">
 <!-- /build -->
 
@@ -69,7 +75,6 @@
 <script type="text/javascript" src="../lib/jsorolla/vendor/jquery.min.js"></script>
 
 <!-- These dependencies must go AFTER jquery -->
-<script type="text/javascript" src="../lib/jsorolla/vendor/bootstrap-scoped-dist/js/bootstrap.min.js"></script>
 <script type="text/javascript" src="../lib/jsorolla/vendor/typeahead.min.js"></script>
 <script type="text/javascript" src="../lib/jsorolla/vendor/jquery.qtip.min.js"></script>
 <script type="text/javascript" src="../lib/jsorolla/vendor/jquery.cookie.js"></script>
@@ -181,7 +186,7 @@
 <script type="text/javascript" src="../lib/cell-maps/src/forms/fatigo-form.js"></script>
 
 
-<script type="text/javascript" src="../lib/cell-maps/src/cm-toolbar.js"></script>
+<!--<script type="text/javascript" src="../lib/cell-maps/src/cm-toolbar.js"></script>-->
 <script type="text/javascript" src="../lib/cell-maps/src/visual-attribute-widget/visual-attribute-widget.js"></script>
 <script type="text/javascript" src="../lib/cell-maps/src/visual-attribute-widget/pie-attribute-widget.js"></script>
 
@@ -220,10 +225,10 @@
 
         session = new NetworkSession();
 
-        var save_count = 0;
-        if (localStorage.getItem('CELLMAPS_SESSION') !== null) {
-            session.loadJSON(JSON.parse(localStorage.getItem('CELLMAPS_SESSION')));
-        }
+//        var save_count = 0;
+//        if (localStorage.getItem('CELLMAPS_SESSION') !== null) {
+//            session.loadJSON(JSON.parse(localStorage.getItem('CELLMAPS_SESSION')));
+//        }
         potyvirus = new Potyvirus({
             target: 'application',
             width: $('html').width(),
@@ -233,24 +238,24 @@
             session: session,
             handlers: {
                 'session:save-request': function (e) {
-                    localStorage.setItem('CELLMAPS_SESSION', JSON.stringify(e.sender.toJSON()));
-                    save_count++;
-                    console.log('Session saved: ' + save_count);
+//                    localStorage.setItem('CELLMAPS_SESSION', JSON.stringify(e.sender.toJSON()));
+//                    save_count++;
+//                    console.log('Session saved: ' + save_count);
                 }
             }
         }); //the div must exist
         potyvirus.draw();
 
-        setTimeout(function () {
-            var intervalId = setInterval(function () {
-                console.time('Save session')
-                potyvirus.saveSession();
-                localStorage.setItem('CELLMAPS_SESSION', JSON.stringify(session));
-                save_count++;
-                console.log('Session saved: ' + save_count);
-                console.timeEnd('Save session')
-            }, 10000);
-        }, 10000);
+//        setTimeout(function () {
+//            var intervalId = setInterval(function () {
+//                console.time('Save session')
+//                potyvirus.saveSession();
+//                localStorage.setItem('CELLMAPS_SESSION', JSON.stringify(session));
+//                save_count++;
+//                console.log('Session saved: ' + save_count);
+//                console.timeEnd('Save session')
+//            }, 10000);
+//        }, 10000);
 
         // Resize
         $(window).resize(function (event) {
@@ -262,26 +267,48 @@
                 });
             }, 500);
         });
+
         $.ajax({
-            url: 'interactions-1.3-weighted.attr',
+            url: 'interactions-1.3.sif',
             success: function (data) {
-                var attributeNetworkDataAdapter = new AttributeNetworkDataAdapter({
+                var attributeNetworkDataAdapter = new SIFNetworkDataAdapter({
                     dataSource: new StringDataSource(data),
                     handlers: {
                         'data:load': function (event) {
-                            var json = event.sender.getAttributesJSON();
-                            json.attributes[1].name = "Weight";
-                            potyvirus.networkViewer.network.importEdgesWithAttributes({content: json});
-                            potyvirus.configuration.propertiesPanel.setActiveTab(1);
-                            potyvirus.configuration.edgeOpacityAttributeWidget.applyDirectVisualSet('Weight', 'String');
+                            potyvirus.networkViewer.setGraph(event.graph);
+                            potyvirus.networkViewer.setLayout('Force directed');
                         },
                         'error:parse': function (event) {
                             console.log(event.errorMsg);
                         }
                     }
                 });
+
+
+                $.ajax({
+                    url: 'interactions-1.3-weighted.attr',
+                    success: function (data) {
+                        var attributeNetworkDataAdapter = new AttributeNetworkDataAdapter({
+                            dataSource: new StringDataSource(data),
+                            handlers: {
+                                'data:load': function (event) {
+                                    var json = event.sender.getAttributesJSON();
+                                    potyvirus.networkViewer.network.importEdgesWithAttributes({content: json});
+                                    potyvirus.configuration.propertiesPanel.setActiveTab(1);
+                                    potyvirus.configuration.edgeOpacityAttributeWidget.applyDirectVisualSet('Weight', 'String');
+                                },
+                                'error:parse': function (event) {
+                                    console.log(event.errorMsg);
+                                }
+                            }
+                        });
+                    }
+                });
+
+
             }
         });
+
 
     });
 

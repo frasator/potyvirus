@@ -19,7 +19,7 @@
  * along with JS Common Libs. If not, see <http://www.gnu.org/licenses/>.
  */
 
-function PtyToolBar(args) {
+function CmToolBar(args) {
 
     // Using Underscore 'extend' function to extend and add Backbone Events
     _.extend(this, Backbone.Events);
@@ -27,7 +27,7 @@ function PtyToolBar(args) {
     var _this = this;
 
     this.id = Utils.genId("CbToolBar");
-
+    this.height = 35;
 
     //set instantiation args, must be last
     _.extend(this, args);
@@ -42,22 +42,13 @@ function PtyToolBar(args) {
     }
 };
 
-PtyToolBar.prototype = {
+CmToolBar.prototype = {
     setWidth: function () {
         this.toolbar.setWidth();
     },
-    render: function (targetId) {
+    render: function () {
         var _this = this;
-        this.targetId = (targetId) ? targetId : this.targetId;
-        if ($('#' + this.targetId).length < 1) {
-            console.log('targetId not found in DOM');
-            return;
-        }
-
-        this.targetDiv = $('#' + this.targetId)[0];
         this.div = $('<div id="navigation-bar' + this.id + '" class="unselectable"></div>')[0];
-        $(this.targetDiv).append(this.div);
-
 
         var importFileMenu = Ext.create('Ext.menu.Menu', {
             plain: true,
@@ -91,6 +82,7 @@ PtyToolBar.prototype = {
                     text: "STRING",
                     hidden: true,
                     handler: function () {
+                        //OLD CODE
                         var stringNetworkFileWidget = new StringNetworkFileWidget({"networkData": _this.networkViewer.networkData});
                         stringNetworkFileWidget.draw();
                         stringNetworkFileWidget.onOk.addEventListener(function (sender, data) {
@@ -144,10 +136,10 @@ PtyToolBar.prototype = {
 
         this.toolbar = Ext.create('Ext.toolbar.Toolbar', {
             id: this.id + "navToolbar",
-            renderTo: $(this.div).attr('id'),
             cls: 'jso-white-background',
             region: "north",
             width: '100%',
+            height: this.height,
             border: false,
             items: [
                 {
@@ -170,9 +162,8 @@ PtyToolBar.prototype = {
                             },
                             {
                                 text: 'Save Session',
-                                href: 'none',
                                 handler: function () {
-                                    _this.trigger('saveJSON:click', {a: this.getEl().child("a"), sender: _this});
+                                    _this.trigger('saveJSON:click', {sender: _this});
                                 }
                             },
                             '-',
@@ -187,55 +178,40 @@ PtyToolBar.prototype = {
                                     plain: true,
                                     items: [
                                         {
-                                            text: "Network as SIF",
-                                            href: "none",
-                                            icon: Utils.images.r,
+                                            text: 'Network as SIF',
+//                                            cls: 'bootstrap',
                                             handler: function () {
-                                                _this.trigger('saveSIF:click', {a: this.getEl().child("a"), sender: _this});
+                                                _this.trigger('saveSIF:click', {sender: _this});
                                             }
                                         },
                                         '-',
                                         {
-                                            text: "Network as SVG",
-                                            href: "none",
-                                            iconCls: 'icon-blue-box',
+                                            text: 'Network as SVG',
+//                                            cls: 'bootstrap',
                                             handler: function () {
-                                                _this.trigger('saveSVG:click', {a: this.getEl().child("a"), sender: _this});
+                                                _this.trigger('saveSVG:click', {sender: _this});
                                             }
                                         },
                                         {
-                                            text: "PNG image",
-                                            href: "none",
-                                            iconCls: 'icon-blue-box',
-                                            hidden: true,
+                                            text: 'PNG image',
+//                                            cls: 'bootstrap',
                                             handler: function () {
-                                                _this.trigger('savePNG:click', {a: this.getEl().child("a"), sender: _this});
-                                            }
-                                        },
-                                        {
-                                            text: "JPG image",
-                                            href: "none",
-                                            iconCls: 'icon-blue-box',
-                                            hidden: true,
-                                            handler: function () {
-                                                _this.trigger('saveJPG:click', {a: this.getEl().child("a"), sender: _this});
+                                                _this.trigger('savePNG:click', {sender: _this});
                                             }
                                         },
                                         '-',
                                         {
                                             text: 'Node attributes as file',
-                                            href: "none",
-                                            icon: Utils.images.r,
+//                                            cls: 'bootstrap',
                                             handler: function () {
-                                                _this.trigger('click:exportVertexAttributes', {a: this.getEl().child("a"), sender: _this});
+                                                _this.trigger('click:exportVertexAttributes', {sender: _this});
                                             }
                                         },
                                         {
                                             text: 'Edge attributes as file',
-                                            href: "none",
-                                            icon: Utils.images.r,
+//                                            cls: 'bootstrap',
                                             handler: function () {
-                                                _this.trigger('click:exportEdgeAttributes', {a: this.getEl().child("a"), sender: _this});
+                                                _this.trigger('click:exportEdgeAttributes', { sender: _this});
                                             }
                                         }
                                     ]
@@ -262,56 +238,48 @@ PtyToolBar.prototype = {
                     menu: this.getAnalysisMenu()
                 },
 
-                {
-                    text: 'Examples',
-                    cls: 'bootstrap',
-                    hidden:true,
-                    menu: this.getExamplesMenu()
-                },
-                {
-                    text: 'Potyvirus',
-                    cls: 'bootstrap',
-                    handler:function(){
-                        _this.trigger('potyvirus', {sender: _this});
-                    }
-                },
+//                {
+//                    text: 'Examples',
+//                    menu: this.getExamplesMenu()
+//                },
 
                 '->',
                 {
                     tooltip: 'Configure',
-                    text: '<span class="emph"> Visual settings</span>',
+                    text: '<i class="fa fa-cog"></i> Visual settings',
                     enableToggle: true,
-                    iconCls: 'ocb-icon-gear',
                     pressed: true,
                     hidden: false,
                     toggleHandler: function () {
                         _this.trigger('configuration-button:change', {selected: this.pressed, sender: _this});
                     }
-                },
-                {
-                    tooltip: 'Jobs',
-                    id:'jobs'+this.id,
-                    text: '<span class="emph"> Jobs</span>',
-                    margin: '0 5 0 0',
-                    enableToggle: true,
-//                    iconCls: 'ocb-icon-gear',
-                    pressed: false,
-//                    hidden: true,
-                    toggleHandler: function () {
-                        _this.trigger('jobs-button:change', {selected: this.pressed, sender: _this});
-                    }
                 }
             ]
         });
         this.rendered = true;
+
+    },
+    draw: function () {
+        this.targetDiv = (this.target instanceof HTMLElement ) ? this.target : document.querySelector('#' + this.target);
+        if (this.targetDiv === 'undefined') {
+            console.log('target not found');
+            return;
+        }
+        /**********/
+        /**********/
+        $(this.targetDiv).append(this.div);
+        /**********/
+        /**********/
+
+        this.toolbar.render(this.div);
     },
 
-    getJobsButton:function(){
-        return Ext.getCmp('jobs'+this.id);
+    getJobsButton: function () {
+        return Ext.getCmp('jobs' + this.id);
     },
 
     getHeight: function () {
-        return this.toolbar.getHeight();
+        return this.height;
     },
 
 
@@ -388,7 +356,7 @@ PtyToolBar.prototype = {
                             {
                                 text: 'Force directed',
                                 menu: {
-                                    plain:true,
+                                    plain: true,
                                     items: [
                                         {
                                             text: 'Default',
@@ -397,7 +365,7 @@ PtyToolBar.prototype = {
                                             }
                                         },
                                         {
-                                            text: 'Configure',
+                                            text: 'Configure...',
                                             handler: function () {
                                                 _this.trigger('click:configureLayout', {sender: _this});
                                             }
@@ -414,7 +382,8 @@ PtyToolBar.prototype = {
                                 handler: function () {
                                     _this.trigger('click:layout', {option: this.text, sender: _this});
                                 }
-                            },,
+                            },
+                            ,
                             {
                                 text: 'Attribute layout...',
                                 handler: function () {
@@ -548,13 +517,13 @@ PtyToolBar.prototype = {
         var importMenu = Ext.create('Ext.menu.Menu', {
             plain: true,
             items: [
-                {
-                    text: "Reactome...",
-//		        	disabled: true,
-                    handler: function () {
-                        _this.trigger('click:reactome', {sender: _this});
-                    }
-                },
+//                {
+//                    text: "Reactome...",
+////		        	disabled: true,
+//                    handler: function () {
+//                        _this.trigger('click:reactome', {sender: _this});
+//                    }
+//                },
                 {
                     text: "IntAct",
 //                    disabled: true,
@@ -566,7 +535,7 @@ PtyToolBar.prototype = {
 //                {
 //                    text: "Differential Expression Analysis",
 //                    disabled: true,
-//                    handler: functon () {
+//                    handler: function () {
 //                    }
 //                }
             ]
@@ -628,7 +597,7 @@ PtyToolBar.prototype = {
         });
 
         var functionalMenu = Ext.create('Ext.menu.Menu', {
-            plain:true,
+            plain: true,
             items: [
                 {
                     text: "Network enrichment analysis - SNOW",
@@ -644,7 +613,6 @@ PtyToolBar.prototype = {
                 },
                 {
                     text: "Fatigo",
-                    hidden:true,
                     handler: function () {
                         _this.trigger('click:fatigo', {sender: _this});
                     }
@@ -748,12 +716,10 @@ PtyToolBar.prototype = {
                     menu: networkMenu
                 },
                 {
-                    hidden:true,
                     text: 'Expression analysis',
                     menu: expressionMenu
                 },
                 {
-                    hidden:true,
                     text: 'Functional analysis',
                     menu: functionalMenu
                 },
@@ -842,7 +808,7 @@ PtyToolBar.prototype = {
             this.circleLayoutMenu.add({
                 text: name,
                 handler: function () {
-                    _this.trigger('click:layout', {option: 'Circle', attributeName: name, sender: _this});
+                    _this.trigger('click:layout', {option: 'Circle', attributeName: this.text, sender: _this});
                 }
             });
         }
