@@ -13,7 +13,6 @@ module.exports = function (grunt) {
         concat: {
             dist: {
                 src: [
-                    'src/pty-toolbar.js',
                     'src/potyvirus.js'
                 ],
                 dest: '<%= def.build %>/<%= def.name %>.js'

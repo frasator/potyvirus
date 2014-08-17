@@ -1,0 +1,164 @@
+<template>
+    <div id="container">
+    </div>
+</template>
+
+<script>
+    (function () {
+
+        // This document reference
+        var thisDoc = document._currentScript.ownerDocument;
+
+        document.registerElement('pty-4f', {
+            prototype: Object.create(HTMLElement.prototype, {
+                createdCallback: {
+                    value: function () {
+                        //Create a copy of the template node.
+                        var template = document.importNode(thisDoc.querySelector('template').content, true);
+                        this.appendChild(template);
+
+                        this.chart = new Highcharts.Chart({
+                            chart: {
+                                renderTo: this.querySelector('#container')
+                            },
+                            title: {
+//                                text: null,
+                                text: 'Topological parameters of each of proteins related with their degree'
+                            },
+                            credits: {
+                                enabled: false
+                            },
+                            navigation: {
+                                buttonOptions: {
+                                    enabled: false
+                                }
+                            },
+                            yAxis: {
+                                title: {
+                                    text: 'Probability'
+                                }
+                            },
+                            xAxis: {
+                                title: {
+                                    text: 'Topological parameters'
+                                }
+                            },
+                            legend: {
+                                layout: 'vertical',
+                                align: 'left',
+                                verticalAlign: 'top',
+                                x: 80,
+                                y: 10,
+                                floating: true,
+                                backgroundColor: (Highcharts.theme && Highcharts.theme.legendBackgroundColor) || '#FFFFFF',
+                                borderWidth: 1
+                            },
+                            series: [
+                                {
+                                    type: 'line',
+                                    name: 'Clustering coefficient',
+                                    data: this.data.clustering,
+                                    color: '#4f81bd',
+                                    marker: {
+                                        symbol: 'circle',
+                                        radius: 6
+                                    }
+                                },
+                                {
+                                    type: 'line',
+                                    name: 'Topological coefficient',
+                                    data: this.data.topological,
+                                    color: '#8064a2',
+                                    marker: {
+                                        symbol: 'circle',
+                                        radius: 6
+                                    }
+                                },
+                                {
+                                    type: 'line',
+                                    name: 'Closeness centrality',
+                                    data: this.data.closeness,
+                                    color: '#c0504d',
+                                    marker: {
+                                        symbol: 'circle',
+                                        radius: 6
+                                    }
+                                },
+                                {
+                                    type: 'line',
+                                    name: 'Betweeness centrality',
+                                    data: this.data.betweeness,
+                                    color: '#9bbb59',
+                                    marker: {
+                                        symbol: 'circle',
+                                        radius: 6
+                                    }
+                                }
+                            ],
+                            tooltip: {
+                                headerFormat: '<span style="font-size:10px">{point.key}</span><table>',
+                                pointFormat: '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' +
+                                        '<td style="padding:0"><b>{point.y:.1f}</b></td></tr>',
+                                footerFormat: '</table>',
+                                shared: true,
+                                useHTML: true
+                            }
+                        });
+
+
+                    }
+                },
+
+                data: {
+                    value: {
+                        clustering: [
+                            {x: 0, y: 0.182},
+                            {x: 0.321, y: 0.273},
+                            {x: 0.4, y: 0.364},
+                            {x: 0.429, y: 0.455},
+                            {x: 0.667, y: 0.545},
+                            {x: 0.833, y: 0.636},
+                            {x: 1, y: 1}
+                        ],
+
+                        topological: [
+                            {x: 0, y: 0.182},
+                            {x: 0.389, y: 0.273},
+                            {x: 0.414, y: 0.364},
+                            {x: 0.444, y: 0.455},
+                            {x: 0.583, y: 0.545},
+                            {x: 0.625, y: 0.636},
+                            {x: 0.700, y: 0.727},
+                            {x: 0.750, y: 0.818},
+                            {x: 0.812, y: 0.909},
+                            {x: 0.833, y: 1}
+                        ],
+                        closeness: [
+                            {y: 0.435, x: 0.091},
+                            {y: 0.476, x: 0.182},
+                            {y: 0.500, x: 0.364},
+                            {y: 0.526, x: 0.455},
+                            {y: 0.588, x: 0.636},
+                            {y: 0.625, x: 0.727},
+                            {y: 0.714, x: 0.818},
+                            {y: 0.769, x: 0.909},
+                            {y: 0.833, x: 1}
+                        ],
+                        betweeness: [
+                            {x: 0, y: 0.545},
+                            {x: 0.015, y: 0.636},
+                            {x: 0.030, y: 0.727},
+                            {x: 0.193, y: 0.818},
+                            {x: 0.259, y: 0.909},
+                            {x: 0.415, y: 1}
+                        ]
+
+                    }
+                }
+            })
+        });
+
+
+    }());
+</script>
+
