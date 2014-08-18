@@ -67,17 +67,18 @@
 <link rel="stylesheet" href="../lib/jsorolla/vendor/font-awesome-4.1.0/css/font-awesome.min.css">
 <link type="text/css" rel="stylesheet" href="../lib/jsorolla/vendor/ext-5/theme-babel/theme-babel-all.css">
 <link type="text/css" rel="stylesheet" href="../lib/jsorolla/vendor/jquery.qtip.min.css"/>
-<link type="text/css" rel="stylesheet" href="../lib/jsorolla/vendor/jquery.simplecolorpicker.css">
 <!-- /build -->
 
 <!-- build:style css -->
 <link type="text/css" rel="stylesheet" href="../lib/jsorolla/styles/css/style.css"/>
 <!-- /build -->
 
-<script type="text/javascript" src="../vendor/ext-all.js"></script>
-<script type="text/javascript" src="../vendor/ext-charts.js"></script>
-<script type="text/javascript" src="../vendor/highcharts/adapters/standalone-framework.js"></script>
-<script type="text/javascript" src="../vendor/highcharts/highcharts-all.js"></script>
+<!-- build:[src] http://cdn.sencha.io/ext/gpl/5.0.0/build/ -->
+<script src="../lib/jsorolla/vendor/ext-5/ext-all.js"></script>
+<!-- /build -->
+
+<script type="text/javascript" src="../lib/jsorolla/vendor/highcharts/adapters/standalone-framework.js"></script>
+<script type="text/javascript" src="../lib/jsorolla/vendor/highcharts/highcharts-all.js"></script>
 
 <!-- Workers directory -->
 <script type="text/javascript">
@@ -94,6 +95,7 @@
 <script type="text/javascript" src="../lib/jsorolla/vendor/jszip.min.js"></script>
 <script type="text/javascript" src="../lib/jsorolla/vendor/xlsx.min.js"></script>
 <script type="text/javascript" src="../lib/jsorolla/vendor/jquery.min.js"></script>
+<script type="text/javascript" src="../lib/jsorolla/vendor/three.min.js"></script>
 
 <!-- These dependencies must go AFTER jquery -->
 <script type="text/javascript" src="../lib/jsorolla/vendor/typeahead.min.js"></script>
@@ -101,9 +103,6 @@
 <script type="text/javascript" src="../lib/jsorolla/vendor/jquery.cookie.js"></script>
 <script type="text/javascript" src="../lib/jsorolla/vendor/jquery.sha1.js"></script>
 <script type="text/javascript" src="../lib/jsorolla/vendor/purl.min.js"></script>
-<script type="text/javascript" src="../lib/jsorolla/vendor/jquery.mousewheel.min.js"></script>
-<script type="text/javascript" src="../lib/jsorolla/vendor/gl-matrix-min.js"></script>
-<script type="text/javascript" src="../lib/jsorolla/vendor/ChemDoodleWeb.js"></script>
 <script type="text/javascript" src="../lib/jsorolla/vendor/jquery.simplecolorpicker.js"></script>
 <script type="text/javascript" src="../lib/jsorolla/vendor/d3.min.js"></script>
 <!-- /build -->
@@ -140,6 +139,7 @@
 <script type="text/javascript" src="../lib/jsorolla/src/lib/network/circos-vertex-renderer.js"></script>
 <script type="text/javascript" src="../lib/jsorolla/src/lib/network/default-edge-renderer.js"></script>
 <script type="text/javascript" src="../lib/jsorolla/src/lib/network/graph-layout.js"></script>
+<script type="text/javascript" src="../lib/jsorolla/src/lib/network/point.js"></script>
 
 <script type="text/javascript" src="../lib/jsorolla/src/lib/cellbase-manager.js"></script>
 
@@ -225,6 +225,9 @@
 <script type="text/javascript" src="../lib/cell-maps/src/cell-maps-configuration.js"></script>
 <script type="text/javascript" src="../lib/cell-maps/src/cell-maps.js"></script>
 
+<script type="text/javascript" src="../lib/jsorolla/src/network-viewer-webgl/network-viewer-webgl.js"></script>
+<script type="text/javascript" src="../lib/jsorolla/src/network-viewer-webgl/js/debugaxis.js"></script>
+
 <script type="text/javascript" src="potyvirus.js"></script>
 <!-- /build -->
 
@@ -243,6 +246,8 @@
     var resizeTimer;
     Ext.onReady(function () {
 
+        potyvirusPorteinNames = {'P1': true, 'HC-Pro': true, 'P3': true, '6K1': true, 'CI': true, '6K2': true, 'VPg': true, 'Nia-Pro': true, 'Nib': true, 'CP': true, 'P3N-PIPO': true};
+
         session = new NetworkSession();
 
         potyvirus = new Potyvirus({
@@ -259,6 +264,16 @@
         }); //the div must exist
         potyvirus.draw();
         potyvirus.configuration.toggle(false);
+
+
+        networkViewerWebgl = new NetworkViewerWebgl({
+            target: 'application1',
+            height: 800,
+            width: $('#application').width(),
+            autoRender: true
+
+        });
+
 
         // Resize
         $(window).resize(function (event) {
@@ -313,6 +328,59 @@
         });
 
 
+        $.ajax({
+            url: 'all.sif',
+            success: function (data) {
+                var sifNetworkDataAdapter = new SIFNetworkDataAdapter({
+                    dataSource: new StringDataSource(data),
+                    handlers: {
+                        'data:load': function (event) {
+                            var graph = event.graph;
+                            var vertices = event.graph.vertices;
+                            var edges = event.graph.edges;
+
+                            var virusVertices = [];
+                            var plantVertices = [];
+
+                            for (var i = 0, l = vertices.length; i < l; i++) {
+                                var vertex = vertices[i];
+                                if (typeof vertex !== 'undefined') {
+                                    if (vertex.id in potyvirusPorteinNames) {
+                                        virusVertices.push(vertex);
+                                    } else {
+                                        plantVertices.push(vertex);
+                                    }
+                                }
+                            }
+
+
+                            circleLevels(virusVertices, 300, 50);
+                            circleLevels(plantVertices, 500, 350);
+                            networkViewerWebgl.renderGraph(graph);
+                        },
+                        'error:parse': function (event) {
+                            console.log(event.errorMsg);
+                        }
+                    }
+                })
+            }
+        });
+
+        function circleLevels(vertices, radius, z) {
+            var centerX = 0;
+            var centerY = 0;
+            var x, y;
+            for (var i = 0, l = vertices.length; i < l; i++) {
+                var vertex = vertices[i];
+                if (typeof vertex !== 'undefined') {
+                    x = centerX + radius * Math.sin(i * 2 * Math.PI / vertices.length);
+                    y = centerY + radius * Math.cos(i * 2 * Math.PI / vertices.length);
+
+                    vertex.position.set(x, y, z);
+                }
+            }
+        }
+
     });
 
 
@@ -320,6 +388,7 @@
 
 
 <div id="application"></div>
+<div id="application1"></div>
 <div id="application2">
     <pty-4a></pty-4a>
     <pty-4b></pty-4b>
