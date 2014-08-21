@@ -3,46 +3,19 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <title>Potyvirus</title>
-    <STYLE type="text/css">
-        html {
-            /*overflow: hidden;*/
-            /*height: 100%;*/
-            width: 98%;
-        }
 
-        #status {
-            height: 26px;
-            border-color: lightgrey;
-            border-style: solid;
-            /*border-width: 0 1px 1px 1px;*/
-            border-width: 1px 0px 0px 0px;
-        }
 
-        body {
-            /*background-color: #f5f5f5;*/
-            /*padding: 4px;*/
-        }
+    <!-- build:style vendor -->
+    <link rel="stylesheet" href="../lib/jsorolla/vendor/font-awesome-4.1.0/css/font-awesome.min.css">
+    <link type="text/css" rel="stylesheet" href="../lib/jsorolla/vendor/ext-5/theme-babel/theme-babel-all.css">
+    <link type="text/css" rel="stylesheet" href="../lib/jsorolla/vendor/jquery.qtip.min.css"/>
+    <!-- /build -->
 
-        .header-form {
-            font-size: 13px;
-            font-family: Oxygen;
-            /*background-color: #f5f5f5;*/
-            font-weight: bold;
-            padding: 4px 6px;
-            /*border:0px solid #d3d3d3;*/
-        }
+    <!-- build:style css -->
+    <link type="text/css" rel="stylesheet" href="../lib/jsorolla/styles/css/style.css"/>
+    <!-- /build -->
 
-        #application {
-            height: 500px;
-            /*float:left;*/
-            /*width: 50%;*/
-        }
 
-        #application2 {
-            /*float:left;*/
-            /*width: 50%;*/
-        }
-    </STYLE>
 
 
     <!--Importing Web Component's Polyfill -->
@@ -51,6 +24,7 @@
     <!--Importing Custom Elements -->
     <link rel="import" href="../lib/jsorolla/src/lib/components/jso-color-picker.html">
     <link rel="import" href="components/pty-toolbar.html">
+    <link rel="import" href="components/pty-header.html">
 
 
     <link rel="import" href="components/pty-4a.html">
@@ -59,19 +33,17 @@
     <link rel="import" href="components/pty-4d.html">
     <link rel="import" href="components/pty-4e.html">
     <link rel="import" href="components/pty-4f.html">
+    <link rel="import" href="components/pty-effect-propagation.html">
+    <link rel="import" href="components/pty-simpson-index.html">
+    <link rel="import" href="components/pty-heatmap.html">
+
+
+
+
 </head>
 <body>
 
 
-<!-- build:style vendor -->
-<link rel="stylesheet" href="../lib/jsorolla/vendor/font-awesome-4.1.0/css/font-awesome.min.css">
-<link type="text/css" rel="stylesheet" href="../lib/jsorolla/vendor/ext-5/theme-babel/theme-babel-all.css">
-<link type="text/css" rel="stylesheet" href="../lib/jsorolla/vendor/jquery.qtip.min.css"/>
-<!-- /build -->
-
-<!-- build:style css -->
-<link type="text/css" rel="stylesheet" href="../lib/jsorolla/styles/css/style.css"/>
-<!-- /build -->
 
 <!-- build:[src] http://cdn.sencha.io/ext/gpl/5.0.0/build/ -->
 <script src="../lib/jsorolla/vendor/ext-5/ext-all.js"></script>
@@ -79,6 +51,7 @@
 
 <script type="text/javascript" src="../lib/jsorolla/vendor/highcharts/adapters/standalone-framework.js"></script>
 <script type="text/javascript" src="../lib/jsorolla/vendor/highcharts/highcharts-all.js"></script>
+<script type="text/javascript" src="../lib/jsorolla/vendor/highcharts/modules/heatmap.js"></script>
 
 <!-- Workers directory -->
 <script type="text/javascript">
@@ -231,47 +204,110 @@
 <script type="text/javascript" src="potyvirus.js"></script>
 <!-- /build -->
 
-<script>
-    CELLBASE_HOST = "http://www.ebi.ac.uk/cellbase/webservices/rest";
-    CELLBASE_VERSION = "v3";
-    //    Ext.Loader.setConfig({enabled: true});
-    //    Ext.Loader.setPath('Ext.ux', 'http://cdn.sencha.io/ext/gpl/4.2.1/examples/ux');
-    //    //    Ext.QuickTips.init();
-    //    Ext.require([
-    //        'Ext.grid.plugin.BufferedRenderer'
-    //    ]);
 
-    var cellMaps;
-    var session
-    var resizeTimer;
+<STYLE type="text/css">
+    html {
+        width: 100%;
+        height: 100%;
+        /*overflow: hidden;*/
+    }
+
+    body {
+        margin: 0px;
+        width: 100%;
+        height: 100%;
+    }
+
+    #maincontent {
+        width: 100%;
+        margin: 0 auto;
+    }
+    #stats{
+        width: 95%;
+        margin: 0 auto;
+    }
+
+</STYLE>
+
+
+<pty-header data-name="Potyvirus" data-description="Protein-protein interaction network analysis"></pty-header>
+<div id="maincontent">
+
+</div>
+<!--<pty-effect-propagation></pty-effect-propagation>-->
+<!--<pty-simpson-index></pty-simpson-index>-->
+
+<script>
     Ext.onReady(function () {
 
-        potyvirusPorteinNames = {'P1': true, 'HC-Pro': true, 'P3': true, '6K1': true, 'CI': true, '6K2': true, 'VPg': true, 'Nia-Pro': true, 'Nib': true, 'CP': true, 'P3N-PIPO': true};
+        CELLBASE_HOST = "http://www.ebi.ac.uk/cellbase/webservices/rest";
+        CELLBASE_VERSION = "v3";
 
-        session = new NetworkSession();
+        var potyvirusPorteinNames = {'P1': true, 'HC-Pro': true, 'P3': true, '6K1': true, 'CI': true, '6K2': true, 'VPg': true, 'Nia-Pro': true, 'Nib': true, 'CP': true, 'P3N-PIPO': true};
 
-        potyvirus = new Potyvirus({
-            target: 'application',
-            width: $('#application').width(),
-            height: $('#application').height(),
-            title: 'Potyvirus',
-            description: 'Protein-protein interaction network analysis',
-            session: session,
-            handlers: {
-                'session:save-request': function (e) {
-                }
+        var height = $('html').height() - 62;
+        var width = $('html').width() - 2;
+
+        var resizeTimer;
+
+        var header = document.querySelector('pty-header');
+        var mainContentEl = document.querySelector('#maincontent');
+
+
+        var contentMap = {};
+        contentMap['nv'] = document.createElement('div');
+        contentMap['nv'].style.border = '1px solid lightgray';
+        contentMap['nvwgl'] = document.createElement('div');
+
+
+        contentMap['stats'] = document.createElement('div');
+        contentMap['stats'].setAttribute('id', 'stats');
+        var epEl = document.createElement('pty-heatmap');
+        var siEl = document.createElement('pty-simpson-index');
+        var aEl = document.createElement('pty-4a');
+        var bEl = document.createElement('pty-4b');
+        var cEl = document.createElement('pty-4c');
+        var dEl = document.createElement('pty-4d');
+        var eEl = document.createElement('pty-4e');
+        var fEl = document.createElement('pty-4f');
+        contentMap['stats'].appendChild(epEl);
+        contentMap['stats'].appendChild(siEl);
+        contentMap['stats'].appendChild(aEl);
+        contentMap['stats'].appendChild(bEl);
+        contentMap['stats'].appendChild(cEl);
+        contentMap['stats'].appendChild(dEl);
+        contentMap['stats'].appendChild(eEl);
+        contentMap['stats'].appendChild(fEl);
+
+
+//        mainContentEl.appendChild(contentMap['nv']);
+        mainContentEl.appendChild(contentMap['stats']);
+
+
+        header.addEventListener('menu-click', function (e) {
+            while (mainContentEl.firstChild) {
+                mainContentEl.removeChild(mainContentEl.firstChild);
             }
-        }); //the div must exist
-        potyvirus.draw();
-        potyvirus.configuration.toggle(false);
+            mainContentEl.appendChild(contentMap[e.detail.value]);
+        });
 
 
-        networkViewerWebgl = new NetworkViewerWebgl({
-            target: 'application1',
-            height: 800,
-            width: $('#application').width(),
-            autoRender: true
+        var session = new NetworkSession();
+        var networkViewer = new NetworkViewer({
+            target: contentMap['nv'],
+            sidePanel: false,
+            overviewPanel: false,
+            session: session,
+            width: width,
+            height: height
+        });
+        networkViewer.draw();
 
+
+        var networkViewerWebgl = new NetworkViewerWebgl({
+            target: contentMap['nvwgl'],
+            width: width - 10,
+            height: height - 10
         });
 
 
@@ -279,62 +315,28 @@
         $(window).resize(function (event) {
             clearTimeout(resizeTimer);
             resizeTimer = setTimeout(function () {
-                potyvirus.resize({
-                    width: $('html').width(),
-                    height: $('html').height()
+                var height = $('html').height() - 62;
+                var width = $('html').width() - 2;
+                networkViewer.resize({
+                    width: width,
+                    height: height
                 });
             }, 500);
-        });
-
-        $.ajax({
-            url: 'interactions-1.3.sif',
-            success: function (data) {
-                var attributeNetworkDataAdapter = new SIFNetworkDataAdapter({
-                    dataSource: new StringDataSource(data),
-                    handlers: {
-                        'data:load': function (event) {
-                            potyvirus.networkViewer.setGraph(event.graph);
-                            potyvirus.networkViewer.setLayout('Force directed');
-                        },
-                        'error:parse': function (event) {
-                            console.log(event.errorMsg);
-                        }
-                    }
-                });
-
-
-                $.ajax({
-                    url: 'interactions-1.3-weighted.attr',
-                    success: function (data) {
-                        var attributeNetworkDataAdapter = new AttributeNetworkDataAdapter({
-                            dataSource: new StringDataSource(data),
-                            handlers: {
-                                'data:load': function (event) {
-                                    var json = event.sender.getAttributesJSON();
-                                    potyvirus.networkViewer.network.importEdgesWithAttributes({content: json});
-                                    potyvirus.configuration.propertiesPanel.setActiveTab(1);
-                                    potyvirus.configuration.edgeOpacityAttributeWidget.applyDirectVisualSet('Weight', 'String');
-                                },
-                                'error:parse': function (event) {
-                                    console.log(event.errorMsg);
-                                }
-                            }
-                        });
-                    }
-                });
-
-
-            }
         });
 
 
         $.ajax({
             url: 'all.sif',
             success: function (data) {
-                var sifNetworkDataAdapter = new SIFNetworkDataAdapter({
+                var attributeNetworkDataAdapter = new SIFNetworkDataAdapter({
                     dataSource: new StringDataSource(data),
                     handlers: {
                         'data:load': function (event) {
+                            networkViewer.setGraph(event.graph);
+                            networkViewer.setLayout('Force directed');
+
+
+                            //3D
                             var graph = event.graph;
                             var vertices = event.graph.vertices;
                             var edges = event.graph.edges;
@@ -357,47 +359,137 @@
                             circleLevels(virusVertices, 300, 50);
                             circleLevels(plantVertices, 500, 350);
                             networkViewerWebgl.renderGraph(graph);
+
+
                         },
                         'error:parse': function (event) {
                             console.log(event.errorMsg);
                         }
                     }
-                })
+                });
+
+                $.ajax({
+                    url: 'interactions-1.3-weighted.attr',
+                    success: function (data) {
+                        var attributeNetworkDataAdapter = new AttributeNetworkDataAdapter({
+                            dataSource: new StringDataSource(data),
+                            handlers: {
+                                'data:load': function (event) {
+                                    var json = event.sender.getAttributesJSON();
+                                    networkViewer.network.importEdgesWithAttributes({content: json});
+//                                    configuration.propertiesPanel.setActiveTab(1);
+//                                    configuration.edgeOpacityAttributeWidget.applyDirectVisualSet('Weight', 'String');
+                                },
+                                'error:parse': function (event) {
+                                    console.log(event.errorMsg);
+                                }
+                            }
+                        });
+                    }
+                });
             }
         });
 
-        function circleLevels(vertices, radius, z) {
-            var centerX = 0;
-            var centerY = 0;
-            var x, y;
-            for (var i = 0, l = vertices.length; i < l; i++) {
-                var vertex = vertices[i];
-                if (typeof vertex !== 'undefined') {
-                    x = centerX + radius * Math.sin(i * 2 * Math.PI / vertices.length);
-                    y = centerY + radius * Math.cos(i * 2 * Math.PI / vertices.length);
-
-                    vertex.position.set(x, y, z);
-                }
-            }
-        }
 
     });
 
+    function circleLevels(vertices, radius, z) {
+        var centerX = 0;
+        var centerY = 0;
+        var x, y;
+        for (var i = 0, l = vertices.length; i < l; i++) {
+            var vertex = vertices[i];
+            if (typeof vertex !== 'undefined') {
+                x = centerX + radius * Math.sin(i * 2 * Math.PI / vertices.length);
+                y = centerY + radius * Math.cos(i * 2 * Math.PI / vertices.length);
+
+                vertex.position.set(x, y, z);
+            }
+        }
+    }
+     function force (args) {
+
+        var network = args.graph;
+        var width = args.width;
+        var height = args.height;
+        var friction = args.friction;
+        var gravity = args.gravity;
+        var chargeDistance = args.chargeDistance;
+
+        var linkStrength = args.linkStrength;
+        var linkDistance = args.linkDistance;
+        var charge = args.charge;
+
+        var multipliers = args.multipliers;
+
+        var endFunction = args.end;
+        var simulation = args.simulation;
+
+        var force = d3.layout.force();
+
+        //Global parameters
+        force.size([width, height]);
+        if (typeof  friction !== 'undefined') {
+            force.friction(friction);
+
+        }
+        if (typeof gravity !== 'undefined') {
+            force.gravity(gravity);
+
+        }
+        if (typeof  chargeDistance !== 'undefined') {
+            force.chargeDistance(chargeDistance);
+
+        }
+
+
+        var vertices = graph.vertices;
+        var edges = graph.edges;
+
+
+        /*------------------------------------------*/
+        /*------------------------------------------*/
+        console.time('Force directed preload');
+
+        force.nodes(vertices);
+        force.links(edges);
+
+        /*------------------------------------------*/
+        /*------------------------------------------*/
+
+
+        force.on('end', function (o) {
+            console.log(o)
+            endFunction(vertices);
+        });
+
+        if (simulation === true) {
+            force.on('tick', function (o) {
+                endFunction(vertices);
+                console.log(force.alpha())
+                if (force.alpha() < 0.025) {
+                    force.stop()
+                }
+            });
+            force.start();
+        } else {
+            console.time('D3 Force directed layout');
+            force.start();
+            var safety = 0;
+            while (force.alpha() > 0.025) { // You'll want to try out different, "small" values for this
+                force.tick();
+                if (safety++ > 1000) {
+                    break;// Avoids infinite looping in case this solution was a bad idea
+                }
+            }
+//            console.log(safety);
+            force.stop();
+            console.timeEnd('D3 Force directed layout');
+        }
+
+    }
 
 </script>
-
-
-<div id="application"></div>
-<div id="application1"></div>
-<div id="application2">
-    <pty-4a></pty-4a>
-    <pty-4b></pty-4b>
-    <pty-4c></pty-4c>
-    <pty-4d></pty-4d>
-    <pty-4e></pty-4e>
-    <pty-4f></pty-4f>
-</div>
-
 
 </body>
 </html>

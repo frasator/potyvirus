@@ -1,0 +1,338 @@
+<template>
+    <div id="container" style="margin-bottom:20px">
+    </div>
+</template>
+
+<script>
+(function () {
+
+    // This document reference
+    var thisDoc = document._currentScript.ownerDocument;
+
+    document.registerElement('pty-effect-propagation', {
+        prototype: Object.create(HTMLElement.prototype, {
+            createdCallback: {
+                value: function () {
+                    //Create a copy of the template node.
+                    var template = document.importNode(thisDoc.querySelector('template').content, true);
+                    this.appendChild(template);
+
+                    this.chart = new Highcharts.Chart({
+                        chart: {
+                            renderTo: this.querySelector('#container'),
+                            type: 'column'
+                        },
+                        title: {
+//                                text: null,
+                            text: 'Effect propagation'
+                        },
+                        credits: {
+                            enabled: false
+                        },
+                        navigation: {
+                            buttonOptions: {
+                                enabled: false
+                            }
+                        },
+                        xAxis: {
+                            allowDecimals: false,
+                            max: 12,
+                            min: 0,
+                            title: {
+                                text: 'Steps'
+                            }
+                        },
+                        yAxis: {
+                            max: 5000,
+                            min: 0,
+                            title: {
+                                text: 'Host proteins'
+                            }
+                        },
+                        series: [
+                            {
+                                type: 'spline',
+                                name: 'P1',
+                                data: this.data['P1'],
+                                color: '#4f81bd',
+                                marker: {
+                                    symbol: 'circle',
+                                    radius: 6
+                                }
+                            },
+                            {
+                                type: 'spline',
+                                name: 'HC-Pro',
+                                data: this.data['HC-Pro'],
+                                color: '#c0504d',
+                                marker: {
+                                    symbol: 'circle',
+                                    radius: 6
+                                }
+                            },
+                            {
+                                type: 'spline',
+                                name: 'P3',
+                                data: this.data['P3'],
+                                color: '#9bbb59',
+                                marker: {
+                                    symbol: 'circle',
+                                    radius: 6
+                                }
+                            },
+                            {
+                                type: 'spline',
+                                name: '6K1',
+                                data: this.data['6K1'],
+                                color: '#8064a2',
+                                marker: {
+                                    symbol: 'circle',
+                                    radius: 6
+                                }
+                            },
+                            {
+                                type: 'spline',
+                                name: 'CI',
+                                data: this.data['CI'],
+                                color: '#4bacc6',
+                                marker: {
+                                    symbol: 'circle',
+                                    radius: 6
+                                }
+                            },
+                            {
+                                type: 'spline',
+                                name: '6K2',
+                                data: this.data['6K2'],
+                                color: '#f79646',
+                                marker: {
+                                    symbol: 'circle',
+                                    radius: 6
+                                }
+                            },
+                            {
+                                type: 'spline',
+                                name: 'VPg',
+                                data: this.data['VPg'],
+                                color: '#2c4d75',
+                                marker: {
+                                    symbol: 'circle',
+                                    radius: 6
+                                }
+                            },
+                            {
+                                type: 'spline',
+                                name: 'NIa-Pro',
+                                data: this.data['NIa-Pro'],
+                                color: '#772c2a',
+                                marker: {
+                                    symbol: 'circle',
+                                    radius: 6
+                                }
+                            },
+                            {
+                                type: 'spline',
+                                name: 'NIb',
+                                data: this.data['NIb'],
+                                color: '#5f7530',
+                                marker: {
+                                    symbol: 'circle',
+                                    radius: 6
+                                }
+                            },
+                            {
+                                type: 'spline',
+                                name: 'CP',
+                                data: this.data['CP'],
+                                color: '#4d3b62',
+                                marker: {
+                                    symbol: 'circle',
+                                    radius: 6
+                                }
+                            },
+                            {
+                                type: 'spline',
+                                name: 'P3N-PIPO',
+                                data: this.data['P3N-PIPO'],
+                                color: '#276a7c',
+                                marker: {
+                                    symbol: 'circle',
+                                    radius: 6
+                                }
+                            }
+                        ]
+                    });
+
+
+                }
+            },
+            attachedCallback: {
+                value: function () {
+                    this.chart.reflow();
+                }
+            },
+            data: {
+                value: {
+                    'P1': [
+                        {x: 1, y: 1},
+                        {x: 2, y: 3},
+                        {x: 3, y: 16},
+                        {x: 4, y: 126},
+                        {x: 5, y: 1356},
+                        {x: 6, y: 3254},
+                        {x: 7, y: 4422},
+                        {x: 8, y: 4713},
+                        {x: 9, y: 4775},
+                        {x: 10, y: 4781},
+                        {x: 11, y: 4782},
+                        {x: 12, y: 4782}
+                    ],
+                    'HC-Pro': [
+                        {x: 1, y: 14},
+                        {x: 2, y: 23},
+                        {x: 3, y: 81},
+                        {x: 4, y: 220},
+                        {x: 5, y: 1536},
+                        {x: 6, y: 3505},
+                        {x: 7, y: 4511},
+                        {x: 8, y: 4751},
+                        {x: 9, y: 4790},
+                        {x: 10, y: 4794},
+                        {x: 11, y: 4794},
+                        {x: 12, y: 4794}
+                    ],
+                    'P3': [
+                        {x: 1, y: 5},
+                        {x: 2, y: 38},
+                        {x: 3, y: 899},
+                        {x: 4, y: 2370},
+                        {x: 5, y: 4233},
+                        {x: 6, y: 4643},
+                        {x: 7, y: 4765},
+                        {x: 8, y: 4780},
+                        {x: 9, y: 4783},
+                        {x: 10, y: 4783},
+                        {x: 11, y: 4783},
+                        {x: 12, y: 4783}
+                    ],
+                    '6K1': [
+                        {x: 1, y: 0},
+                        {x: 2, y: 0},
+                        {x: 3, y: 0},
+                        {x: 4, y: 0},
+                        {x: 5, y: 0},
+                        {x: 6, y: 0},
+                        {x: 7, y: 0},
+                        {x: 8, y: 0},
+                        {x: 9, y: 0},
+                        {x: 10, y: 0},
+                        {x: 11, y: 0},
+                        {x: 12, y: 0}
+                    ],
+                    'CI': [
+                        {x: 1, y: 2},
+                        {x: 2, y: 2},
+                        {x: 3, y: 2},
+                        {x: 4, y: 2},
+                        {x: 5, y: 2},
+                        {x: 6, y: 2},
+                        {x: 7, y: 2},
+                        {x: 8, y: 2},
+                        {x: 9, y: 2},
+                        {x: 10, y: 2},
+                        {x: 11, y: 2},
+                        {x: 12, y: 2}
+                    ],
+                    '6K2': [
+                        {x: 1, y: 0},
+                        {x: 2, y: 0},
+                        {x: 3, y: 0},
+                        {x: 4, y: 0},
+                        {x: 5, y: 0},
+                        {x: 6, y: 0},
+                        {x: 7, y: 0},
+                        {x: 8, y: 0},
+                        {x: 9, y: 0},
+                        {x: 10, y: 0},
+                        {x: 11, y: 0},
+                        {x: 12, y: 0}
+                    ],
+                    'VPg': [
+                        {x: 1, y: 11},
+                        {x: 2, y: 85},
+                        {x: 3, y: 383},
+                        {x: 4, y: 2071},
+                        {x: 5, y: 3909},
+                        {x: 6, y: 4611},
+                        {x: 7, y: 4756},
+                        {x: 8, y: 4781},
+                        {x: 9, y: 4785},
+                        {x: 10, y: 4785},
+                        {x: 11, y: 4785},
+                        {x: 12, y: 4785}
+                    ],
+                    'NIa-Pro': [
+                        {x: 1, y: 3},
+                        {x: 2, y: 13},
+                        {x: 3, y: 68},
+                        {x: 4, y: 625},
+                        {x: 5, y: 2510},
+                        {x: 6, y: 4156},
+                        {x: 7, y: 4645},
+                        {x: 8, y: 4764},
+                        {x: 9, y: 4779},
+                        {x: 10, y: 4782},
+                        {x: 11, y: 4782},
+                        {x: 12, y: 4782}
+                    ],
+                    'NIb': [
+                        {x: 1, y: 4},
+                        {x: 2, y: 16},
+                        {x: 3, y: 77},
+                        {x: 4, y: 642},
+                        {x: 5, y: 2645},
+                        {x: 6, y: 4200},
+                        {x: 7, y: 4669},
+                        {x: 8, y: 4768},
+                        {x: 9, y: 4781},
+                        {x: 10, y: 4782},
+                        {x: 11, y: 4782},
+                        {x: 12, y: 4782}
+                    ],
+                    'CP': [
+                        {x: 1, y: 4},
+                        {x: 2, y: 5},
+                        {x: 3, y: 25},
+                        {x: 4, y: 63},
+                        {x: 5, y: 603},
+                        {x: 6, y: 2241},
+                        {x: 7, y: 4101},
+                        {x: 8, y: 4640},
+                        {x: 9, y: 4770},
+                        {x: 10, y: 4784},
+                        {x: 11, y: 4785},
+                        {x: 12, y: 4785}
+                    ],
+                    'P3N-PIPO': [
+                        {x: 1, y: 1},
+                        {x: 2, y: 1},
+                        {x: 3, y: 1},
+                        {x: 4, y: 1},
+                        {x: 5, y: 1},
+                        {x: 6, y: 1},
+                        {x: 7, y: 1},
+                        {x: 8, y: 1},
+                        {x: 9, y: 1},
+                        {x: 10, y: 1},
+                        {x: 11, y: 1},
+                        {x: 12, y: 1}
+                    ]
+                }
+            }
+        })
+    });
+
+
+}());
+</script>
+

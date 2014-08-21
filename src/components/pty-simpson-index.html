@@ -1,0 +1,217 @@
+<template>
+    <div id="container" style="margin-bottom:20px">
+    </div>
+</template>
+
+<script>
+(function () {
+
+    // This document reference
+    var thisDoc = document._currentScript.ownerDocument;
+
+    document.registerElement('pty-simpson-index', {
+        prototype: Object.create(HTMLElement.prototype, {
+            createdCallback: {
+                value: function () {
+                    //Create a copy of the template node.
+                    var template = document.importNode(thisDoc.querySelector('template').content, true);
+                    this.appendChild(template);
+                    this.chart = new Highcharts.Chart({
+                        chart: {
+                            renderTo: this.querySelector('#container'),
+                            type: 'column'
+                        },
+                        title: {
+//                                text: null,
+                            text: 'Simpson index evolution for HC-Pro'
+                        },
+                        credits: {
+                            enabled: false
+                        },
+                        navigation: {
+                            buttonOptions: {
+                                enabled: false
+                            }
+                        },
+                        xAxis: {
+                            allowDecimals: false,
+                            max: 12,
+                            min: 0,
+                            title: {
+                                text: 'Steps'
+                            }
+                        },
+                        yAxis: {
+                            max: 1,
+                            min: 0,
+                            title: {
+                                text: 'Simpson index'
+                            }
+                        },
+                        series: [
+                            {
+                                type: 'line',
+                                name: 'P1',
+                                data: this.data['P1'],
+                                color: '#c0504d',
+                                marker: {
+                                    symbol: 'circle',
+                                    radius: 6
+                                }
+                            },
+                            {
+                                type: 'line',
+                                name: 'P3',
+                                data: this.data['P3'],
+                                color: '#4f81bd',
+                                marker: {
+                                    symbol: 'circle',
+                                    radius: 6
+                                }
+                            },
+                            {
+                                type: 'line',
+                                name: 'VPg',
+                                data: this.data['VPg'],
+                                color: '#9bbb59',
+                                marker: {
+                                    symbol: 'circle',
+                                    radius: 6
+                                }
+                            },
+                            {
+                                type: 'line',
+                                name: 'NIa-Pro',
+                                data: this.data['NIa-Pro'],
+                                color: '#8064a2',
+                                marker: {
+                                    symbol: 'circle',
+                                    radius: 6
+                                }
+                            },
+                            {
+                                type: 'line',
+                                name: 'NIb',
+                                data: this.data['NIb'],
+                                color: '#4bacc6',
+                                marker: {
+                                    symbol: 'circle',
+                                    radius: 6
+                                }
+                            },
+                            {
+                                type: 'line',
+                                name: 'CP',
+                                data: this.data['CP'],
+                                color: '#f79646',
+                                marker: {
+                                    symbol: 'circle',
+                                    radius: 6
+                                }
+                            }
+                        ]
+                    });
+
+
+                }
+            },
+            attachedCallback: {
+                value: function () {
+                    this.chart.reflow();
+                }
+            },
+            data: {
+                value: {
+                    'P1': [
+                        {x: 1, y: 0},
+                        {x: 2, y: 0},
+                        {x: 3, y: 0},
+                        {x: 4, y: 0.11},
+                        {x: 5, y: 0.59},
+                        {x: 6, y: 0.89},
+                        {x: 7, y: 0.98},
+                        {x: 8, y: 1},
+                        {x: 9, y: 1},
+                        {x: 10, y: 1},
+                        {x: 11, y: 1},
+                        {x: 12, y: 1}
+                    ],
+                    'P3': [
+                        {x: 1, y: 0},
+                        {x: 2, y: 0.04},
+                        {x: 3, y: 0.59},
+                        {x: 4, y: 0.8},
+                        {x: 5, y: 0.99},
+                        {x: 6, y: 1},
+                        {x: 7, y: 1},
+                        {x: 8, y: 1},
+                        {x: 9, y: 1},
+                        {x: 10, y: 1},
+                        {x: 11, y: 1},
+                        {x: 12, y: 1}
+                    ],
+                    'VPg': [
+                        {x: 1, y: 0.18},
+                        {x: 2, y: 0.3},
+                        {x: 3, y: 0.16},
+                        {x: 4, y: 0.57},
+                        {x: 5, y: 0.91},
+                        {x: 6, y: 0.99},
+                        {x: 7, y: 1},
+                        {x: 8, y: 1},
+                        {x: 9, y: 1},
+                        {x: 10, y: 1},
+                        {x: 11, y: 1},
+                        {x: 12, y: 1}
+                    ],
+                    'NIa-Pro': [
+                        {x: 1, y: 0},
+                        {x: 2, y: 0},
+                        {x: 3, y: 0.01},
+                        {x: 4, y: 0.4},
+                        {x: 5, y: 0.77},
+                        {x: 6, y: 0.97},
+                        {x: 7, y: 0.99},
+                        {x: 8, y: 1},
+                        {x: 9, y: 1},
+                        {x: 10, y: 1},
+                        {x: 11, y: 1},
+                        {x: 12, y: 1}
+                    ],
+                    'NIb': [
+                        {x: 1, y: 0},
+                        {x: 2, y: 0},
+                        {x: 3, y: 0.01},
+                        {x: 4, y: 0.4},
+                        {x: 5, y: 0.78},
+                        {x: 6, y: 0.97},
+                        {x: 7, y: 0.99},
+                        {x: 8, y: 1},
+                        {x: 9, y: 1},
+                        {x: 10, y: 1},
+                        {x: 11, y: 1},
+                        {x: 12, y: 1}
+                    ],
+                    'CP': [
+                        {x: 1, y: 0},
+                        {x: 2, y: 0},
+                        {x: 3, y: 0.12},
+                        {x: 4, y: 0.54},
+                        {x: 5, y: 0.94},
+                        {x: 6, y: 0.97},
+                        {x: 7, y: 1},
+                        {x: 8, y: 1},
+                        {x: 9, y: 1},
+                        {x: 10, y: 1},
+                        {x: 11, y: 1},
+                        {x: 12, y: 1}
+                    ]
+                }
+            }
+        })
+    });
+
+
+}());
+</script>
+

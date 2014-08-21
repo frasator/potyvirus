@@ -1,8 +1,7 @@
 <template>
-    <div id="container">
+    <div id="container" style="margin-bottom:20px">
     </div>
 </template>
-
 <script>
     (function () {
 
@@ -76,6 +75,11 @@
                         });
 
 
+                    }
+                },
+                attachedCallback: {
+                    value: function () {
+                        this.chart.reflow();
                     }
                 },
                 data: {

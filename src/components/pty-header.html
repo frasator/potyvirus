@@ -1,0 +1,118 @@
+<template>
+    <div class="ocb-header-widget unselectable" style="height:60px;position:relative;">
+        <ul class="ocb-header">
+            <li data-id="name" class="title"></li>
+            <li data-id="description" class="description"></li>
+            <li data-value="nv" class="">VHPI</li>
+            <li data-value="nvwgl" class="">VHPI3D</li>
+            <li data-value="stats" class="">Stats</li>
+
+
+
+            <!--<li id="support" class="right"> &nbsp; <i class="fa fa-support"></i>&nbsp;</li>-->
+            <!--<li id="signin" class="right"><i class="fa fa-sign-in"></i> &nbsp;sign in</li>-->
+            <!--<li id="jobs" class="right hidden"><i class="fa fa-tasks"></i> &nbsp;jobs</li>-->
+            <!--<li id="profile" class="right hidden"><i class="fa fa-user"></i> &nbsp;profile</li>-->
+            <!--<li id="upload" class="right hidden"><i class="fa fa-cloud-upload"></i> &nbsp;upload & manage</li>-->
+            <!--<li id="logout" class="right hidden"><i class="fa fa-sign-out"></i> &nbsp;logout</li>-->
+            <!--<li id="user" class="right hidden text"></li>-->
+        </ul>
+    </div>
+</template>
+
+<script>
+    (function () {
+
+        // This document reference
+        var thisDoc = document._currentScript.ownerDocument;
+
+        var ColorPicker = document.registerElement('pty-header', {
+            prototype: Object.create(HTMLElement.prototype, {
+                /*
+                 * Lifecycle callback methods
+                 */
+                createdCallback: {
+                    value: function () {
+                        var me = this;
+
+                        //Create a copy of the template node.
+                        var template = document.importNode(thisDoc.querySelector('template').content, true);
+                        this.appendChild(template);
+
+                        //Work with the copy of the template and create the els object. The keys are the ids of the elements;
+                        this.els = {};
+                        var els = this.querySelectorAll('[data-id]');
+                        for (var i = 0; i < els.length; i++) {
+                            var el = els[i];
+                            this.els[el.dataset.id] = el
+                        }
+
+                        this.els.name.textContent = this.dataset.name;
+                        this.els.description.textContent = this.dataset.description;
+
+                        this.addEventListener('click', function (e) {
+                            console.log(e.target);
+                            if ('value' in e.target.dataset) {
+                                this.dispatchEvent(new CustomEvent('menu-click', {"detail": e.target.dataset}));
+                            }
+                        });
+                    }
+                },
+                attachedCallback: {
+                    value: function () {
+                    }
+                },
+                detachedCallback: {
+                    value: function () {
+                    }
+                },
+                attributeChangedCallback: {
+                    value: function (attr, oldVal, newVal) {
+                    }
+                },
+
+                /*
+                 * Methods and attributes
+                 */
+                _clickHandler: {
+                    value: function (text) {
+
+                    }
+                },
+                setWidth: {
+                    value: function (width) {
+
+                    }
+                },
+                setVertexAttributes: {
+                    value: function (attributes) {
+
+                        while (this.els.circleAttributesMenu.firstChild) {
+                            this.els.circleAttributesMenu.removeChild(this.els.circleAttributesMenu.firstChild);
+                        }
+
+                        var entry = document.createElement('li');
+                        entry.setAttribute('data-value', 'layout-circle');
+                        entry.textContent = 'Unsorted';
+                        this.els.circleAttributesMenu.appendChild(entry);
+
+                        entry = document.createElement('li');
+                        entry.setAttribute('data-divider', true);
+                        this.els.circleAttributesMenu.appendChild(entry);
+
+
+                        for (var a in attributes) {
+                            var name = attributes[a].name;
+                            entry = document.createElement('li');
+                            entry.setAttribute('data-value', 'layout-circle');
+                            entry.setAttribute('data-subvalue', name);
+                            entry.textContent = name;
+                            this.els.circleAttributesMenu.appendChild(entry);
+                        }
+                    }
+                }
+            })
+        });
+    }());
+</script>
+

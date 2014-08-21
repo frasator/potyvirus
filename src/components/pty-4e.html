@@ -1,6 +1,5 @@
-pty-4b.html
 <template>
-    <div id="container">
+    <div id="container" style="margin-bottom:20px">
     </div>
 </template>
 
@@ -60,6 +59,11 @@ pty-4b.html
                         });
 
 
+                    }
+                },
+                attachedCallback: {
+                    value: function () {
+                        this.chart.reflow();
                     }
                 },
                 data: {
