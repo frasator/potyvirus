@@ -93,24 +93,28 @@
                                 }
                             }
                         });
-
+                    }
+                },
+                attachedCallback: {
+                    value: function () {
+                        var me = this;
+                        this.chart.reflow();
                         this.interval = setInterval(function () {
                             me.chart.setTitle(null, {text: 'Step ' + me.step}, true);
                             me.chart.series[0].setData(me.getStepData(me.step), false);
                             me.chart.series[0].update();
                             me.step++;
 
-                            console.log(me.step)
                             if (me.step === 12) {
                                 me.step = 1;
                             }
                         }, 1000);
-
                     }
                 },
-                attachedCallback: {
+                detachedCallback: {
                     value: function () {
-                        this.chart.reflow();
+                        this.step = 1;
+                        clearInterval(this.interval);
                     }
                 },
                 categories: {

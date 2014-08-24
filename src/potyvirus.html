@@ -16,8 +16,6 @@
     <!-- /build -->
 
 
-
-
     <!--Importing Web Component's Polyfill -->
     <script src="../lib/jsorolla/vendor/platform.js"></script>
 
@@ -38,11 +36,8 @@
     <link rel="import" href="components/pty-heatmap.html">
 
 
-
-
 </head>
-<body>
-
+<body class="ocb">
 
 
 <!-- build:[src] http://cdn.sencha.io/ext/gpl/5.0.0/build/ -->
@@ -222,7 +217,8 @@
         width: 100%;
         margin: 0 auto;
     }
-    #stats{
+
+    #stats {
         width: 95%;
         margin: 0 auto;
     }
@@ -238,256 +234,211 @@
 <!--<pty-simpson-index></pty-simpson-index>-->
 
 <script>
-    Ext.onReady(function () {
+Ext.onReady(function () {
 
-        CELLBASE_HOST = "http://www.ebi.ac.uk/cellbase/webservices/rest";
-        CELLBASE_VERSION = "v3";
+    CELLBASE_HOST = "http://www.ebi.ac.uk/cellbase/webservices/rest";
+    CELLBASE_VERSION = "v3";
 
-        var potyvirusPorteinNames = {'P1': true, 'HC-Pro': true, 'P3': true, '6K1': true, 'CI': true, '6K2': true, 'VPg': true, 'Nia-Pro': true, 'Nib': true, 'CP': true, 'P3N-PIPO': true};
+    var potyvirusPorteinNames = {'P1': true, 'HC-Pro': true, 'P3': true, '6K1': true, 'CI': true, '6K2': true, 'VPg': true, 'Nia-Pro': true, 'Nib': true, 'CP': true, 'P3N-PIPO': true};
 
-        var height = $('html').height() - 62;
-        var width = $('html').width() - 2;
+    var height = $('html').height() - 62;
+    var width = $('html').width() - 2;
 
-        var resizeTimer;
+    var resizeTimer;
 
-        var header = document.querySelector('pty-header');
-        var mainContentEl = document.querySelector('#maincontent');
-
-
-        var contentMap = {};
-        contentMap['nv'] = document.createElement('div');
-        contentMap['nv'].style.border = '1px solid lightgray';
-        contentMap['nvwgl'] = document.createElement('div');
+    var header = document.querySelector('pty-header');
+    var mainContentEl = document.querySelector('#maincontent');
 
 
-        contentMap['stats'] = document.createElement('div');
-        contentMap['stats'].setAttribute('id', 'stats');
-        var epEl = document.createElement('pty-heatmap');
-        var siEl = document.createElement('pty-simpson-index');
-        var aEl = document.createElement('pty-4a');
-        var bEl = document.createElement('pty-4b');
-        var cEl = document.createElement('pty-4c');
-        var dEl = document.createElement('pty-4d');
-        var eEl = document.createElement('pty-4e');
-        var fEl = document.createElement('pty-4f');
-        contentMap['stats'].appendChild(epEl);
-        contentMap['stats'].appendChild(siEl);
-        contentMap['stats'].appendChild(aEl);
-        contentMap['stats'].appendChild(bEl);
-        contentMap['stats'].appendChild(cEl);
-        contentMap['stats'].appendChild(dEl);
-        contentMap['stats'].appendChild(eEl);
-        contentMap['stats'].appendChild(fEl);
+    var contentMap = {};
+    contentMap['nv'] = document.createElement('div');
+    contentMap['nv'].style.border = '1px solid lightgray';
+    contentMap['nvwgl'] = document.createElement('div');
+
+
+    contentMap['stats'] = document.createElement('div');
+    contentMap['stats'].setAttribute('id', 'stats');
+    var epEl = document.createElement('pty-heatmap');
+    var siEl = document.createElement('pty-simpson-index');
+    var aEl = document.createElement('pty-4a');
+    var bEl = document.createElement('pty-4b');
+    var cEl = document.createElement('pty-4c');
+    var dEl = document.createElement('pty-4d');
+    var eEl = document.createElement('pty-4e');
+    var fEl = document.createElement('pty-4f');
+    contentMap['stats'].appendChild(epEl);
+    contentMap['stats'].appendChild(siEl);
+    contentMap['stats'].appendChild(aEl);
+    contentMap['stats'].appendChild(bEl);
+    contentMap['stats'].appendChild(cEl);
+    contentMap['stats'].appendChild(dEl);
+    contentMap['stats'].appendChild(eEl);
+    contentMap['stats'].appendChild(fEl);
 
 
 //        mainContentEl.appendChild(contentMap['nv']);
-        mainContentEl.appendChild(contentMap['stats']);
+//        mainContentEl.appendChild(contentMap['stats']);
+    mainContentEl.appendChild(contentMap['nvwgl']);
 
 
-        header.addEventListener('menu-click', function (e) {
-            while (mainContentEl.firstChild) {
-                mainContentEl.removeChild(mainContentEl.firstChild);
-            }
-            mainContentEl.appendChild(contentMap[e.detail.value]);
-        });
-
-
-        var session = new NetworkSession();
-        var networkViewer = new NetworkViewer({
-            target: contentMap['nv'],
-            sidePanel: false,
-            overviewPanel: false,
-            session: session,
-            width: width,
-            height: height
-        });
-        networkViewer.draw();
-
-
-        var networkViewerWebgl = new NetworkViewerWebgl({
-            target: contentMap['nvwgl'],
-            width: width - 10,
-            height: height - 10
-        });
-
-
-        // Resize
-        $(window).resize(function (event) {
-            clearTimeout(resizeTimer);
-            resizeTimer = setTimeout(function () {
-                var height = $('html').height() - 62;
-                var width = $('html').width() - 2;
-                networkViewer.resize({
-                    width: width,
-                    height: height
-                });
-            }, 500);
-        });
-
-
-        $.ajax({
-            url: 'all.sif',
-            success: function (data) {
-                var attributeNetworkDataAdapter = new SIFNetworkDataAdapter({
-                    dataSource: new StringDataSource(data),
-                    handlers: {
-                        'data:load': function (event) {
-                            networkViewer.setGraph(event.graph);
-                            networkViewer.setLayout('Force directed');
-
-
-                            //3D
-                            var graph = event.graph;
-                            var vertices = event.graph.vertices;
-                            var edges = event.graph.edges;
-
-                            var virusVertices = [];
-                            var plantVertices = [];
-
-                            for (var i = 0, l = vertices.length; i < l; i++) {
-                                var vertex = vertices[i];
-                                if (typeof vertex !== 'undefined') {
-                                    if (vertex.id in potyvirusPorteinNames) {
-                                        virusVertices.push(vertex);
-                                    } else {
-                                        plantVertices.push(vertex);
-                                    }
-                                }
-                            }
-
-
-                            circleLevels(virusVertices, 300, 50);
-                            circleLevels(plantVertices, 500, 350);
-                            networkViewerWebgl.renderGraph(graph);
-
-
-                        },
-                        'error:parse': function (event) {
-                            console.log(event.errorMsg);
-                        }
-                    }
-                });
-
-                $.ajax({
-                    url: 'interactions-1.3-weighted.attr',
-                    success: function (data) {
-                        var attributeNetworkDataAdapter = new AttributeNetworkDataAdapter({
-                            dataSource: new StringDataSource(data),
-                            handlers: {
-                                'data:load': function (event) {
-                                    var json = event.sender.getAttributesJSON();
-                                    networkViewer.network.importEdgesWithAttributes({content: json});
-//                                    configuration.propertiesPanel.setActiveTab(1);
-//                                    configuration.edgeOpacityAttributeWidget.applyDirectVisualSet('Weight', 'String');
-                                },
-                                'error:parse': function (event) {
-                                    console.log(event.errorMsg);
-                                }
-                            }
-                        });
-                    }
-                });
-            }
-        });
-
-
+    header.addEventListener('menu-click', function (e) {
+        while (mainContentEl.firstChild) {
+            mainContentEl.removeChild(mainContentEl.firstChild);
+        }
+        mainContentEl.appendChild(contentMap[e.detail.value]);
     });
 
-    function circleLevels(vertices, radius, z) {
-        var centerX = 0;
-        var centerY = 0;
-        var x, y;
-        for (var i = 0, l = vertices.length; i < l; i++) {
-            var vertex = vertices[i];
-            if (typeof vertex !== 'undefined') {
-                x = centerX + radius * Math.sin(i * 2 * Math.PI / vertices.length);
-                y = centerY + radius * Math.cos(i * 2 * Math.PI / vertices.length);
 
-                vertex.position.set(x, y, z);
-            }
-        }
-    }
-     function force (args) {
+    var session = new NetworkSession();
+    var networkViewer = new NetworkViewer({
+        target: contentMap['nv'],
+        sidePanel: false,
+        overviewPanel: false,
+        session: session,
+        width: width,
+        height: height
+    });
+    networkViewer.draw();
 
-        var network = args.graph;
-        var width = args.width;
-        var height = args.height;
-        var friction = args.friction;
-        var gravity = args.gravity;
-        var chargeDistance = args.chargeDistance;
-
-        var linkStrength = args.linkStrength;
-        var linkDistance = args.linkDistance;
-        var charge = args.charge;
-
-        var multipliers = args.multipliers;
-
-        var endFunction = args.end;
-        var simulation = args.simulation;
-
-        var force = d3.layout.force();
-
-        //Global parameters
-        force.size([width, height]);
-        if (typeof  friction !== 'undefined') {
-            force.friction(friction);
-
-        }
-        if (typeof gravity !== 'undefined') {
-            force.gravity(gravity);
-
-        }
-        if (typeof  chargeDistance !== 'undefined') {
-            force.chargeDistance(chargeDistance);
-
-        }
+    var networkViewerWebgl = new NetworkViewerWebgl({
+        target: contentMap['nvwgl'],
+        width: width - 10,
+        height: height - 10
+    });
 
 
-        var vertices = graph.vertices;
-        var edges = graph.edges;
+    // Resize
+    $(window).resize(function (event) {
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(function () {
+            var height = $('html').height() - 62;
+            var width = $('html').width() - 2;
+            networkViewer.resize({
+                width: width,
+                height: height
+            });
+        }, 500);
+    });
+
+//
+//        $.ajax({
+//            url: 'vh0-1.sif',
+//            success: function (data) {
+//                var attributeNetworkDataAdapter = new SIFNetworkDataAdapter({
+//                    dataSource: new StringDataSource(data),
+//                    handlers: {
+//                        'data:load': function (event) {
+//                            networkViewer.setGraph(event.graph);
+//                            networkViewer.setLayout('Force directed');
+//
+//
+//                            //3D
+//                            var graph = event.graph;
+//                            var vertices = event.graph.vertices;
+//                            var edges = event.graph.edges;
+//
+//                            var virusVertices = [];
+//                            var plantVertices = [];
+//
+//                            for (var i = 0, l = vertices.length; i < l; i++) {
+//                                var vertex = vertices[i];
+//                                if (typeof vertex !== 'undefined') {
+//                                    if (vertex.id in potyvirusPorteinNames) {
+//                                        virusVertices.push(vertex);
+//                                    } else {
+//                                        plantVertices.push(vertex);
+//                                    }
+//                                }
+//                            }
+//
+//
+//                            circleLevels(virusVertices, 300, 50);
+//                            circleLevels(plantVertices, 500, 350);
+//                            networkViewerWebgl.renderGraph(graph);
+//
+//
+//                        },
+//                        'error:parse': function (event) {
+//                            console.log(event.errorMsg);
+//                        }
+//                    }
+//                });
+//
+//                $.ajax({
+//                    url: 'interactions-1.3-weighted.attr',
+//                    success: function (data) {
+//                        var attributeNetworkDataAdapter = new AttributeNetworkDataAdapter({
+//                            dataSource: new StringDataSource(data),
+//                            handlers: {
+//                                'data:load': function (event) {
+//                                    var json = event.sender.getAttributesJSON();
+//                                    networkViewer.network.importEdgesWithAttributes({content: json});
+////                                    configuration.propertiesPanel.setActiveTab(1);
+////                                    configuration.edgeOpacityAttributeWidget.applyDirectVisualSet('Weight', 'String');
+//                                },
+//                                'error:parse': function (event) {
+//                                    console.log(event.errorMsg);
+//                                }
+//                            }
+//                        });
+//                    }
+//                });
+//            }
+//        });
+//
 
 
-        /*------------------------------------------*/
-        /*------------------------------------------*/
-        console.time('Force directed preload');
-
-        force.nodes(vertices);
-        force.links(edges);
-
-        /*------------------------------------------*/
-        /*------------------------------------------*/
-
-
-        force.on('end', function (o) {
-            console.log(o)
-            endFunction(vertices);
-        });
-
-        if (simulation === true) {
-            force.on('tick', function (o) {
-                endFunction(vertices);
-                console.log(force.alpha())
-                if (force.alpha() < 0.025) {
-                    force.stop()
+    $.ajax({
+        url: 'Ath_Interactome.txt',
+        success: function (data) {
+            var textNetworkDataAdapter = new TextNetworkDataAdapter({
+                dataSource: new StringDataSource(data),
+                handlers: {
+                    'data:load': function (event) {
+                        var graph = event.sender.parseColumns(0, 1, -1, 'hh');
+                        sphereSurface(graph.vertices, 400, 300);
+                        networkViewerWebgl.renderGraph(graph);
+                    },
+                    'error:parse': function (event) {
+                        console.log(event);
+                    }
                 }
             });
-            force.start();
-        } else {
-            console.time('D3 Force directed layout');
-            force.start();
-            var safety = 0;
-            while (force.alpha() > 0.025) { // You'll want to try out different, "small" values for this
-                force.tick();
-                if (safety++ > 1000) {
-                    break;// Avoids infinite looping in case this solution was a bad idea
-                }
-            }
-//            console.log(safety);
-            force.stop();
-            console.timeEnd('D3 Force directed layout');
         }
+    });
+});
 
+
+function circleLevels(vertices, radius, z) {
+    var centerX = 0;
+    var centerY = 0;
+    var x, y;
+    for (var i = 0, l = vertices.length; i < l; i++) {
+        var vertex = vertices[i];
+        if (typeof vertex !== 'undefined') {
+            x = centerX + radius * Math.sin(i * 2 * Math.PI / vertices.length);
+            y = centerY + radius * Math.cos(i * 2 * Math.PI / vertices.length);
+
+            vertex.position.set(x, y, z);
+        }
     }
+}
+
+function sphereSurface(vertices, radius, offsetZ) {
+
+    //        θ = theta
+    //        φ = phi
+    var n = vertices.length;
+
+    for (var i = 0; i < vertices.length; i++) {
+        var vertex = vertices[i];
+        var phi = Math.acos(-1 + ( 2 * i ) / n);
+        var theta = Math.sqrt(n * Math.PI) * phi;
+        vertex.position.setX(radius * Math.cos(theta) * Math.sin(phi));
+        vertex.position.setY(radius * Math.sin(theta) * Math.sin(phi));
+        vertex.position.setZ(radius * Math.cos(phi) + offsetZ);
+    }
+}
 
 </script>
 
