@@ -5,25 +5,23 @@
     <title>Potyvirus</title>
 
 
-    <!-- build:style vendor -->
+    <!-- build:[href] vendor/font-awesome-4.1.0/css/ -->
     <link rel="stylesheet" href="../lib/jsorolla/vendor/font-awesome-4.1.0/css/font-awesome.min.css">
-    <link type="text/css" rel="stylesheet" href="../lib/jsorolla/vendor/ext-5/theme-babel/theme-babel-all.css">
-    <link type="text/css" rel="stylesheet" href="../lib/jsorolla/vendor/jquery.qtip.min.css"/>
     <!-- /build -->
 
-    <!-- build:style css -->
-    <link type="text/css" rel="stylesheet" href="../lib/jsorolla/styles/css/style.css"/>
+    <!-- build:[href] styles/css/ -->
+    <link rel="stylesheet" href="../lib/jsorolla/styles/css/style.css">
     <!-- /build -->
 
-
-    <!--Importing Web Component's Polyfill -->
+    <!-- build:[src] vendor/ -->
     <script src="../lib/jsorolla/vendor/platform.js"></script>
+    <!-- /build -->
 
-    <!--Importing Custom Elements -->
+    <!-- build:[href] components/ -->
     <link rel="import" href="../lib/jsorolla/src/lib/components/jso-color-picker.html">
+
     <link rel="import" href="components/pty-toolbar.html">
     <link rel="import" href="components/pty-header.html">
-
 
     <link rel="import" href="components/pty-4a.html">
     <link rel="import" href="components/pty-4b.html">
@@ -34,170 +32,119 @@
     <link rel="import" href="components/pty-effect-propagation.html">
     <link rel="import" href="components/pty-simpson-index.html">
     <link rel="import" href="components/pty-heatmap.html">
+    <!-- /build -->
+
+    <!-- build:[src] vendor/ext-5/ -->
+    <script src="../lib/jsorolla/vendor/ext-5/ext-all.js"></script>
+    <!-- /build -->
+
+    <!-- build:[src] vendor/highcharts/adapters/ -->
+    <script src="../lib/jsorolla/vendor/highcharts/adapters/standalone-framework.js"></script>
+    <!-- /build -->
+    <!-- build:[src] vendor/highcharts/ -->
+    <script src="../lib/jsorolla/vendor/highcharts/highcharts-all.js"></script>
+    <!-- /build -->
+    <!-- build:[src] vendor/highcharts/modules/ -->
+    <script src="../lib/jsorolla/vendor/highcharts/modules/heatmap.js"></script>
+    <!-- /build -->
 
 
 </head>
 <body class="ocb">
 
+<!-- build:[src] vendor/ -->
+<script src="../lib/jsorolla/vendor/underscore-min.js"></script>
+<script src="../lib/jsorolla/vendor/backbone-min.js"></script>
+<script src="../lib/jsorolla/vendor/jquery.min.js"></script>
+<script src="../lib/jsorolla/vendor/three.min.js"></script>
 
-<!-- build:[src] http://cdn.sencha.io/ext/gpl/5.0.0/build/ -->
-<script src="../lib/jsorolla/vendor/ext-5/ext-all.js"></script>
-<!-- /build -->
-
-<script type="text/javascript" src="../lib/jsorolla/vendor/highcharts/adapters/standalone-framework.js"></script>
-<script type="text/javascript" src="../lib/jsorolla/vendor/highcharts/highcharts-all.js"></script>
-<script type="text/javascript" src="../lib/jsorolla/vendor/highcharts/modules/heatmap.js"></script>
-
-<!-- Workers directory -->
-<script type="text/javascript">
-    WORKERS_PATH = "./";
-</script>
-
-<!-- build:script vendor -->
-<script type="text/javascript" src="../lib/jsorolla/vendor/underscore-min.js"></script>
-<script type="text/javascript" src="../lib/jsorolla/vendor/backbone-min.js"></script>
-<script type="text/javascript" src="../lib/jsorolla/vendor/rawdeflate.js"></script>
-<script type="text/javascript" src="../lib/jsorolla/vendor/rgbcolor.js"></script>
-<script type="text/javascript" src="../lib/jsorolla/vendor/canvg.js"></script>
-<script type="text/javascript" src="../lib/jsorolla/vendor/xml2json.js"></script>
-<script type="text/javascript" src="../lib/jsorolla/vendor/jszip.min.js"></script>
-<script type="text/javascript" src="../lib/jsorolla/vendor/xlsx.min.js"></script>
-<script type="text/javascript" src="../lib/jsorolla/vendor/jquery.min.js"></script>
-<script type="text/javascript" src="../lib/jsorolla/vendor/three.min.js"></script>
-
-<!-- These dependencies must go AFTER jquery -->
-<script type="text/javascript" src="../lib/jsorolla/vendor/typeahead.min.js"></script>
-<script type="text/javascript" src="../lib/jsorolla/vendor/jquery.qtip.min.js"></script>
-<script type="text/javascript" src="../lib/jsorolla/vendor/jquery.cookie.js"></script>
-<script type="text/javascript" src="../lib/jsorolla/vendor/jquery.sha1.js"></script>
-<script type="text/javascript" src="../lib/jsorolla/vendor/purl.min.js"></script>
-<script type="text/javascript" src="../lib/jsorolla/vendor/jquery.simplecolorpicker.js"></script>
-<script type="text/javascript" src="../lib/jsorolla/vendor/d3.min.js"></script>
+<script src="../lib/jsorolla/vendor/d3.min.js"></script>
 <!-- /build -->
 
 
-<!-- build:script config -->
-<script type="text/javascript" src="../lib/jsorolla/src/network-viewer/nv-config.js"></script>
-<script type="text/javascript" src="../lib/cell-maps/src/cm-config.js"></script>
+<!-- build:[src] ./ -->
+<script src="../lib/jsorolla/src/network-viewer/nv-config.js"></script>
 <!-- /build -->
 
 
-<!-- build:script lib -->
+<!-- build:js network-viewer.min.js -->
+<script src="../lib/jsorolla/src/lib/svg.js"></script>
+<script src="../lib/jsorolla/src/lib/utils.js"></script>
 
-<script type="text/javascript" src="../lib/jsorolla/src/lib/svg.js"></script>
-<script type="text/javascript" src="../lib/jsorolla/src/lib/utils.js"></script>
+<script src="../lib/jsorolla/src/lib/widgets/ux-window.js"></script>
 
-<script type="text/javascript" src="../lib/jsorolla/src/lib/widgets/ux-window.js"></script>
+<script src="../lib/jsorolla/src/lib/widgets/network/network-edit-widget.js"></script>
+<script src="../lib/jsorolla/src/lib/widgets/network/layout-configure-widget.js"></script>
+<script src="../lib/jsorolla/src/lib/widgets/network/attribute-layout-configure-widget.js"></script>
 
-<script type="text/javascript" src="../lib/jsorolla/src/lib/widgets/network/network-edit-widget.js"></script>
-<script type="text/javascript" src="../lib/jsorolla/src/lib/widgets/network/layout-configure-widget.js"></script>
-<script type="text/javascript" src="../lib/jsorolla/src/lib/widgets/network/attribute-layout-configure-widget.js"></script>
+<script src="../lib/jsorolla/src/lib/network/attributes/attribute-manager-idb.js"></script>
+<script src="../lib/jsorolla/src/lib/network/attributes/attribute-manager-store.js"></script>
+<script src="../lib/jsorolla/src/lib/network/network.js"></script>
+<script src="../lib/jsorolla/src/lib/network/network-session.js"></script>
+<script src="../lib/jsorolla/src/lib/network/network-config.js"></script>
+<script src="../lib/jsorolla/src/lib/network/graph.js"></script>
+<script src="../lib/jsorolla/src/lib/network/edge.js"></script>
+<script src="../lib/jsorolla/src/lib/network/edge-config.js"></script>
+<script src="../lib/jsorolla/src/lib/network/vertex.js"></script>
+<script src="../lib/jsorolla/src/lib/network/vertex-config.js"></script>
+<script src="../lib/jsorolla/src/lib/network/default-vertex-renderer.js"></script>
+<script src="../lib/jsorolla/src/lib/network/circos-vertex-renderer.js"></script>
+<script src="../lib/jsorolla/src/lib/network/default-edge-renderer.js"></script>
+<script src="../lib/jsorolla/src/lib/network/graph-layout.js"></script>
+<script src="../lib/jsorolla/src/lib/network/point.js"></script>
 
-<script type="text/javascript" src="../lib/jsorolla/src/lib/network/attributes/attribute-manager-idb.js"></script>
-<script type="text/javascript" src="../lib/jsorolla/src/lib/network/attributes/attribute-manager-store.js"></script>
-<script type="text/javascript" src="../lib/jsorolla/src/lib/network/network.js"></script>
-<script type="text/javascript" src="../lib/jsorolla/src/lib/network/network-session.js"></script>
-<script type="text/javascript" src="../lib/jsorolla/src/lib/network/network-config.js"></script>
-<script type="text/javascript" src="../lib/jsorolla/src/lib/network/graph.js"></script>
-<script type="text/javascript" src="../lib/jsorolla/src/lib/network/edge.js"></script>
-<script type="text/javascript" src="../lib/jsorolla/src/lib/network/edge-config.js"></script>
-<script type="text/javascript" src="../lib/jsorolla/src/lib/network/vertex.js"></script>
-<script type="text/javascript" src="../lib/jsorolla/src/lib/network/vertex-config.js"></script>
-<script type="text/javascript" src="../lib/jsorolla/src/lib/network/default-vertex-renderer.js"></script>
-<script type="text/javascript" src="../lib/jsorolla/src/lib/network/circos-vertex-renderer.js"></script>
-<script type="text/javascript" src="../lib/jsorolla/src/lib/network/default-edge-renderer.js"></script>
-<script type="text/javascript" src="../lib/jsorolla/src/lib/network/graph-layout.js"></script>
-<script type="text/javascript" src="../lib/jsorolla/src/lib/network/point.js"></script>
+<script src="../lib/jsorolla/src/lib/cellbase-manager.js"></script>
 
-<script type="text/javascript" src="../lib/jsorolla/src/lib/cellbase-manager.js"></script>
+<script src="../lib/jsorolla/src/lib/opencga-manager.js"></script>
+<script src="../lib/jsorolla/src/lib/widgets/opencga/generic-form-panel.js"></script>
+<script src="../lib/jsorolla/src/lib/widgets/opencga/check-browser.js"></script>
+<script src="../lib/jsorolla/src/lib/widgets/opencga/header-widget.js"></script>
+<script src="../lib/jsorolla/src/lib/widgets/opencga/job-list-widget.js"></script>
+<script src="../lib/jsorolla/src/lib/widgets/opencga/login-widget.js"></script>
+<script src="../lib/jsorolla/src/lib/widgets/opencga/opencga-browser-widget.js"></script>
+<script src="../lib/jsorolla/src/lib/widgets/opencga/profile-widget.js"></script>
+<script src="../lib/jsorolla/src/lib/widgets/opencga/result-widget.js"></script>
+<script src="../lib/jsorolla/src/lib/widgets/opencga/result-table.js"></script>
+<script src="../lib/jsorolla/src/lib/widgets/opencga/upload-widget.js"></script>
 
-<script type="text/javascript" src="../lib/jsorolla/src/lib/opencga-manager.js"></script>
-<script type="text/javascript" src="../lib/jsorolla/src/lib/widgets/opencga/generic-form-panel.js"></script>
-<script type="text/javascript" src="../lib/jsorolla/src/lib/widgets/opencga/check-browser.js"></script>
-<script type="text/javascript" src="../lib/jsorolla/src/lib/widgets/opencga/header-widget.js"></script>
-<script type="text/javascript" src="../lib/jsorolla/src/lib/widgets/opencga/job-list-widget.js"></script>
-<script type="text/javascript" src="../lib/jsorolla/src/lib/widgets/opencga/login-widget.js"></script>
-<script type="text/javascript" src="../lib/jsorolla/src/lib/widgets/opencga/opencga-browser-widget.js"></script>
-<script type="text/javascript" src="../lib/jsorolla/src/lib/widgets/opencga/profile-widget.js"></script>
-<script type="text/javascript" src="../lib/jsorolla/src/lib/widgets/opencga/result-widget.js"></script>
-<script type="text/javascript" src="../lib/jsorolla/src/lib/widgets/opencga/result-table.js"></script>
-<script type="text/javascript" src="../lib/jsorolla/src/lib/widgets/opencga/upload-widget.js"></script>
+<script src="../lib/jsorolla/src/lib/data-adapter/network/dot-network-data-adapter.js"></script>
+<script src="../lib/jsorolla/src/lib/data-adapter/network/json-network-data-adapter.js"></script>
+<script src="../lib/jsorolla/src/lib/data-adapter/network/sif-network-data-adapter.js"></script>
+<script src="../lib/jsorolla/src/lib/data-adapter/network/text-network-data-adapter.js"></script>
+<script src="../lib/jsorolla/src/lib/data-adapter/network/xlsx-network-data-adapter.js"></script>
+<script src="../lib/jsorolla/src/lib/data-adapter/network/attribute-network-data-adapter.js"></script>
 
-<script type="text/javascript" src="../lib/jsorolla/src/lib/data-adapter/network/dot-network-data-adapter.js"></script>
-<script type="text/javascript" src="../lib/jsorolla/src/lib/data-adapter/network/json-network-data-adapter.js"></script>
-<script type="text/javascript" src="../lib/jsorolla/src/lib/data-adapter/network/sif-network-data-adapter.js"></script>
-<script type="text/javascript" src="../lib/jsorolla/src/lib/data-adapter/network/text-network-data-adapter.js"></script>
-<script type="text/javascript" src="../lib/jsorolla/src/lib/data-adapter/network/xlsx-network-data-adapter.js"></script>
-<script type="text/javascript" src="../lib/jsorolla/src/lib/data-adapter/network/attribute-network-data-adapter.js"></script>
+<script src="../lib/jsorolla/src/lib/data-source/data-source.js"></script>
+<script src="../lib/jsorolla/src/lib/data-source/file-data-source.js"></script>
+<script src="../lib/jsorolla/src/lib/data-source/string-data-source.js"></script>
 
-<script type="text/javascript" src="../lib/jsorolla/src/lib/data-source/data-source.js"></script>
-<script type="text/javascript" src="../lib/jsorolla/src/lib/data-source/file-data-source.js"></script>
-<script type="text/javascript" src="../lib/jsorolla/src/lib/data-source/string-data-source.js"></script>
+<script src="../lib/jsorolla/src/lib/widgets/network/network-file-widget.js"></script>
+<script src="../lib/jsorolla/src/lib/widgets/network/dot-network-file-widget.js"></script>
+<script src="../lib/jsorolla/src/lib/widgets/network/json-network-file-widget.js"></script>
+<script src="../lib/jsorolla/src/lib/widgets/network/sif-network-file-widget.js"></script>
+<script src="../lib/jsorolla/src/lib/widgets/network/text-network-file-widget.js"></script>
+<script src="../lib/jsorolla/src/lib/widgets/network/xlsx-network-file-widget.js"></script>
+<script src="../lib/jsorolla/src/lib/widgets/network/attribute-network-file-widget.js"></script>
 
-<script type="text/javascript" src="../lib/jsorolla/src/lib/widgets/network/network-file-widget.js"></script>
-<script type="text/javascript" src="../lib/jsorolla/src/lib/widgets/network/dot-network-file-widget.js"></script>
-<script type="text/javascript" src="../lib/jsorolla/src/lib/widgets/network/json-network-file-widget.js"></script>
-<script type="text/javascript" src="../lib/jsorolla/src/lib/widgets/network/sif-network-file-widget.js"></script>
-<script type="text/javascript" src="../lib/jsorolla/src/lib/widgets/network/text-network-file-widget.js"></script>
-<script type="text/javascript" src="../lib/jsorolla/src/lib/widgets/network/xlsx-network-file-widget.js"></script>
-<script type="text/javascript" src="../lib/jsorolla/src/lib/widgets/network/attribute-network-file-widget.js"></script>
+<script src="../lib/jsorolla/src/lib/widgets/network/attributes/attribute-edit-widget.js"></script>
+<script src="../lib/jsorolla/src/lib/widgets/network/attributes/attribute-filter-widget.js"></script>
+<script src="../lib/jsorolla/src/lib/network/attributes/attribute-manager-store.js"></script>
+<script src="../lib/jsorolla/src/lib/network/attributes/attribute-manager-idb.js"></script>
 
-<script type="text/javascript" src="../lib/jsorolla/src/lib/widgets/network/attributes/attribute-edit-widget.js"></script>
-<script type="text/javascript" src="../lib/jsorolla/src/lib/widgets/network/attributes/attribute-filter-widget.js"></script>
-<script type="text/javascript" src="../lib/jsorolla/src/lib/network/attributes/attribute-manager-store.js"></script>
-<script type="text/javascript" src="../lib/jsorolla/src/lib/network/attributes/attribute-manager-idb.js"></script>
+<script src="../lib/jsorolla/src/network-viewer/tool-bar.js"></script>
+<script src="../lib/jsorolla/src/network-viewer/edition-bar.js"></script>
+<script src="../lib/jsorolla/src/network-viewer/network-svg-layout.js"></script>
 
-<script type="text/javascript" src="../lib/jsorolla/src/network-viewer/tool-bar.js"></script>
-<script type="text/javascript" src="../lib/jsorolla/src/network-viewer/edition-bar.js"></script>
-<script type="text/javascript" src="../lib/jsorolla/src/network-viewer/network-svg-layout.js"></script>
-
-<script type="text/javascript" src="../lib/jsorolla/src/network-viewer/network-viewer.js"></script>
-
-
-<script type="text/javascript">
-    WORKERS_PATH = "../lib/jsorolla/src/lib/";
-</script>
+<script src="../lib/jsorolla/src/network-viewer/network-viewer.js"></script>
 <!-- /build -->
 
-<!-- build:script js -->
 
-<script type="text/javascript" src="../lib/cell-maps/src/plugins/fatigo-plugin.js"></script>
-<script type="text/javascript" src="../lib/cell-maps/src/plugins/intact-plugin.js"></script>
-<script type="text/javascript" src="../lib/cell-maps/src/plugins/reactome-plugin.js"></script>
-<script type="text/javascript" src="../lib/cell-maps/src/plugins/cellbase-plugin.js"></script>
-<script type="text/javascript" src="../lib/cell-maps/src/plugins/intact-plugin.js"></script>
-<script type="text/javascript" src="../lib/cell-maps/src/plugins/communities-structure-detection-plugin.js"></script>
-<script type="text/javascript" src="../lib/cell-maps/src/plugins/topological-study-plugin.js"></script>
+<!--<script src="../lib/cell-maps/src/plugins/topological-study-plugin.js"></script>-->
 
-<script type="text/javascript" src="../lib/cell-maps/src/forms/reactome-fi-microarray-form.js"></script>
-<script type="text/javascript" src="../lib/cell-maps/src/forms/snow-form.js"></script>
-<script type="text/javascript" src="../lib/cell-maps/src/forms/network-miner-form.js"></script>
-<script type="text/javascript" src="../lib/cell-maps/src/forms/fatigo-form.js"></script>
-
-
-<!--<script type="text/javascript" src="../lib/cell-maps/src/cm-toolbar.js"></script>-->
-<script type="text/javascript" src="../lib/cell-maps/src/visual-attribute-widget/visual-attribute-widget.js"></script>
-<script type="text/javascript" src="../lib/cell-maps/src/visual-attribute-widget/pie-attribute-widget.js"></script>
-
-<script type="text/javascript" src="../lib/cell-maps/src/visual-attribute-widget/attribute-control/attribute-control.js"></script>
-<script type="text/javascript" src="../lib/cell-maps/src/visual-attribute-widget/attribute-control/color-attribute-control.js"></script>
-<script type="text/javascript" src="../lib/cell-maps/src/visual-attribute-widget/attribute-control/number-attribute-control.js"></script>
-<script type="text/javascript" src="../lib/cell-maps/src/visual-attribute-widget/attribute-control/select-attribute-control.js"></script>
-
-<script type="text/javascript" src="../lib/cell-maps/src/visual-attribute-widget/attribute-grid/attribute-grid.js"></script>
-<script type="text/javascript" src="../lib/cell-maps/src/visual-attribute-widget/attribute-grid/string-attribute-grid.js"></script>
-<script type="text/javascript" src="../lib/cell-maps/src/visual-attribute-widget/attribute-grid/number-attribute-grid.js"></script>
-<script type="text/javascript" src="../lib/cell-maps/src/visual-attribute-widget/attribute-grid/list-string-attribute-grid.js"></script>
-<script type="text/javascript" src="../lib/cell-maps/src/visual-attribute-widget/attribute-grid/list-number-attribute-grid.js"></script>
-
-<script type="text/javascript" src="../lib/cell-maps/src/cell-maps-configuration.js"></script>
-<script type="text/javascript" src="../lib/cell-maps/src/cell-maps.js"></script>
-
-<script type="text/javascript" src="../lib/jsorolla/src/network-viewer-webgl/network-viewer-webgl.js"></script>
-<script type="text/javascript" src="../lib/jsorolla/src/network-viewer-webgl/js/debugaxis.js"></script>
-
-<script type="text/javascript" src="potyvirus.js"></script>
+<!-- build:[src] ./ -->
+<script src="../lib/jsorolla/src/network-viewer-webgl/network-viewer-webgl.js"></script>
 <!-- /build -->
+
 
 
 <STYLE type="text/css">
@@ -239,7 +186,7 @@ Ext.onReady(function () {
     CELLBASE_HOST = "http://www.ebi.ac.uk/cellbase/webservices/rest";
     CELLBASE_VERSION = "v3";
 
-    var potyvirusPorteinNames = {'P1': true, 'HC-Pro': true, 'P3': true, '6K1': true, 'CI': true, '6K2': true, 'VPg': true, 'Nia-Pro': true, 'Nib': true, 'CP': true, 'P3N-PIPO': true};
+    var potyvirusPorteinNames = {'P1': true, 'HC-Pro': true, 'P3': true, '6K1': true, 'CI': true, '6K2': true, 'VPg': true, 'NIa-Pro': true, 'NIb': true, 'CP': true, 'P3N-PIPO': true};
 
     var height = $('html').height() - 62;
     var width = $('html').width() - 2;
@@ -320,84 +267,100 @@ Ext.onReady(function () {
         }, 500);
     });
 
-//
-//        $.ajax({
-//            url: 'vh0-1.sif',
-//            success: function (data) {
-//                var attributeNetworkDataAdapter = new SIFNetworkDataAdapter({
-//                    dataSource: new StringDataSource(data),
-//                    handlers: {
-//                        'data:load': function (event) {
-//                            networkViewer.setGraph(event.graph);
-//                            networkViewer.setLayout('Force directed');
-//
-//
-//                            //3D
-//                            var graph = event.graph;
-//                            var vertices = event.graph.vertices;
-//                            var edges = event.graph.edges;
-//
-//                            var virusVertices = [];
-//                            var plantVertices = [];
-//
-//                            for (var i = 0, l = vertices.length; i < l; i++) {
-//                                var vertex = vertices[i];
-//                                if (typeof vertex !== 'undefined') {
-//                                    if (vertex.id in potyvirusPorteinNames) {
-//                                        virusVertices.push(vertex);
-//                                    } else {
-//                                        plantVertices.push(vertex);
-//                                    }
-//                                }
-//                            }
-//
-//
-//                            circleLevels(virusVertices, 300, 50);
-//                            circleLevels(plantVertices, 500, 350);
-//                            networkViewerWebgl.renderGraph(graph);
-//
-//
-//                        },
-//                        'error:parse': function (event) {
-//                            console.log(event.errorMsg);
-//                        }
-//                    }
-//                });
-//
-//                $.ajax({
-//                    url: 'interactions-1.3-weighted.attr',
-//                    success: function (data) {
-//                        var attributeNetworkDataAdapter = new AttributeNetworkDataAdapter({
-//                            dataSource: new StringDataSource(data),
-//                            handlers: {
-//                                'data:load': function (event) {
-//                                    var json = event.sender.getAttributesJSON();
-//                                    networkViewer.network.importEdgesWithAttributes({content: json});
-////                                    configuration.propertiesPanel.setActiveTab(1);
-////                                    configuration.edgeOpacityAttributeWidget.applyDirectVisualSet('Weight', 'String');
-//                                },
-//                                'error:parse': function (event) {
-//                                    console.log(event.errorMsg);
-//                                }
-//                            }
-//                        });
-//                    }
-//                });
-//            }
-//        });
-//
+
+    $.ajax({
+        url: 'interactions-1.3.sif',
+        success: function (data) {
+            var attributeNetworkDataAdapter = new SIFNetworkDataAdapter({
+                dataSource: new StringDataSource(data),
+                handlers: {
+                    'data:load': function (event) {
+                        networkViewer.setGraph(event.graph);
+                        networkViewer.setLayout('Force directed');
+                    },
+                    'error:parse': function (event) {
+                        console.log(event.errorMsg);
+                    }
+                }
+            });
+
+            $.ajax({
+                url: 'interactions-1.3-weighted.attr',
+                success: function (data) {
+                    var attributeNetworkDataAdapter = new AttributeNetworkDataAdapter({
+                        dataSource: new StringDataSource(data),
+                        handlers: {
+                            'data:load': function (event) {
+                                var json = event.sender.getAttributesJSON();
+                                networkViewer.network.importEdgesWithAttributes({content: json});
+
+                                var edges = networkViewer.network.graph.edges;
+                                for (var i = 0, l = edges.length; i < l; i++) {
+                                    var edge = edges[i];
+                                    if (typeof edge !== 'undefined') {
+//                                        networkViewer.network.setEdgeRendererAttribute(edge, 'size', networkViewer.network.edgeAttributeManager.getValueByAttributeAndId(edge.id, 'Weight'));
+                                        networkViewer.network.setEdgeRendererAttribute(edge, 'opacity', networkViewer.network.edgeAttributeManager.getValueByAttributeAndId(edge.id, 'Weight'));
+                                    }
+                                }
+
+                            },
+                            'error:parse': function (event) {
+                                console.log(event.errorMsg);
+                            }
+                        }
+                    });
+                }
+            });
+        }
+    });
 
 
     $.ajax({
-        url: 'Ath_Interactome.txt',
+//        url: 'Ath_Interactome.txt',
+        url: 'vh0-1.sif',
         success: function (data) {
             var textNetworkDataAdapter = new TextNetworkDataAdapter({
                 dataSource: new StringDataSource(data),
                 handlers: {
                     'data:load': function (event) {
-                        var graph = event.sender.parseColumns(0, 1, -1, 'hh');
-                        sphereSurface(graph.vertices, 400, 300);
-                        networkViewerWebgl.renderGraph(graph);
+//                        var graph = event.sender.parseColumns(0, 1, -1, 'hh');
+                        var graph = event.sender.parseColumns(0, 2, 1);
+//                        sphereSurface(graph.vertices, 400, 300);
+//                        circleLevels(graph.vertices, 600, 300);
+
+
+//                        var virusVertices = [];
+//                        var plantVertices = [];
+//
+//                        for (var i = 0, l = graph.vertices.length; i < l; i++) {
+//                            var vertex = graph.vertices[i];
+//                            if (typeof vertex !== 'undefined') {
+//                                if (vertex.id in potyvirusPorteinNames) {
+//                                    virusVertices.push(vertex);
+//                                } else {
+//                                    plantVertices.push(vertex);
+//                                }
+//                            }
+//                        }
+//                            circleLevels(virusVertices, 300, 50);
+//                            circleLevels(plantVertices, 500, 350);
+//                            networkViewerWebgl.renderGraph(graph);
+
+                        forceDirected(graph.vertices, graph.edges, function (vertices) {
+                            for (var i = 0; i < vertices.length; i++) {
+                                var v = vertices[i];
+                                var vertex = graph.getVertexById(v.id);
+                                var z = 0;
+                                if (vertex.id in potyvirusPorteinNames) {
+                                    z = 100;
+                                } else {
+                                    z = 300;
+                                }
+                                vertex.position.set(v.x, v.y, z);
+                            }
+                            networkViewerWebgl.renderGraph(graph);
+                        });
+
                     },
                     'error:parse': function (event) {
                         console.log(event);
@@ -439,6 +402,77 @@ function sphereSurface(vertices, radius, offsetZ) {
         vertex.position.setZ(radius * Math.cos(phi) + offsetZ);
     }
 }
+
+
+function forceDirected(vertices, edges, endFunction) {
+    var force = d3.layout.force();
+
+    force.charge(-50)
+    force.linkDistance(40)
+
+    /*------------------------------------------*/
+    /*------------------------------------------*/
+    console.time('Force directed preload');
+
+    var d3Vertices = [];
+    var d3VerticesMap = {};
+    var d3Edges = [];
+
+    //set node and edge arrays for D3
+    for (var i = 0, l = vertices.length; i < l; i++) {
+        var vertex = vertices[i];
+        if (typeof vertex !== 'undefined') {
+            var v = {
+                id: vertex.id,
+                index: i
+            };
+            d3Vertices.push(v);
+            d3VerticesMap[vertex.id] = v;
+        }
+    }
+    force.nodes(d3Vertices);
+    for (var i = 0, l = edges.length; i < l; i++) {
+        var edge = edges[i];
+        if (typeof edge !== 'undefined') {
+            d3Edges.push({
+                source: d3VerticesMap[edge.source.id],
+                target: d3VerticesMap[edge.target.id]
+            });
+        }
+    }
+    force.links(d3Edges);
+
+
+    force.on('end', function (o) {
+        console.log(o)
+        endFunction(d3Vertices);
+    });
+
+    console.time('D3 Force directed layout');
+    force.start();
+    var safety = 0;
+    while (force.alpha() > 0.025) { // You'll want to try out different, "small" values for this
+        force.tick();
+        if (safety++ > 2000) {
+            break;// Avoids infinite looping in case this solution was a bad idea
+        }
+    }
+    console.log(safety);
+    force.stop();
+    console.timeEnd('D3 Force directed layout');
+
+
+//    force.on('tick', function (o) {
+//        endFunction(d3Vertices);
+//        console.log(force.alpha())
+//        if (force.alpha() < 0.025) {
+//            force.stop()
+//        }
+//    });
+//    force.start();
+
+}
+
 
 </script>
 
