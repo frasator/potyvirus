@@ -22,6 +22,7 @@
 
     <link rel="import" href="components/pty-toolbar.html">
     <link rel="import" href="components/pty-header.html">
+    <link rel="import" href="components/pty-3d-toolbar.html">
 
     <link rel="import" href="components/pty-4a.html">
     <link rel="import" href="components/pty-4b.html">
@@ -146,7 +147,6 @@
 <!-- /build -->
 
 
-
 <STYLE type="text/css">
     html {
         width: 100%;
@@ -202,6 +202,11 @@ Ext.onReady(function () {
     contentMap['nv'].style.border = '1px solid lightgray';
     contentMap['nvwgl'] = document.createElement('div');
 
+    var nvwglcontent = document.createElement('div');
+    var nvwglbar = document.createElement('pty-3d-toolbar');
+    contentMap['nvwgl'].appendChild(nvwglcontent);
+    contentMap['nvwgl'].appendChild(nvwglbar);
+
 
     contentMap['stats'] = document.createElement('div');
     contentMap['stats'].setAttribute('id', 'stats');
@@ -250,9 +255,19 @@ Ext.onReady(function () {
     var networkViewerWebgl = new NetworkViewerWebgl({
         target: contentMap['nvwgl'],
         width: width - 10,
-        height: height - 10
+        height: height - 10 - 32
     });
 
+
+    nvwglbar.addEventListener('zoom-in', function (e) {
+        console.log('in')
+        networkViewerWebgl.setZoom(100);
+    });
+
+    nvwglbar.addEventListener('zoom-out', function (e) {
+        console.log('out')
+        networkViewerWebgl.setZoom(-100);
+    });
 
     // Resize
     $(window).resize(function (event) {

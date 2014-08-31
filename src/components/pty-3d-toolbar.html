@@ -1,0 +1,67 @@
+<template>
+    <div class="unselectable">
+        <div id="zoomin" data-value="zoom-in" class="ocb-ctrl" style="margin-left:10px;"><i class="fa fa-plus"></i></div>
+        <div id="zoomout" data-value="zoom-out" class="ocb-ctrl" style="margin-left:10px;"><i class="fa fa-minus"></i></div>
+    </div>
+</template>
+
+<script>
+    (function () {
+
+        // This document reference
+        var thisDoc = document._currentScript.ownerDocument;
+
+        var ColorPicker = document.registerElement('pty-3d-toolbar', {
+            prototype: Object.create(HTMLElement.prototype, {
+                /*
+                 * Lifecycle callback methods
+                 */
+                createdCallback: {
+                    value: function () {
+                        var me = this;
+
+                        this.style.display = 'block';
+                        this.style.boxSizing = 'border-box';
+                        this.style.height = '32px';
+                        this.style.padding = '4px 0';
+                        this.style.borderBottom = '1px solid #D9D9D9';
+                        this.style.borderTop = '1px solid #D9D9D9';
+
+                        //Create a copy of the template node.
+                        var template = document.importNode(thisDoc.querySelector('template').content, true);
+                        this.appendChild(template);
+
+                        //Work with the copy of the template and create the els object. The keys are the ids of the elements;
+                        this.els = {};
+                        var els = this.querySelectorAll('[id]');
+                        for (var i = 0; i < els.length; i++) {
+                            var el = els[i];
+                            var id = el.getAttribute('id');
+                            this.els[id] = el;
+                        }
+                        this.els.zoomin.addEventListener('click', function (e) {
+                            me.dispatchEvent(new CustomEvent(this.dataset.value, {"detail": this.dataset}));
+                        });
+                        this.els.zoomout.addEventListener('click', function (e) {
+                            me.dispatchEvent(new CustomEvent(this.dataset.value, {"detail": this.dataset}));
+                        });
+                    }
+                },
+                attachedCallback: {
+                    value: function () {
+                    }
+                },
+                detachedCallback: {
+                    value: function () {
+                    }
+                },
+                attributeChangedCallback: {
+                    value: function (attr, oldVal, newVal) {
+                    }
+                }
+
+            })
+        });
+    }());
+</script>
+
