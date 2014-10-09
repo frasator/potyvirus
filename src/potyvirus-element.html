@@ -1,0 +1,23 @@
+<polymer-element name="potyvirus-element" attributes="who">
+    <template>
+        <link rel="stylesheet" href="element-style.css">
+        <style>
+            :host {
+                display: block;
+                height: 100vh;
+            }
+        </style>
+        Hello <strong>{{who}}</strong> :)
+    </template>
+    <script>
+        Polymer({
+            created: function () {
+
+            },
+            ready: function () {
+
+            },
+            who: 'World'
+        });
+    </script>
+</polymer-element>
