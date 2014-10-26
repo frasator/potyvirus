@@ -1,0 +1,183 @@
+1	P1	CI	1	PPV	-	-	BiFC
+2	P1	NIa-VPg	1	PPV	-	-	BiFC
+3	P1	NIa-Pro	1	PPV	-	-	BiFC
+4	P1	CP	1	PPV	-	-	BiFC
+5	HC-Pro	HC-Pro	1	TuMV	Small aggregates along cell walls	-	Y2H
+6	HC-Pro	CI	1	PPV	-	-	BiFC
+7	P3	CI	1	PPV	-	-	BiFC
+8	P3	NIa-Pro	1	PPV	-	-	BiFC
+9	P3	Nib	1	PPV	-	-	BiFC
+10	6K1	CI	1	PPV	-	-	BiFC
+11	6K1	6K2	1	PPV	-	-	BiFC
+12	6K1	NIa-Pro	1	PPV	-	-	BiFC
+13	CI	CI	1	PPV	Small aggregates along cell walls, plasmodesmata	-	BiFC
+14	CI	6K2	1	PPV	-	-	BiFC
+15	CI	NIa-VPg	1	PPV	-	-	BiFC
+16	CI	NIa-Pro	1	PPV	-	-	BiFC
+17	CI	Nib	1	PPV	-	-	BiFC
+18	CI	CP	1	PPV	Small aggregates along cell walls	-	BiFC
+19	CI	P3N-PIPO	1	PPV	All over cell walls	-	BiFC
+20	6K2	6K2	1	PPV	Vesicular strictures, chloroplasts	-	BiFC
+21	6K2	NIa-VPg	1	PPV	-	-	BiFC
+22	6K2	NIa-Pro	1	PPV	-	-	BiFC
+23	6K2	Nib	1	PPV	-	-	BiFC
+24	NIa-VPg	NIa-VPg	1	PPV	Nucleus, nucleolus	-	BiFC
+25	NIa-VPg	NIa-Pro	1	PPV	-	-	BiFC
+26	NIa-VPg	Nib	1	PPV	-	-	BiFC
+27	NIa-VPg	CP	1	PPV	-	-	BiFC
+28	NIa-Pro	NIa-Pro	1	PPV	Nuclei, cytoplasm	-	BiFC
+29	NIa-Pro	Nib	1	PPV	-	-	BiFC
+30	NIa-Pro	CP	1	PPV	-	-	BiFC
+31	Nib	Nib	1	PPV	Small aggregates along cell walls	-	BiFC
+32	Nib	CP	1	PPV	-	-	BiFC
+33	CP	CP	1	PPV	-	-	BiFC
+34	HC-Pro	HC-Pro	2	SMV	-	-	Y2H	2
+35	HC-Pro	CI	2	SMV	-	-	Y2H	2
+36	HC-Pro	NIa-Pro	2	SMV	-	-	Y2H	1
+37	P3	NIa-VPg	2	SMV	-	-	Y2H	1
+38	P3	NIa-Pro	2	SMV	-	-	Y2H	1
+39	6K1	NIa-VPg	2	SMV	-	-	Y2H	2
+40	6K1	NIa-Pro	2	SMV	-	-	Y2H	2
+41	CI	6K1	2	SMV	-	-	Y2H	2
+42	CI	CI	2	SMV	-	-	Y2H	1
+43	CI	NIa-VPg	2	SMV	-	-	Y2H	1
+44	CI	NIa-Pro	2	SMV	-	-	Y2H	2
+45	CI	Nib	2	SMV	-	-	Y2H	1
+46	6K2	NIa-Pro	2	SMV	-	-	Y2H	1
+47	NIa-VPg	6K1	2	SMV	-	-	Y2H	1
+48	NIa-VPg	CI	2	SMV	-	-	Y2H	2
+49	NIa-VPg	6K2	2	SMV	-	-	Y2H	2
+50	NIa-VPg	NIa-VPg	2	SMV	-	-	Y2H	3
+51	NIa-VPg	NIa-Pro	2	SMV	-	-	Y2H	2
+52	NIa-VPg	Nib	2	SMV	-	-	Y2H	2
+53	NIa-Pro	HC-Pro	2	SMV	-	-	Y2H	1
+54	NIa-Pro	P3	2	SMV	-	-	Y2H	1
+55	NIa-Pro	6K1	2	SMV	-	-	Y2H	2
+56	NIa-Pro	CI	2	SMV	-	-	Y2H	1
+57	NIa-Pro	6K2	2	SMV	-	-	Y2H	2
+58	NIa-Pro	NIa-VPg	2	SMV	-	-	Y2H	2
+59	NIa-Pro	NIa-Pro	2	SMV	-	-	Y2H	3
+60	NIa-Pro	Nib	2	SMV	-	-	Y2H	2
+61	NIa-Pro	CP	2	SMV	-	-	Y2H	1
+62	Nib	HC-Pro	2	SMV	-	-	Y2H	2
+63	Nib	P3	2	SMV	-	-	Y2H	2
+64	Nib	6K1	2	SMV	-	-	Y2H	3
+65	Nib	CI	2	SMV	-	-	Y2H	2
+66	Nib	6K2	2	SMV	-	-	Y2H	2
+67	Nib	NIa-VPg	2	SMV	-	-	Y2H	2
+68	Nib	NIa-Pro	2	SMV	-	-	Y2H	3
+69	Nib	Nib	2	SMV	-	-	Y2H	2
+70	Nib	CP	2	SMV	-	-	Y2H	2
+71	CP	CP	2	SMV	-	-	Y2H	2
+72	P1	P1	2	SYSV	-	-	Y2H	3
+73	P1	6K1	2	SYSV	-	-	Y2H	2
+74	P1	CI	2	SYSV	-	-	Y2H	1
+75	P1	NIa-VPg	2	SYSV	-	-	Y2H	1
+76	P1	CP	2	SYSV	-	-	Y2H	2
+77	HC-Pro	HC-Pro	2	SYSV	-	-	Y2H	3
+78	HC-Pro	NIa-VPg	2	SYSV	-	-	Y2H	2
+79	HC-Pro	CP	2	SYSV	-	-	Y2H	1
+80	P3	P1	2	SYSV	-	-	Y2H	1
+81	P3	HC-Pro	2	SYSV	-	-	Y2H	2
+82	P3	P3	2	SYSV	-	-	Y2H	1
+83	P3	6K1	2	SYSV	-	-	Y2H	3
+84	P3	CI	2	SYSV	-	-	Y2H	2
+85	P3	6K2	2	SYSV	-	-	Y2H	1
+86	P3	NIa-VPg	2	SYSV	-	-	Y2H	2
+87	P3	NIa-Pro	2	SYSV	-	-	Y2H	2
+88	P3	Nib	2	SYSV	-	-	Y2H	2
+89	6K1	NIa-VPg	2	SYSV	-	-	Y2H	1
+90	6K1	NIa-Pro	2	SYSV	-	-	Y2H	2
+91	CI	P1	2	SYSV	-	-	Y2H	2
+92	CI	CI	2	SYSV	-	-	Y2H	2
+93	CI	NIa-VPg	2	SYSV	-	-	Y2H	1
+94	CI	NIa-Pro	2	SYSV	-	-	Y2H	1
+95	CI	CP	2	SYSV	-	-	Y2H	2
+96	6K2	CI	2	SYSV	-	-	Y2H	2
+97	6K2	NIa-VPg	2	SYSV	-	-	Y2H	1
+98	NIa-VPg	P1	2	SYSV	-	-	Y2H	2
+99	NIa-VPg	HC-Pro	2	SYSV	-	-	Y2H	2
+100	NIa-VPg	6K1	2	SYSV	-	-	Y2H	1
+101	NIa-VPg	CI	2	SYSV	-	-	Y2H	1
+102	NIa-VPg	6K2	2	SYSV	-	-	Y2H	3
+103	NIa-VPg	NIa-VPg	2	SYSV	-	-	Y2H	3
+104	NIa-VPg	CP	2	SYSV	-	-	Y2H	2
+105	NIa-Pro	P1	2	SYSV	-	-	Y2H	2
+106	NIa-Pro	HC-Pro	2	SYSV	-	-	Y2H	1
+107	NIa-Pro	6K1	2	SYSV	-	-	Y2H	2
+108	NIa-Pro	CI	2	SYSV	-	-	Y2H	3
+109	NIa-Pro	6K2	2	SYSV	-	-	Y2H	1
+110	NIa-Pro	NIa-Pro	2	SYSV	-	-	Y2H	3
+111	NIa-Pro	Nib	2	SYSV	-	-	Y2H	3
+112	NIa-Pro	CP	2	SYSV	-	-	Y2H	2
+113	Nib	NIa-VPg	2	SYSV	-	-	Y2H	2
+114	Nib	Nib	2	SYSV	-	-	Y2H	3
+115	Nib	CP	2	SYSV	-	-	Y2H	1
+116	CP	CP	2	SYSV	-	-	Y2H	1
+117	CI	P3N-PIPO	3	TuMV	Plasmodesmata	Cell to cell movement	BiFC
+118	CP	P3N-PIPO	3	TuMV	Plasmodesmata	Cell to cell movement	FP coincidence
+119	CI	HC-Pro	1	PPV	-	-	BiFC
+120	CI	P3	1	PPV	-	-	BiFC
+121	CI	6K1	1	PPV	-	-	BiFC
+122	6K2	6K1	1	PPV	-	-	BiFC
+123	6K2	CI	1	PPV	-	-	BiFC
+124	NIa-VPg	CI	1	PPV	-	-	BiFC
+125	NIa-VPg	6K2	1	PPV	-	-	BiFC
+126	NIa-Pro	P3	1	PPV	-	-	BiFC
+127	NIa-Pro	6K1	1	PPV	-	-	BiFC
+128	NIa-Pro	CI	1	PPV	-	-	BiFC
+129	NIa-Pro	6K2	1	PPV	-	-	BiFC
+130	NIa-Pro	NIa-VPg	1	PPV	-	-	BiFC
+131	Nib	P3	1	PPV	-	-	BiFC
+132	Nib	CI	1	PPV	-	-	BiFC
+133	Nib	6K2	1	PPV	-	-	BiFC
+134	Nib	NIa-VPg	1	PPV	-	-	BiFC
+135	Nib	NIa-Pro	1	PPV	-	-	BiFC
+136	CP	CI	1	PPV	Small aggregates along cell walls	-	BiFC
+137	CP	NIa-VPg	1	PPV	-	-	BiFC
+138	CP	NIa-Pro	1	PPV	-	-	BiFC
+139	CP	Nib	1	PPV	-	-	BiFC
+140	P3N-PIPO	CI	1	PPV	All over cell walls	-	BiFC
+141	CP	HC-Pro	2	SMV	-	-	Y2H	1
+142	P1	HC-Pro	4	PVA	-	-	Y2H	0.5
+143	P1	CI	4	PVA	-	-	Y2H	1
+144	HC-Pro	HC-Pro	4	PVA	-	-	Y2H	3
+145	HC-Pro	CI	4	PVA	-	-	Y2H	2
+146	P3	Nib	4	PVA	-	-	Y2H	1
+147	CI	HC-Pro	4	PVA	-	-	Y2H	2
+148	CI	CP	4	PVA	-	-	Y2H	0.5
+149	NIa-VPg	P1	4	PVA	-	-	Y2H	0.5
+150	NIa-VPg	HC-Pro	4	PVA	-	-	Y2H	0.5
+151	NIa-VPg	NIa-VPg	4	PVA	-	-	Y2H	2
+152	NIa-VPg	NIa-Pro	4	PVA	-	-	Y2H	0.5
+153	NIa-Pro	HC-Pro	4	PVA	-	-	Y2H	0.5
+154	NIa-Pro	NIa-VPg	4	PVA	-	-	Y2H	1
+155	NIa-Pro	Nib	4	PVA	-	-	Y2H	1
+156	Nib	P3	4	PVA	-	-	Y2H	0.5
+157	CP	CP	4	PVA	-	-	Y2H	2
+158	HC-Pro	HC-Pro	4	PSbMV	-	-	Y2H	2
+159	HC-Pro	NIa-VPg	4	PSbMV	-	-	Y2H	0.5
+160	NIa-VPg	NIa-VPg	4	PSbMV	-	-	Y2H	3
+161	NIa-VPg	Nib	4	PSbMV	-	-	Y2H	0.5
+162	NIa-Pro	P3	4	PSbMV	-	-	Y2H	0.5
+163	NIa-Pro	NIa-Pro	4	PSbMV	-	-	Y2H	0.5
+164	NIa-Pro	Nib	4	PSbMV	-	-	Y2H	0.5
+165	Nib	NIa-VPg	4	PSbMV	-	-	Y2H	0.5
+166	Nib	NIa-Pro	4	PSbMV	-	-	Y2H	0.5
+167	CP	CP	4	PSbMV	-	-	Y2H	1
+168	P1	NIa-VPg	5	PRSV-P	-	-	Y2H	2
+169	HC-Pro	HC-Pro	5	PRSV-P	-	-	Y2H	2
+170	P3	NIa-VPg	5	PRSV-P	-	-	Y2H	1
+171	P3	Nib	5	PRSV-P	-	-	Y2H	1
+172	CI	NIa-VPg	5	PRSV-P	-	-	Y2H	1
+173	CI	NIa-Pro	5	PRSV-P	-	-	Y2H	1
+174	NIa-VPg	P1	5	PRSV-P	-	-	Y2H	2
+175	NIa-VPg	P3	5	PRSV-P	-	-	Y2H	1
+176	NIa-VPg	CI	5	PRSV-P	-	-	Y2H	1
+177	NIa-VPg	NIa-VPg	5	PRSV-P	-	-	Y2H	3
+178	NIa-VPg	CP	5	PRSV-P	-	-	Y2H	2
+179	NIa-Pro	CI	5	PRSV-P	-	-	Y2H	1
+180	NIa-Pro	NIa-Pro	5	PRSV-P	-	-	Y2H	1
+181	Nib	P3	5	PRSV-P	-	-	Y2H	1
+182	CP	NIa-VPg	5	PRSV-P	-	-	Y2H	2
+183	CP	CP	5	PRSV-P	-	-	Y2H	3

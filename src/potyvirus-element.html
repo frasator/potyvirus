@@ -1,23 +1,131 @@
-<polymer-element name="potyvirus-element" attributes="who">
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/polymer-fontawesome/polymer-fontawesome.html">
+<link rel="import" href="../lib/jsorolla/src/lib/components/opencga/jso-header.html">
+<link rel="import" href="../lib/jsorolla/src/lib/components/opencga/jso-project-browser.html">
+<link rel="import" href="potyvirus-home.html">
+
+
+<link rel="import" href="components/pty-toolbar.html">
+<link rel="import" href="components/pty-header.html">
+<link rel="import" href="components/pty-3d-toolbar.html">
+<link rel="import" href="components/potyvirus-interactions-table.html">
+
+<link rel="import" href="components/pty-4a.html">
+<link rel="import" href="components/pty-4b.html">
+<link rel="import" href="components/pty-4c.html">
+<link rel="import" href="components/pty-4d.html">
+<link rel="import" href="components/pty-4e.html">
+<link rel="import" href="components/pty-4f.html">
+<link rel="import" href="components/pty-effect-propagation.html">
+<link rel="import" href="components/pty-simpson-index.html">
+<link rel="import" href="components/pty-heatmap.html">
+
+
+<polymer-element name="potyvirus-element">
     <template>
-        <link rel="stylesheet" href="element-style.css">
+        <link rel="stylesheet" href="../lib/jsorolla/styles/css/style.css">
+        <link rel="stylesheet" href="../bower_components/fontawesome/css/font-awesome.min.css">
         <style>
             :host {
                 display: block;
+                position: relative;
                 height: 100vh;
+                background-color: #314559;
+
+                -webkit-touch-callout: none;
+                -webkit-user-select: none;
+                -khtml-user-select: none;
+                -moz-user-select: none;
+                -ms-user-select: none;
+                user-select: none;
+                cursor: default;
+
+                font-size: 13px;
             }
+
+            [hide=true] {
+                display: none !important;
+            }
+
+            [hide=false] {
+                display: initial !important;
+            }
+
+            jso-project-browser {
+                position: absolute;
+                top: 60px; /* header height */
+                bottom: 0;
+                left: 0;
+                right: 0;
+            }
+            #stats{
+                background-color: #FFFFFF;
+                text-align: center;
+                border-top:1px solid #d3d3d3;
+                padding-top:20px;
+            }
+
         </style>
-        Hello <strong>{{who}}</strong> :)
+        <jso-header selectedOption="{{selectedOption}}" userData="{{userData}}" title="Potyvirus" allowLogin="false"
+                    options="{{options}}">
+        </jso-header>
+
+        <potyvirus-home hide="{{selectedOption != 'home' }}"></potyvirus-home>
+
+        <template if="{{selectedOption == 'stats' }}">
+            <div id="stats">
+                <pty-heatmap></pty-heatmap>
+                <pty-simpson-index></pty-simpson-index>
+                <pty-4a></pty-4a>
+                <pty-4b></pty-4b>
+                <pty-4c></pty-4c>
+                <pty-4d></pty-4d>
+                <pty-4e></pty-4e>
+                <pty-4f></pty-4f>
+            </div>
+        </template>
+
+        <template if="{{selectedOption == 'interactions' }}">
+            <potyvirus-interactions-table></potyvirus-interactions-table>
+        </template>
+
     </template>
     <script>
         Polymer({
             created: function () {
+                this.selectedOption = 'home';
+                this.userData;
+                this.options = this.getOptions();
 
             },
             ready: function () {
 
             },
-            who: 'World'
+            handleAppMenu: function (e) {
+                this.$.sidePanel.classList.toggle('side-panel-shown');
+            },
+
+
+            getOptions: function () {
+                return  [
+                    {
+                        option: 'interactions',
+                        text: 'Interactions'
+                    },
+                    {
+                        option: 'vhpi',
+                        text: 'VHPI'
+                    },
+                    {
+                        option: 'vhpi3d',
+                        text: 'VHPI3D'
+                    },
+                    {
+                        option: 'stats',
+                        text: 'Stats'
+                    }
+                ]
+            }
         });
     </script>
 </polymer-element>
