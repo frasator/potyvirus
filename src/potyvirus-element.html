@@ -1,5 +1,6 @@
 <link rel="import" href="../bower_components/polymer/polymer.html">
 <link rel="import" href="../bower_components/polymer-fontawesome/polymer-fontawesome.html">
+<link rel="import" href="../bower_components/sortable-table/sortable-table.html">
 <link rel="import" href="../lib/jsorolla/src/lib/components/opencga/jso-header.html">
 <link rel="import" href="../lib/jsorolla/src/lib/components/opencga/jso-project-browser.html">
 <link rel="import" href="potyvirus-home.html">
@@ -23,13 +24,10 @@
 
 <polymer-element name="potyvirus-element">
     <template>
-        <link rel="stylesheet" href="../lib/jsorolla/styles/css/style.css">
-        <link rel="stylesheet" href="../bower_components/fontawesome/css/font-awesome.min.css">
         <style>
             :host {
                 display: block;
                 position: relative;
-                height: 100vh;
                 background-color: #314559;
 
                 -webkit-touch-callout: none;
@@ -51,22 +49,19 @@
                 display: initial !important;
             }
 
-            jso-project-browser {
-                position: absolute;
-                top: 60px; /* header height */
-                bottom: 0;
-                left: 0;
-                right: 0;
+            potyvirus-interactions-table {
+                height: calc(100vh - 60px);
             }
-            #stats{
+
+            #stats {
                 background-color: #FFFFFF;
                 text-align: center;
-                border-top:1px solid #d3d3d3;
-                padding-top:20px;
+                border-top: 1px solid #d3d3d3;
+                padding-top: 20px;
             }
 
         </style>
-        <jso-header selectedOption="{{selectedOption}}" userData="{{userData}}" title="Potyvirus" allowLogin="false"
+        <jso-header selectedOption="{{selectedOption}}" userData="{{userData}}" appTitle="Potyvirus" allowLogin="false"
                     options="{{options}}">
         </jso-header>
 
@@ -85,18 +80,18 @@
             </div>
         </template>
 
-        <template if="{{selectedOption == 'interactions' }}">
-            <potyvirus-interactions-table></potyvirus-interactions-table>
-        </template>
+        <potyvirus-interactions-table data="{{data}}" hide="{{selectedOption != 'interactions'}}"></potyvirus-interactions-table>
 
     </template>
     <script>
         Polymer({
             created: function () {
+                this.data = [];
                 this.selectedOption = 'home';
                 this.userData;
                 this.options = this.getOptions();
 
+                this.getData();
             },
             ready: function () {
 
@@ -104,10 +99,8 @@
             handleAppMenu: function (e) {
                 this.$.sidePanel.classList.toggle('side-panel-shown');
             },
-
-
             getOptions: function () {
-                return  [
+                return [
                     {
                         option: 'interactions',
                         text: 'Interactions'
@@ -125,6 +118,35 @@
                         text: 'Stats'
                     }
                 ]
+            },
+            getData: function () {
+                var me = this;
+                var request = new XMLHttpRequest();
+                request.onload = function () {
+                    var lines = this.response.split('\n');
+                    var data = [];
+                    for (var i = 0; i < lines.length; i++) {
+                        var fields = lines[i].split('\t');
+                        var obj = {
+                            id: fields[0],
+                            p1: fields[1],
+                            p2: fields[2],
+                            reference: fields[3],
+                            specie: fields[4],
+                            cellularLocation: fields[5],
+                            'function': fields[6],
+                            detection: fields[7],
+                            intensity: fields[8]
+                        };
+                        data.push(obj);
+                    }
+                    me.data = data;
+                };
+                request.onerror = function () {
+                    console.log('error loading file');
+                };
+                request.open('GET', 'src/components/potyvirus-interactions-data-1.1.txt', true);
+                request.send();
             }
         });
     </script>

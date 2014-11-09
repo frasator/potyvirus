@@ -1,15 +1,31 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <meta charset="utf-8">
+    <title>Potyvirus</title>
+
     <script src="bower_components/platform/platform.js"></script>
 
     <link rel="import" href="bower_components/polymer/polymer.html">
     <link rel="import" href="src/potyvirus-element.html">
 
+    <script src="bower_components/Cookies/dist/cookies.min.js"></script>
+    <script src="bower_components/highcharts-release/adapters/standalone-framework.js"></script>
+    <script src="bower_components/highcharts-release/highcharts.js"></script>
+    <script src="bower_components/highcharts-release/modules/heatmap.js"></script>
+
+    <link rel="stylesheet" href="src/fonts/fonts.css">
     <style>
-        html, body{
-            height:100vh;
-            margin:0px;
+        html {
+            /*overflow-x:hidden;*/
+            /*overflow-y:scroll;*/
+            background-color: #314559;
+        }
+
+        html, body {
+            position: relative;
+            margin: 0px;
+            font-family: 'Lato', 'Roboto', 'Helvetica Neue', Helvetica, Arial, 'sans-serif' !important;
         }
     </style>
 </head>

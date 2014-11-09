@@ -1,58 +1,85 @@
-<polymer-element name="potyvirus-interactions-table">
+<polymer-element name="potyvirus-interactions-table" attributes="data">
     <template>
+        <link rel="stylesheet" href="../../lib/jsorolla/src/lib/components/sortable-table.css">
         <style>
             :host {
                 display: block;
+                position: relative;
+            }
+
+            #main {
+                height: 100%;
                 background-color: #ffffff;
             }
 
+            #table {
+                overflow-y: auto;
+                /*border: 1px solid #d3d3d3;*/
+            }
         </style>
-    TODO
+        <div id="main" layout vertical>
+            <sortable-table vertical layout
+                            id="table"
+                            data="{{data}}"
+                            columns="{{columns}}"
+                            rowselection="{{rowSelection}}"
+                            multiselect="{{multiSelect}}"
+                            page="{{page}}"
+                            pageSize="{{pageSize}}"
+                            footerTemplate="defaultPager"
+
+                    >
+            </sortable-table>
+        </div>
     </template>
     <script>
         Polymer({
             created: function () {
-
+                this.page = 0;
+                this.pageSize = 20;
+                this.rowSelection = true;
+                this.multiSelect = true;
+                this.data;
+                this.columns = [{
+                    name: "id",
+                    title: "ID",
+//                    cellTemplate: "inputTemplate"
+                }, {
+                    name: "p1",
+                    title: "Protein source",
+//                    cellTemplate: "inputTemplate"
+                }, {
+                    name: "p2",
+                    title: "Protein target",
+//                    cellTemplate: "inputTemplate"
+                }, {
+                    name: "reference",
+                    title: "Reference",
+//                    cellTemplate: "inputTemplate"
+                }, {
+                    name: "specie",
+                    title: "Specie",
+//                    cellTemplate: "inputTemplate"
+                }, {
+                    name: "cellularLocation",
+                    title: "Cellular location",
+//                    cellTemplate: "inputTemplate"
+                }, {
+                    name: "function",
+                    title: "Function",
+//                    cellTemplate: "inputTemplate"
+                }, {
+                    name: "detection",
+                    title: "Detection",
+//                    cellTemplate: "inputTemplate"
+                }, {
+                    name: "intensity",
+                    title: "Intensity",
+//                    cellTemplate: "inputTemplate"
+                }];
             },
             ready: function () {
-//                fields: ['id', 'p1', 'p2', 'reference', 'specie', 'cellularLocation', 'function', 'detection', 'intensity'],
 
-//                columns: [
-//                    { text: 'id', dataIndex: 'id', width: 40, editor: {xtype: 'textfield', allowBlank: false} },
-//                    { text: 'p1', dataIndex: 'p1', width: 40, editor: {xtype: 'textfield', allowBlank: false} },
-//                    { text: 'p2', dataIndex: 'p2', width: 40, editor: {xtype: 'textfield', allowBlank: false} },
-//                    { text: 'reference', dataIndex: 'reference', width: 70, editor: {xtype: 'textfield', allowBlank: false} },
-//                    { text: 'specie', dataIndex: 'specie', width: 50, editor: {xtype: 'textfield', allowBlank: false} },
-//                    { text: 'cell Location', dataIndex: 'cellularLocation', width: 70, editor: {xtype: 'textfield', allowBlank: false} },
-//                    { text: 'function', dataIndex: 'function', width: 50, editor: {xtype: 'textfield', allowBlank: false} },
-//                    { text: 'detection', dataIndex: 'detection', width: 60, editor: {xtype: 'textfield', allowBlank: false} },
-//                    { text: 'intensity', dataIndex: 'intensity', width: 60, editor: {xtype: 'textfield', allowBlank: false} }
-//                ],
-
-//                var inputFile = document.getElementById(me.fileInputEl.id).files[0];
-//                var reader = new FileReader();
-//                reader.onload = function (evt) {
-//                    deleteAll();
-//                    var res = evt.target.result.split('\n');
-//                    for (var i = 0; i < res.length; i++) {
-//                        var fields = res[i].split('\t');
-//                        var obj = {
-//                            id: fields[0],
-//                            p1: fields[1],
-//                            p2: fields[2],
-//                            reference: fields[3],
-//                            specie: fields[4],
-//                            cellularLocation: fields[5],
-//                            'function': fields[6],
-//                            detection: fields[7],
-//                            intensity: fields[8]
-//                        };
-//                        documents.push(obj);
-//                        me.reset();
-//                    }
-//                    insert(documents);
-//                };
-//                reader.readAsText(inputFile, "UTF-8");
             }
         });
     </script>
