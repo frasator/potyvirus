@@ -1,43 +1,96 @@
 <polymer-element name="potyvirus-interactions-table" attributes="data">
     <template>
         <link rel="stylesheet" href="../../lib/jsorolla/src/lib/components/sortable-table.css">
+        <link rel="stylesheet" href="../../lib/jsorolla/src/lib/components/jso-style.css">
         <style>
             :host {
                 display: block;
-                position: relative;
+                position: absolute;
+                box-sizing: border-box;
+                background-color: #FFFFFF;
+                /*padding: 30px 100px;*/
+
+                z-index: 50000;
+                top: 90px;
+
+                left: 0;
+                right: 0;
+                margin-left: auto;
+                margin-right: auto;
+
+                width: 95%;
+                height: 572px;
+                border: 1px solid #c6d0da;
+                /*border-width: 1px;*/
+                /*border-top-width: 1px;*/
+                transition: all 0.2s;
+                box-shadow: 10px 10px 10px rgba(0, 0, 0, 0.2);
             }
 
-            #main {
-                height: 100%;
-                background-color: #ffffff;
+            #tablewrap {
+                height: 540px;
+                position: relative;
+                background-color: #FAFAFA;
             }
 
             #table {
-                overflow-y: auto;
-                /*border: 1px solid #d3d3d3;*/
+                overflow-y: hidden;
+                overflow-x: auto;
+                margin-right: 5px;
+                border-right: 1px solid #d3d3d3;
+                background-color: #ffffff;
+            }
+
+            .customPager {
+                background-color: #fafafa;
+                box-sizing: border-box;
+                border-top: 1px solid #cccccc;
+                color: #445D76;
+                padding: 3px;
+            }
+
+            .customPagerScroll {
+                position: absolute;
+                top: 0;
+                right: 0;
+                width: 5px;
+                background-color: #c5c5c5;
+                /*background-color: #3F3F3F;*/
             }
         </style>
-        <div id="main" layout vertical>
-            <sortable-table vertical layout
-                            id="table"
+        <div id="tablewrap" class="" flex horizontal layout on-wheel="{{handleScroll}}">
+            <sortable-table id="table" flex
                             data="{{data}}"
                             columns="{{columns}}"
                             rowselection="{{rowSelection}}"
                             multiselect="{{multiSelect}}"
                             page="{{page}}"
-                            pageSize="{{pageSize}}"
-                            footerTemplate="defaultPager"
-
-                    >
+                            pageSize="{{pageSize}}">
+                <template id="inputTemplate">
+                    <td class="edit">
+                        <input type="text" value="{{row[column.name]}}">
+                    </td>
+                </template>
             </sortable-table>
+            <div class="customPagerScroll"
+                 style="height:calc(100% / {{table.lastPage}}); top:{{ (table.page-1) / table.lastPage * 100}}%"></div>
+        </div>
+        <div class="customPager" horizontal layout>
+            <div class="text">{{table.dataSize}} {{type}}{{table.dataSize != 1 ? 's' : ''}}</div>
+            <div class="button action" disabled?="{{table.page<=1}}" on-click="{{moveToPreviousPage}}">
+                &lt;</div>
+            <div class="text"> {{table.page}} of {{table.lastPage}}</div>
+            <div class="button action" disabled?="{{table.page>=table.lastPage}}"
+                 on-click="{{moveToNextPage}}">&gt;</div>
         </div>
     </template>
     <script>
         Polymer({
             created: function () {
-                this.page = 0;
+                this.type = 'interaction';
+                this.page = 1;
                 this.pageSize = 20;
-                this.rowSelection = true;
+                this.rowSelection = false;
                 this.multiSelect = true;
                 this.data;
                 this.columns = [{
@@ -79,7 +132,24 @@
                 }];
             },
             ready: function () {
-
+                this.table = this.$.table;
+            },
+            domReady: function () {
+//                this.pageSize = Math.floor(this.getBoundingClientRect().height / 26) - 2;
+            },
+            handleScroll: function (e) {
+                if (e.deltaY > 0) {
+                    this.moveToNextPage();
+                }
+                if (e.deltaY < 0) {
+                    this.moveToPreviousPage();
+                }
+            },
+            moveToNextPage: function () {
+                this.$.table.moveToNextPage();
+            },
+            moveToPreviousPage: function () {
+                this.$.table.moveToPreviousPage();
             }
         });
     </script>

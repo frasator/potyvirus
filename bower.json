@@ -16,15 +16,16 @@
     "tests"
   ],
   "dependencies": {
-    "polymer": "Polymer/polymer#~0.4.2",
-    "cookies-js": "~0.4.0",
+    "polymer": "*",
+    "cookies-js": "~1.1.0",
     "crypto-js-evanvosberg": "~3.1.2",
     "highcharts-release": "~4.0.4",
     "polymer-fontawesome": "~1.0.0-beta.2",
-    "fontawesome": "~4.2.0",
     "jquery": "~2.1.1",
-    "modernizr": "~2.8.3",
     "Cookies": "~1.1.0",
-    "sortable-table": "~0.10.0"
+    "sortable-table": "~0.10.1",
+    "underscore": "~1.7.0",
+    "backbone": "~1.1.2",
+    "threejs": "*"
   }
 }

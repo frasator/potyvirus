@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <title>Potyvirus</title>
 
-    <script src="bower_components/platform/platform.js"></script>
+    <script src="bower_components/webcomponentsjs/webcomponents.min.js"></script>
 
     <link rel="import" href="bower_components/polymer/polymer.html">
     <link rel="import" href="src/potyvirus-element.html">
@@ -13,6 +13,12 @@
     <script src="bower_components/highcharts-release/adapters/standalone-framework.js"></script>
     <script src="bower_components/highcharts-release/highcharts.js"></script>
     <script src="bower_components/highcharts-release/modules/heatmap.js"></script>
+    <script src="bower_components/underscore/underscore-min.js"></script>
+    <script src="bower_components/backbone/backbone.js"></script>
+
+    <script src="bower_components/threejs/build/three.min.js"></script>
+    <script src="bower_components/jquery/dist/jquery.min.js"></script>
+
 
     <link rel="stylesheet" href="src/fonts/fonts.css">
     <style>
@@ -35,6 +41,7 @@
 <potyvirus-element></potyvirus-element>
 
 <script>
+    potyvirus = document.querySelector('potyvirus-element');
     window.addEventListener('polymer-ready', function (e) {
         console.log('polymer-ready');
     });

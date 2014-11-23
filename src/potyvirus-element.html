@@ -2,9 +2,8 @@
 <link rel="import" href="../bower_components/polymer-fontawesome/polymer-fontawesome.html">
 <link rel="import" href="../bower_components/sortable-table/sortable-table.html">
 <link rel="import" href="../lib/jsorolla/src/lib/components/opencga/jso-header.html">
-<link rel="import" href="../lib/jsorolla/src/lib/components/opencga/jso-project-browser.html">
+<link rel="import" href="../lib/jsorolla/src/network-viewer/jso-network-viewer.html">
 <link rel="import" href="potyvirus-home.html">
-
 
 <link rel="import" href="components/pty-toolbar.html">
 <link rel="import" href="components/pty-header.html">
@@ -21,6 +20,7 @@
 <link rel="import" href="components/pty-simpson-index.html">
 <link rel="import" href="components/pty-heatmap.html">
 
+<script src="../lib/jsorolla/src/network-viewer-webgl/network-viewer-webgl.js"></script>
 
 <polymer-element name="potyvirus-element">
     <template>
@@ -45,11 +45,10 @@
                 display: none !important;
             }
 
-            [hide=false] {
-                display: initial !important;
-            }
-
-            potyvirus-interactions-table {
+            /*potyvirus-interactions-table {*/
+            /*height: calc(100vh - 60px);*/
+            /*}*/
+            jso-network-viewer {
                 height: calc(100vh - 60px);
             }
 
@@ -65,7 +64,7 @@
                     options="{{options}}">
         </jso-header>
 
-        <potyvirus-home hide="{{selectedOption != 'home' }}"></potyvirus-home>
+        <potyvirus-home hidden?="{{selectedOption != 'home' }}"></potyvirus-home>
 
         <template if="{{selectedOption == 'stats' }}">
             <div id="stats">
@@ -80,20 +79,54 @@
             </div>
         </template>
 
-        <potyvirus-interactions-table data="{{data}}" hide="{{selectedOption != 'interactions'}}"></potyvirus-interactions-table>
+        <potyvirus-interactions-table data="{{data}}" hidden?="{{selectedOption != 'interactions'}}"></potyvirus-interactions-table>
+        <jso-network-viewer id="networkViewer" hidden?="{{selectedOption != 'vhpi'}}"></jso-network-viewer>
 
+        <div id="nvwebgl" hidde?="{{selectedOption != 'vhpi3d'}}">
+
+        </div>
     </template>
     <script>
         Polymer({
             created: function () {
-                this.data = [];
-                this.selectedOption = 'home';
-                this.userData;
                 this.options = this.getOptions();
-
-                this.getData();
+                this.data = [];
+                this.userData;
+                this.potyvirusPorteinNames = {
+                    'P1': true,
+                    'HC-Pro': true,
+                    'P3': true,
+                    '6K1': true,
+                    'CI': true,
+                    '6K2': true,
+                    'VPg': true,
+                    'NIa-Pro': true,
+                    'NIb': true,
+                    'CP': true,
+                    'P3N-PIPO': true
+                };
             },
             ready: function () {
+                this.selectedOption = 'vhpi3d';
+            },
+            domReady: function () {
+                this.getData();
+                this.getInteractionsSif();
+
+                var height = window.innerHeight - 65;
+                var width = window.innerWidth;
+                this.networkViewerWebgl = new NetworkViewerWebgl({
+                    target: this.$.nvwebgl,
+                    width: width,
+                    height: height
+                });
+
+                var me = this;
+                setTimeout(function () {
+//                    me.getPlantInteractome();
+                    me.testPlantInteractome();
+                }, 100);
+
 
             },
             handleAppMenu: function (e) {
@@ -147,6 +180,284 @@
                 };
                 request.open('GET', 'src/components/potyvirus-interactions-data-1.1.txt', true);
                 request.send();
+            },
+            getInteractionsSif: function () {
+                var me = this;
+                var request = new XMLHttpRequest();
+                request.onload = function () {
+
+                    var adapter = new SIFNetworkDataAdapter({
+                        dataSource: new StringDataSource(this.response),
+                        handlers: {
+                            'data:load': function (event) {
+                                me.$.networkViewer.setGraph(event.graph);
+                                me.$.networkViewer.setLayout('Force directed');
+                                me.getInteractionsAttr();
+                            },
+                            'error:parse': function (event) {
+                                me.message = event.errorMsg;
+                            }
+                        }
+                    });
+
+                };
+                request.onerror = function () {
+                    console.log('error loading file');
+                };
+                request.open('GET', 'src/components/interactions-1.3.sif', true);
+                request.send();
+            },
+            getInteractionsAttr: function () {
+
+                var me = this;
+                var request = new XMLHttpRequest();
+                request.onload = function () {
+
+                    new AttributeNetworkDataAdapter({
+                        dataSource: new StringDataSource(this.response),
+                        handlers: {
+                            'data:load': function (event) {
+                                me.$.networkViewer.importEdgeAttributeManager(event.attributeManager);
+                                var row, matches = {};
+                                for (var i = 0; i < me.$.networkViewer.eAttr.data.length; i++) {
+                                    row = me.$.networkViewer.eAttr.data[i];
+                                    matches[row["Weight"]] = row["Weight"];
+                                }
+                                me.$.networkViewer.handleEdgeVisualSet({
+                                    attribute: "Weight",
+                                    renderProperty: 'opacity',
+                                    matches: matches
+                                });
+                            },
+                            'error:parse': function (event) {
+                                me.message = event.errorMsg;
+                            }
+                        }
+                    });
+
+                };
+                request.onerror = function () {
+                    console.log('error loading file');
+                };
+                request.open('GET', 'src/components/interactions-1.3-weighted.attr', true);
+                request.send();
+            },
+            getPlantInteractome: function () {
+                var me = this;
+                var request = new XMLHttpRequest();
+                request.onload = function () {
+                    var textNetworkDataAdapter = new TextNetworkDataAdapter({
+                        dataSource: new StringDataSource(this.response),
+                        handlers: {
+                            'data:load': function (event) {
+//                        var graph = event.sender.parseColumns(0, 1, -1, 'hh');
+                                var graph = event.sender.parseColumns(0, 2, 1);
+//                        sphereSurface(graph.vertices, 400, 300);
+//                        circleLevels(graph.vertices, 600, 300);
+
+
+//                        var virusVertices = [];
+//                        var plantVertices = [];
+//
+//                        for (var i = 0, l = graph.vertices.length; i < l; i++) {
+//                            var vertex = graph.vertices[i];
+//                            if (typeof vertex !== 'undefined') {
+//                                if (vertex.id in potyvirusPorteinNames) {
+//                                    virusVertices.push(vertex);
+//                                } else {
+//                                    plantVertices.push(vertex);
+//                                }
+//                            }
+//                        }
+//                            circleLevels(virusVertices, 300, 50);
+//                            circleLevels(plantVertices, 500, 350);
+//                            networkViewerWebgl.renderGraph(graph);
+
+                                me.forceDirected(graph.vertices, graph.edges, function (vertices) {
+                                    for (var i = 0; i < vertices.length; i++) {
+                                        var v = vertices[i];
+                                        var vertex = graph.getVertexById(v.id);
+                                        var z = 0;
+                                        if (vertex.id in me.potyvirusPorteinNames) {
+                                            z = 100;
+                                        } else {
+                                            z = 300;
+                                        }
+                                        vertex.position.set(v.x, v.y, z);
+                                    }
+                                    me.networkViewerWebgl.renderGraph(graph);
+                                });
+
+                            },
+                            'error:parse': function (event) {
+                                console.log(event);
+                            }
+                        }
+                    });
+
+                };
+                request.onerror = function () {
+                    console.log('error loading file');
+                };
+                request.open('GET', 'src/components/vh0-1.sif', true);
+                request.send();
+            },
+            testPlantInteractome: function () {
+                var me = this;
+                var request = new XMLHttpRequest();
+                request.onload = function () {
+                    var textNetworkDataAdapter = new TextNetworkDataAdapter({
+                        dataSource: new StringDataSource(this.response),
+                        handlers: {
+                            'data:load': function (event) {
+                                var graph = event.sender.parseColumns(0, 1, -1, 'hh');
+
+                                var visited = {};
+                                var levels = {};
+                                var level = 1;
+                                var processNode = function(node){
+                                    if(!visited[node.id]){
+                                        for (var i = 0, l = node.edges.length; i < l; i++) {
+                                            processNode(node.edges[i].source);
+//                                            processNode(node.edges[i].target);
+                                        }
+                                        visited[node.id] = level;
+                                        level++;
+                                    }
+                                }
+
+                                for(var vp in me.potyvirusPorteinNames){
+                                    var n = graph.getVertexById(vp);
+                                    processNode(n);
+                                    debugger
+                                    break;
+                                }
+
+                                for (var i = 0, l = graph.vertices.length; i < l; i++) {
+                                    var v = graph.vertices[i];
+                                }
+//                                me.circleLevels(graph.vertices, 600, 300)
+
+//                                me.networkViewerWebgl.renderGraph(graph);
+
+                            },
+                            'error:parse': function (event) {
+                                console.log(event);
+                            }
+                        }
+                    });
+
+                };
+                request.onerror = function () {
+                    console.log('error loading file');
+                };
+                request.open('GET', 'src/components/Ath_Interactome.txt', true);
+                request.send();
+            },
+            /* ** */
+            /* ** */
+            /* layout */
+            /* ** */
+            /* ** */
+            circleLevels: function (vertices, radius, z) {
+                var centerX = 0;
+                var centerY = 0;
+                var x, y;
+                for (var i = 0, l = vertices.length; i < l; i++) {
+                    var vertex = vertices[i];
+                    if (typeof vertex !== 'undefined') {
+                        x = centerX + radius * Math.sin(i * 2 * Math.PI / vertices.length);
+                        y = centerY + radius * Math.cos(i * 2 * Math.PI / vertices.length);
+
+                        vertex.position.set(x, y, z);
+                    }
+                }
+            },
+
+            sphereSurface: function (vertices, radius, offsetZ) {
+
+                //        θ = theta
+                //        φ = phi
+                var n = vertices.length;
+
+                for (var i = 0; i < vertices.length; i++) {
+                    var vertex = vertices[i];
+                    var phi = Math.acos(-1 + ( 2 * i ) / n);
+                    var theta = Math.sqrt(n * Math.PI) * phi;
+                    vertex.position.setX(radius * Math.cos(theta) * Math.sin(phi));
+                    vertex.position.setY(radius * Math.sin(theta) * Math.sin(phi));
+                    vertex.position.setZ(radius * Math.cos(phi) + offsetZ);
+                }
+            },
+
+
+            forceDirected: function (vertices, edges, endFunction) {
+                var force = d3.layout.force();
+
+                force.charge(-50)
+                force.linkDistance(40)
+
+                /*------------------------------------------*/
+                /*------------------------------------------*/
+                console.time('Force directed preload');
+
+                var d3Vertices = [];
+                var d3VerticesMap = {};
+                var d3Edges = [];
+
+                //set node and edge arrays for D3
+                for (var i = 0, l = vertices.length; i < l; i++) {
+                    var vertex = vertices[i];
+                    if (typeof vertex !== 'undefined') {
+                        var v = {
+                            id: vertex.id,
+                            index: i
+                        };
+                        d3Vertices.push(v);
+                        d3VerticesMap[vertex.id] = v;
+                    }
+                }
+                force.nodes(d3Vertices);
+                for (var i = 0, l = edges.length; i < l; i++) {
+                    var edge = edges[i];
+                    if (typeof edge !== 'undefined') {
+                        d3Edges.push({
+                            source: d3VerticesMap[edge.source.id],
+                            target: d3VerticesMap[edge.target.id]
+                        });
+                    }
+                }
+                force.links(d3Edges);
+
+
+                force.on('end', function (o) {
+                    console.log(o)
+                    endFunction(d3Vertices);
+                });
+
+                console.time('D3 Force directed layout');
+                force.start();
+                var safety = 0;
+                while (force.alpha() > 0.025) { // You'll want to try out different, "small" values for this
+                    force.tick();
+                    if (safety++ > 2000) {
+                        break;// Avoids infinite looping in case this solution was a bad idea
+                    }
+                }
+                console.log(safety);
+                force.stop();
+                console.timeEnd('D3 Force directed layout');
+
+
+//    force.on('tick', function (o) {
+//        endFunction(d3Vertices);
+//        console.log(force.alpha())
+//        if (force.alpha() < 0.025) {
+//            force.stop()
+//        }
+//    });
+//    force.start();
+
             }
         });
     </script>
