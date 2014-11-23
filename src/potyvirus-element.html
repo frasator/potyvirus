@@ -315,27 +315,26 @@
                                 var visited = {};
                                 var levels = {};
                                 var level = 1;
-                                var processNode = function(node){
+                                var processNode = function(node, lvl){
                                     if(!visited[node.id]){
+                                        visited[node.id] = lvl;
                                         for (var i = 0, l = node.edges.length; i < l; i++) {
-                                            processNode(node.edges[i].source);
+                                            processNode(node.edges[i].target, lvl+1);
 //                                            processNode(node.edges[i].target);
                                         }
-                                        visited[node.id] = level;
-                                        level++;
                                     }
                                 }
 
                                 for(var vp in me.potyvirusPorteinNames){
                                     var n = graph.getVertexById(vp);
-                                    processNode(n);
+                                    processNode(n, 1);
                                     debugger
                                     break;
                                 }
-
-                                for (var i = 0, l = graph.vertices.length; i < l; i++) {
-                                    var v = graph.vertices[i];
-                                }
+//
+//                                for (var i = 0, l = graph.vertices.length; i < l; i++) {
+//                                    var v = graph.vertices[i];
+//                                }
 //                                me.circleLevels(graph.vertices, 600, 300)
 
 //                                me.networkViewerWebgl.renderGraph(graph);
