@@ -310,27 +310,39 @@
                         dataSource: new StringDataSource(this.response),
                         handlers: {
                             'data:load': function (event) {
-                                var graph = event.sender.parseColumns(0, 1, -1, 'hh');
+                                var graph = event.sender.parseColumns(0, 1, -1, 'i');
 
                                 var visited = {};
-                                var levels = {};
-                                var level = 1;
-                                var processNode = function(node, lvl){
-                                    if(!visited[node.id]){
+                                var processNode = function (node, lvl) {
+                                    if (!visited[node.id]) {
                                         visited[node.id] = lvl;
                                         for (var i = 0, l = node.edges.length; i < l; i++) {
-                                            processNode(node.edges[i].target, lvl+1);
+                                            processNode(node.edges[i].target, lvl + 1);
 //                                            processNode(node.edges[i].target);
                                         }
                                     }
                                 }
 
-                                for(var vp in me.potyvirusPorteinNames){
+                                for (var vp in me.potyvirusPorteinNames) {
                                     var n = graph.getVertexById(vp);
-                                    processNode(n, 1);
-                                    debugger
-                                    break;
+//                                    console.log(vp)
+                                    if (n) {
+//                                        console.log(n)
+                                        processNode(n, 1);
+
+                                    }
                                 }
+
+                                me.forceDirected(graph.vertices, graph.edges, function (d3Vertices) {
+                                    for (var i = 0; i < d3Vertices.length; i++) {
+                                        var v = d3Vertices[i];
+                                        var vertex = graph.getVertexById(v.id);
+                                        var lvl = visited[vertex.id] || 20;
+                                        var z = -500 + lvl * 50;
+                                        vertex.position.set(v.x, v.y, z);
+                                    }
+                                    me.networkViewerWebgl.renderGraph(graph);
+                                });
 //
 //                                for (var i = 0, l = graph.vertices.length; i < l; i++) {
 //                                    var v = graph.vertices[i];
@@ -407,24 +419,20 @@
                 //set node and edge arrays for D3
                 for (var i = 0, l = vertices.length; i < l; i++) {
                     var vertex = vertices[i];
-                    if (typeof vertex !== 'undefined') {
-                        var v = {
-                            id: vertex.id,
-                            index: i
-                        };
-                        d3Vertices.push(v);
-                        d3VerticesMap[vertex.id] = v;
-                    }
+                    var v = {
+                        id: vertex.id,
+                        index: i
+                    };
+                    d3Vertices.push(v);
+                    d3VerticesMap[vertex.id] = v;
                 }
                 force.nodes(d3Vertices);
                 for (var i = 0, l = edges.length; i < l; i++) {
                     var edge = edges[i];
-                    if (typeof edge !== 'undefined') {
-                        d3Edges.push({
-                            source: d3VerticesMap[edge.source.id],
-                            target: d3VerticesMap[edge.target.id]
-                        });
-                    }
+                    d3Edges.push({
+                        source: d3VerticesMap[edge.source.id],
+                        target: d3VerticesMap[edge.target.id]
+                    });
                 }
                 force.links(d3Edges);
 
