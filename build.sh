@@ -1,9 +1,10 @@
 #!/bin/sh
 mkdir -p build
-rm -rf build/index.html build/index.js build/workers build/fonts
+rm -rf build/index.html build/index.js build/workers build/fonts build/files
 
 vulcanize index.html -o build/index.html --inline --strip --csp
 
+cp -r files build/
 cp -r bower_components/fontawesome/fonts build/
 cp -r src/fonts/*.woff* build/fonts/
 
