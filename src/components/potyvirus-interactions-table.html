@@ -1,44 +1,37 @@
-<polymer-element name="potyvirus-interactions-table" attributes="data">
+<polymer-element name="potyvirus-interactions-table" attributes="interactions">
     <template>
         <link rel="stylesheet" href="../../lib/jsorolla/src/lib/components/sortable-table.css">
         <link rel="stylesheet" href="../../lib/jsorolla/src/lib/components/jso-style.css">
         <style>
             :host {
                 display: block;
-                position: absolute;
+                position: relative;
                 box-sizing: border-box;
-                background-color: #FFFFFF;
-                /*padding: 30px 100px;*/
+                /*background-color: #FFFFFF;*/
+                /*margin: 30px 75px;*/
 
                 z-index: 50000;
-                top: 90px;
 
-                left: 0;
-                right: 0;
-                margin-left: auto;
-                margin-right: auto;
-
-                width: 95%;
-                height: 572px;
-                border: 1px solid #c6d0da;
+                /*height: 572px;*/
+                /*border: 1px solid #c6d0da;*/
                 /*border-width: 1px;*/
                 /*border-top-width: 1px;*/
-                transition: all 0.2s;
-                box-shadow: 10px 10px 10px rgba(0, 0, 0, 0.2);
+                /*transition: height 0.15s;*/
+                /*box-shadow: 10px 10px 10px rgba(0, 0, 0, 0.2);*/
             }
 
-            #tablewrap {
-                height: 540px;
+            .tablewrap {
+                height: 100%;
+                /*height: 540px;*/
                 position: relative;
                 background-color: #FAFAFA;
             }
 
-            #table {
+            .table {
                 overflow-y: hidden;
                 overflow-x: auto;
                 margin-right: 5px;
                 border-right: 1px solid #d3d3d3;
-                background-color: #ffffff;
             }
 
             .customPager {
@@ -58,46 +51,82 @@
                 /*background-color: #3F3F3F;*/
             }
         </style>
-        <div id="tablewrap" class="" flex horizontal layout on-wheel="{{handleScroll}}">
-            <sortable-table id="table" flex
-                            data="{{data}}"
-                            columns="{{columns}}"
-                            rowselection="{{rowSelection}}"
-                            multiselect="{{multiSelect}}"
-                            page="{{page}}"
-                            pageSize="{{pageSize}}">
-                <template id="inputTemplate">
-                    <td class="edit">
-                        <input type="text" value="{{row[column.name]}}">
-                    </td>
-                </template>
-            </sortable-table>
-            <div class="customPagerScroll"
-                 style="height:calc(100% / {{table.lastPage}}); top:{{ (table.page-1) / table.lastPage * 100}}%"></div>
+
+        <div horizontal layout>
+            <div class="left">
+                <div class="tablewrap" on-wheel="{{handleScroll}}">
+                    <div class="customPagerScroll"
+                         style="height:calc(100% / {{table.lastPage}}); top:{{ (table.page-1) / table.lastPage * 100}}%"></div>
+                    <sortable-table id="table" class="table" flex
+                                    data="{{interactions}}"
+                                    columns="{{columns}}"
+                                    rowselection="{{rowSelection}}"
+                                    multiselect="{{multiSelect}}"
+                                    page="{{page}}"
+                                    pageSize="{{pageSize}}">
+                        <template id="inputTemplate">
+                            <td class="edit">
+                                <input type="text" value="{{row[column.name]}}">
+                            </td>
+                        </template>
+                    </sortable-table>
+                </div>
+                <div class="customPager" horizontal layout>
+                    <div class="text">{{table.dataSize}} {{type}}{{table.dataSize != 1 ? 's' : ''}}</div>
+                    <div class="button action" disabled?="{{table.page<=1}}" on-click="{{moveToPreviousPage}}">
+                        &lt;</div>
+                    <div class="text"> {{table.page}} of {{table.lastPage}}</div>
+                    <div class="button action" disabled?="{{table.page>=table.lastPage}}"
+                         on-click="{{moveToNextPage}}">&gt;</div>
+                </div>
+            </div>
+            <div class="right">
+                <div class="tablewrap" on-wheel="{{handleScrollSym}}">
+                    <div class="customPagerScroll"
+                         style="height:calc(100% / {{table.lastPage}}); top:{{ (table.page-1) / table.lastPage * 100}}%"></div>
+                    <sortable-table id="tablesym" class="table" flex
+                                    data="{{datasym}}"
+                                    columns="{{columnssym}}"
+                                    rowselection="{{rowSelection}}"
+                                    multiselect="{{multiSelect}}"
+                                    page="{{pagesym}}"
+                                    pageSize="{{pageSizeSym}}">
+                        <template id="inputTemplate">
+                            <td class="edit">
+                                <input type="text" value="{{row[column.name]}}">
+                            </td>
+                        </template>
+                    </sortable-table>
+                </div>
+                <div class="customPager" horizontal layout>
+                    <div class="text">{{tablesym.dataSize}} {{type}}{{tablesym.dataSize != 1 ? 's' : ''}}</div>
+                    <div class="button action" disabled?="{{tablesym.page<=1}}" on-click="{{moveToPreviousPageSym}}">
+                        &lt;</div>
+                    <div class="text"> {{tablesym.page}} of {{tablesym.lastPage}}</div>
+                    <div class="button action" disabled?="{{tablesym.page>=tablesym.lastPage}}"
+                         on-click="{{moveToNextPageSym}}">&gt;</div>
+                </div>
+            </div>
         </div>
-        <div class="customPager" horizontal layout>
-            <div class="text">{{table.dataSize}} {{type}}{{table.dataSize != 1 ? 's' : ''}}</div>
-            <div class="button action" disabled?="{{table.page<=1}}" on-click="{{moveToPreviousPage}}">
-                &lt;</div>
-            <div class="text"> {{table.page}} of {{table.lastPage}}</div>
-            <div class="button action" disabled?="{{table.page>=table.lastPage}}"
-                 on-click="{{moveToNextPage}}">&gt;</div>
-        </div>
+
+
     </template>
     <script>
         Polymer({
             created: function () {
                 this.type = 'interaction';
                 this.page = 1;
+                this.pagesym = 1;
                 this.pageSize = 20;
+                this.pageSizeSym = 20;
                 this.rowSelection = false;
                 this.multiSelect = true;
-                this.data;
+                this.interactions;
+
+                this.datasym = [];
+
+//                Protein A	Protein B	Reference	sp	Detection	Intensity	Detected	Tested
                 this.columns = [{
-                    name: "id",
-                    title: "ID",
-//                    cellTemplate: "inputTemplate"
-                }, {
                     name: "p1",
                     title: "Protein source",
 //                    cellTemplate: "inputTemplate"
@@ -110,16 +139,8 @@
                     title: "Reference",
 //                    cellTemplate: "inputTemplate"
                 }, {
-                    name: "specie",
-                    title: "Specie",
-//                    cellTemplate: "inputTemplate"
-                }, {
-                    name: "cellularLocation",
-                    title: "Cellular location",
-//                    cellTemplate: "inputTemplate"
-                }, {
-                    name: "function",
-                    title: "Function",
+                    name: "species",
+                    title: "Species",
 //                    cellTemplate: "inputTemplate"
                 }, {
                     name: "detection",
@@ -129,13 +150,157 @@
                     name: "intensity",
                     title: "Intensity",
 //                    cellTemplate: "inputTemplate"
+                }, {
+                    name: "detected",
+                    title: "Detected",
+//                    cellTemplate: "inputTemplate"
+                }, {
+                    name: "tested",
+                    title: "Tested",
+//                    cellTemplate: "inputTemplate"
+                }];
+
+                this.columnssym = [{
+                    name: "p1",
+                    title: "Protein source"
+                }, {
+                    name: "p2",
+                    title: "Protein target"
+                }, {
+                    name: "detectedbifc",
+                    title: "BiFC detected"
+                }, {
+                    name: "testedbifc",
+                    title: "BiFC tested"
+                }, {
+                    name: "detectedy2h",
+                    title: "Y2H detected"
+                }, {
+                    name: "testedy2h",
+                    title: "Y2H tested"
+                }, {
+                    name: "detectedtotal",
+                    title: "Total detected"
+                }, {
+                    name: "testedtotal",
+                    title: "Total tested"
+                }, {
+                    name: "rc",
+                    title: "RC %"
                 }];
             },
             ready: function () {
+                var me = this;
+                this.addEventListener('transitionend', function () {
+                    me.handleResize();
+                });
                 this.table = this.$.table;
+                this.tablesym = this.$.tablesym;
             },
             domReady: function () {
-//                this.pageSize = Math.floor(this.getBoundingClientRect().height / 26) - 2;
+                var me = this;
+                var undirectedMap = {};
+                var interactions = [];
+                var responseCount = 0;
+                this.getData(function (response) {
+                    responseCount++;
+                    var lines = response.split('\n');
+                    for (var i = 0; i < lines.length; i++) {
+                        var line = lines[i];
+                        if (line.trim().length != 0) {
+                            var fields = line.split('\t');
+                            var key1 = fields[0] + fields[1] + fields[3];
+                            var key2 = fields[1] + fields[0] + fields[3];
+                            if (undirectedMap[key1] != true && undirectedMap[key2] != true) {
+                                var obj = {
+                                    p1: fields[0],
+                                    p2: fields[1],
+                                    reference: fields[2],
+                                    species: fields[3],
+                                    detection: fields[4],
+                                    intesity: fields[5],
+                                    detected: fields[6],
+                                    tested: fields[7]
+                                };
+//                                if (obj.p1 == 'P1' && obj.p2 == 'HCPro') {
+                                interactions.push(obj);
+                                undirectedMap[key1] = true;
+                                undirectedMap[key2] = true;
+//                                }
+
+                            }
+
+                        }
+                    }
+                    me.interactions = interactions;
+                    me.processDataSym();
+                });
+            },
+            getData: function (callback) {
+                var me = this;
+                var request = new XMLHttpRequest();
+                request.onload = function () {
+                    callback(this.response)
+                };
+                request.onerror = function () {
+                    console.log('error loading file');
+                };
+                request.open('GET', 'files/interactions.tsv', true);
+                request.send();
+            },
+            processDataSym: function () {
+//                                              BiFC	            Y2H		            Total
+//                Protein A	Protein B	Detected	Tested	Detected	Tested	Detected	Tested	RC
+                var map = {};
+                var datasym = [];
+                for (var i = 0; i < this.interactions.length; i++) {
+                    var interaction = this.interactions[i];
+                    var key1 = interaction.p1 + ">" + interaction.p2;
+                    var key2 = interaction.p2 + "<" + interaction.p1;
+                    if (map[key1] == null && map[key2] == null) {
+                        var obj = {
+                            p1: interaction.p1,
+                            p2: interaction.p2,
+                            detectedbifc: 0,
+                            testedbifc: 0,
+                            detectedy2h: 0,
+                            testedy2h: 0,
+                            detectedtotal: 0,
+                            testedtotal: 0,
+                            rc: 0
+                        }
+                        map[key1] = obj;
+                        map[key2] = true;
+                        datasym.push(obj);
+                    }
+                    var obj = map[key1];
+                    var d = (parseInt(interaction.detected) > 0) ? 1 : 0;
+                    var t = (parseInt(interaction.tested) > 0) ? 1 : 0;
+                    if (interaction.detection == 'BiFC') {
+                        obj.detectedbifc += d;
+                        obj.testedbifc += t;
+                    } else if (interaction.detection == 'Y2H') {
+                        obj.detectedy2h += d;
+                        obj.testedy2h += t;
+                    }
+                    obj.detectedtotal += d;
+                    obj.testedtotal += t;
+
+
+                }
+                for (var i = 0; i < datasym.length; i++) {
+                    var symi = datasym[i];
+                    symi.rc = ((2 / (symi.testedtotal + 1)) * symi.detectedbifc) + ((1 / (symi.testedtotal + 1)) * symi.detectedy2h);
+                    symi.rc = Math.round(symi.rc * 100);
+                }
+
+                this.datasym = datasym;
+
+                //TODO get interaction network;
+            },
+            handleResize: function () {
+                this.pageSize = Math.floor(this.getBoundingClientRect().height / 26) - 2;
+                this.pageSizeSym = this.pageSize;
             },
             handleScroll: function (e) {
                 if (e.deltaY > 0) {
@@ -150,6 +315,20 @@
             },
             moveToPreviousPage: function () {
                 this.$.table.moveToPreviousPage();
+            },
+            handleScrollSym: function (e) {
+                if (e.deltaY > 0) {
+                    this.moveToNextPageSym();
+                }
+                if (e.deltaY < 0) {
+                    this.moveToPreviousPageSym();
+                }
+            },
+            moveToNextPageSym: function () {
+                this.$.tablesym.moveToNextPage();
+            },
+            moveToPreviousPageSym: function () {
+                this.$.tablesym.moveToPreviousPage();
             }
         });
     </script>

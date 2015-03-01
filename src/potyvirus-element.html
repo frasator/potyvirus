@@ -1,9 +1,12 @@
 <link rel="import" href="../bower_components/polymer/polymer.html">
 <link rel="import" href="../bower_components/polymer-fontawesome/polymer-fontawesome.html">
 <link rel="import" href="../bower_components/sortable-table/sortable-table.html">
+<script src="../lib/jsorolla/src/lib/opencga-manager.js"></script>
 <link rel="import" href="../lib/jsorolla/src/lib/components/opencga/jso-header.html">
+<link rel="import" href="../lib/jsorolla/src/lib/components/opencga/jso-footer.html">
 <link rel="import" href="../lib/jsorolla/src/network-viewer/jso-network-viewer.html">
 <link rel="import" href="potyvirus-home.html">
+<link rel="import" href="potyvirus-menu.html">
 
 <link rel="import" href="components/pty-toolbar.html">
 <link rel="import" href="components/pty-header.html">
@@ -19,7 +22,7 @@
             :host {
                 display: block;
                 position: relative;
-                background-color: #314559;
+                /*background-color: #314559;*/
 
                 -webkit-touch-callout: none;
                 -webkit-user-select: none;
@@ -32,15 +35,21 @@
                 font-size: 13px;
             }
 
-            [hide=true] {
-                display: none !important;
+            .content {
+                background-color: #435f7a;
+                position: relative;
+                /*min-height: calc(100vh - 160px);*/
+            }
+
+            .content > * {
+                min-height: calc(100vh - 110px);
             }
 
             /*potyvirus-interactions-table {*/
             /*height: calc(100vh - 60px);*/
             /*}*/
-            jso-network-viewer {
-                height: calc(100vh - 90px);
+            jso-network-viewer, #nvwebgl {
+                height: calc(100vh - 110px);
             }
 
             #stats {
@@ -66,6 +75,7 @@
                 visibility: hidden;
                 opacity: 0;
                 color: #666;
+                min-height: 25px;
             }
 
             #menu3d {
@@ -74,44 +84,62 @@
                 left: 0px;
             }
 
+            jso-footer {
+                height: 50px;
+            }
+
         </style>
-        <jso-header selectedOption="{{selectedOption}}" userData="{{userData}}" allowLogin="false"
-                    options="{{options}}">
+        <jso-header selectedOption="{{selectedOption}}"
+                    userData="{{userData}}"
+                    showMenu="true"
+                    allowLogin="false">
             <div class="title">Potyvirus</div>
+            <potyvirus-menu class="menu" selectedOption="{{selectedOption}}">
+            </potyvirus-menu>
         </jso-header>
 
-        <potyvirus-home hidden?="{{selectedOption != 'home' }}"></potyvirus-home>
+        <div class="content">
 
-        <template if="{{selectedOption == 'stats' }}">
-            <div id="stats">
-                <pty-heatmap></pty-heatmap>
-                <pty-simpson-index></pty-simpson-index>
-                <pty-4a></pty-4a>
-                <pty-4b></pty-4b>
-                <pty-4c></pty-4c>
-                <pty-4d></pty-4d>
-                <pty-4e></pty-4e>
-                <pty-4f></pty-4f>
+            <template if="{{selectedOption == 'home' }}">
+                <potyvirus-home></potyvirus-home>
+            </template>
+
+            <template if="{{selectedOption == 'stats' }}">
+                <div id="stats">
+                    <pty-heatmap></pty-heatmap>
+                    <pty-simpson-index></pty-simpson-index>
+                    <pty-4a></pty-4a>
+                    <pty-4b></pty-4b>
+                    <pty-4c></pty-4c>
+                    <pty-4d></pty-4d>
+                    <pty-4e></pty-4e>
+                    <pty-4f></pty-4f>
+                </div>
+            </template>
+
+            <potyvirus-interactions-table interactions="{{interactions}}" hidden?="{{selectedOption != 'interactions'}}"></potyvirus-interactions-table>
+            <jso-network-viewer lite="false" id="networkViewer" hidden?="{{selectedOption != 'vhpi'}}"></jso-network-viewer>
+
+            <div horizontal layout id="menu3d" hidden?="{{selectedOption != 'vhpi3d'}}">
+                <div class="button action" on-click="{{handle3dLayout}}" data-v="force">Force layout</div>
+                <div class="button action" on-click="{{handle3dLayout}}" data-v="circle">Circle</div>
             </div>
-        </template>
+            <div id="nvwebgl" hidden?="{{selectedOption != 'vhpi3d'}}">
+            </div>
 
-        <potyvirus-interactions-table data="{{data}}" hidden?="{{selectedOption != 'interactions'}}"></potyvirus-interactions-table>
-        <jso-network-viewer id="networkViewer" hidden?="{{selectedOption != 'vhpi'}}"></jso-network-viewer>
-
-        <div horizontal layout id="menu3d" hidden?="{{selectedOption != 'vhpi3d'}}">
-            <div class="button action" on-click="{{handle3dLayout}}" data-v="force">Force layout</div>
-            <div class="button action" on-click="{{handle3dLayout}}" data-v="circle">Circle</div>
+            <div id="info" hidden?="{{selectedOption != 'vhpi3d'}}">{{message}}</div>
         </div>
-        <div id="nvwebgl" hidden?="{{selectedOption != 'vhpi3d'}}">
-        </div>
-
-        <div id="info" hidden?="{{selectedOption != 'vhpi3d'}}">{{message}}</div>
+        <jso-footer>
+            Potyvirus -
+            Universitat Politècnica de Valencia, Valencia, Spain -
+            Principe Felipe Research Center, Valencia, Spain -
+            2015
+        </jso-footer>
     </template>
     <script>
         Polymer({
             created: function () {
-                this.options = this.getOptions();
-                this.data = [];
+                this.interactions = [];
                 this.userData;
                 this.potyvirusPorteinNames = {
                     'P1': true,
@@ -156,7 +184,6 @@
                 this.$.networkViewer.hideEdgeSimpleRendering = true;
             },
             domReady: function () {
-                this.getData();
                 this.getInteractionsSif();
 
                 var height = window.innerHeight - 65;
@@ -173,59 +200,9 @@
                     me.testPlantInteractome("force");
                 }, 100);
 
-
             },
             handleAppMenu: function (e) {
                 this.$.sidePanel.classList.toggle('side-panel-shown');
-            },
-            getOptions: function () {
-                return [
-                    {
-                        option: 'interactions',
-                        text: 'Interactions'
-                    },
-                    {
-                        option: 'vhpi',
-                        text: 'VHPI'
-                    },
-                    {
-                        option: 'vhpi3d',
-                        text: 'VHPI3D'
-                    },
-                    {
-                        option: 'stats',
-                        text: 'Stats'
-                    }
-                ]
-            },
-            getData: function () {
-                var me = this;
-                var request = new XMLHttpRequest();
-                request.onload = function () {
-                    var lines = this.response.split('\n');
-                    var data = [];
-                    for (var i = 0; i < lines.length; i++) {
-                        var fields = lines[i].split('\t');
-                        var obj = {
-                            id: fields[0],
-                            p1: fields[1],
-                            p2: fields[2],
-                            reference: fields[3],
-                            specie: fields[4],
-                            cellularLocation: fields[5],
-                            'function': fields[6],
-                            detection: fields[7],
-                            intensity: fields[8]
-                        };
-                        data.push(obj);
-                    }
-                    me.data = data;
-                };
-                request.onerror = function () {
-                    console.log('error loading file');
-                };
-                request.open('GET', 'files/potyvirus-interactions-data-1.1.txt', true);
-                request.send();
             },
             getInteractionsSif: function () {
                 var me = this;
@@ -267,15 +244,12 @@
                                 for (var i = 0; i < me.$.networkViewer.eAttr.data.length; i++) {
                                     row = me.$.networkViewer.eAttr.data[i];
                                     matches[row["Weight"]] = row["Weight"];
+
+                                    var edge = me.$.networkViewer.graph.getEdgeById(row['id']);
+                                    edge.renderer.set("opacity", row["Weight"]);
                                 }
-                                me.$.networkViewer.edgeVisualSets.opacity = {
-                                    attribute: "Weight",
-                                    renderProperty: 'opacity',
-                                    matches: matches,
-                                    enabled: true,
-                                    parse: 'string'
-                                };
-                                me.$.networkViewer.handleEdgeDefaultOpacity();
+
+
                             },
                             'error:parse': function (event) {
                                 me.message = event.errorMsg;

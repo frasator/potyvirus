@@ -4,6 +4,15 @@
     <meta charset="utf-8">
     <title>Potyvirus</title>
 
+    <script>
+        CELLBASE_HOST = "http://wwwdev.ebi.ac.uk/cellbase/webservices/rest";
+        CELLBASE_VERSION = "v3";
+        //OPENCGA_HOST = "http://ws-beta.bioinfo.cipf.es/opencga-staging/rest";
+        //OPENCGA_HOST = "http://test.babelomics.org/opencga-nar/rest";
+        OPENCGA_HOST = "http://ws.babelomics.org/opencga/rest";
+        STUDY_NAME="WorkSpace"
+    </script>
+
     <script src="bower_components/webcomponentsjs/webcomponents.min.js"></script>
 
     <link rel="import" href="bower_components/polymer/polymer.html">
@@ -30,11 +39,12 @@
     <link rel="import" href="src/components/pty-heatmap.html">
 
     <link rel="stylesheet" href="src/fonts/fonts.css">
+
     <style>
         html {
             /*overflow-x:hidden;*/
             /*overflow-y:scroll;*/
-            background-color: #314559;
+            /*background-color: #314559;*/
         }
 
         html, body {
@@ -50,6 +60,13 @@
 <potyvirus-element></potyvirus-element>
 
 <script>
+    CELLBASE_HOST = "http://wwwdev.ebi.ac.uk/cellbase/webservices/rest";
+    CELLBASE_VERSION = "v3";
+    //OPENCGA_HOST = "http://ws-beta.bioinfo.cipf.es/opencga-staging/rest";
+    //OPENCGA_HOST = "http://test.babelomics.org/opencga-nar/rest";
+    OPENCGA_HOST = "http://ws.babelomics.org/opencga/rest";
+    STUDY_NAME="WorkSpace"
+
     potyvirus = document.querySelector('potyvirus-element');
     window.addEventListener('polymer-ready', function (e) {
         console.log('polymer-ready');
