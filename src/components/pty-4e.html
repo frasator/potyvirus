@@ -1,90 +1,80 @@
-<template>
-    <div id="container" style="margin-bottom:20px">
-    </div>
-</template>
-
-<script>
-    (function () {
-
-        // This document reference
-        var thisDoc = document._currentScript.ownerDocument;
-
-        document.registerElement('pty-4e', {
-            prototype: Object.create(HTMLElement.prototype, {
-                createdCallback: {
-                    value: function () {
-                        //Create a copy of the template node.
-                        var template = document.importNode(thisDoc.querySelector('template').content, true);
-                        this.appendChild(template);
-
-                        this.chart = new Highcharts.Chart({
-                            chart: {
-                                renderTo: this.querySelector('#container'),
-                                type: 'column'
-                            },
-                            title: {
-//                                text: null,
-                                text: 'Degree cumulative probability distribution'
-                            },
-                            credits: {
-                                enabled: false
-                            },
-                            navigation: {
-                                buttonOptions: {
-                                    enabled: false
-                                }
-                            },
-                            xAxis: {
-                                title: {
-                                    text: 'Protein degree'
-                                }
-                            },
-                            yAxis: {
-                                title: {
-                                    text: 'Probability'
-                                }
-                            },
-                            series: [
-                                {
-                                    type: 'line',
-                                    name: 'Probability',
-                                    data: this.data,
-                                    color: '#f79646',
-                                    marker: {
-                                        symbol: 'circle',
-                                        radius: 6
-                                    }
-                                }
-                            ]
-                        });
-
-
-                    }
-                },
-                attachedCallback: {
-                    value: function () {
-                        this.chart.reflow();
-                    }
-                },
-                data: {
-                    value: [
-
-                        {x: 1, y: 0.182},
-                        {x: 2, y: 0.455},
-                        {x: 3, y: 0.455},
-                        {x: 4, y: 0.455},
-                        {x: 5, y: 0.545},
-                        {x: 6, y: 0.727},
-                        {x: 7, y: 0.727},
-                        {x: 8, y: 0.818},
-                        {x: 9, y: 0.909},
-                        {x: 10, y: 1}
-                    ]
+<polymer-element name="pty-4e" attributes="">
+    <template>
+        <div id="container" style="margin-bottom:20px">
+        </div>
+    </template>
+    <script>
+        Polymer({
+            created: function () {
+                this.data = [
+                    {x: 1, y: 0.182},
+                    {x: 2, y: 0.455},
+                    {x: 3, y: 0.455},
+                    {x: 4, y: 0.455},
+                    {x: 5, y: 0.545},
+                    {x: 6, y: 0.727},
+                    {x: 7, y: 0.727},
+                    {x: 8, y: 0.818},
+                    {x: 9, y: 0.909},
+                    {x: 10, y: 1}
+                ];
+            },
+            attached: function () {
+                if (this.chart) {
+                    this.chart.reflow();
                 }
-            })
+            },
+            domReady: function () {
+
+                this.chart = new Highcharts.Chart({
+                    chart: {
+                        renderTo: this.$.container,
+                        type: 'column'
+                    },
+                    title: {
+//                                text: null,
+                        text: 'Degree cumulative probability distribution'
+                    },
+                    credits: {
+                        enabled: false
+                    },
+                    navigation: {
+                        buttonOptions: {
+                            enabled: false
+                        }
+                    },
+                    xAxis: {
+                        title: {
+                            text: 'Protein degree'
+                        }
+                    },
+                    yAxis: {
+                        title: {
+                            text: 'Probability'
+                        }
+                    },
+                    series: [
+                        {
+                            type: 'line',
+                            name: 'Probability',
+                            data: this.data,
+                            color: '#f79646',
+                            marker: {
+                                symbol: 'circle',
+                                radius: 6
+                            }
+                        }
+                    ]
+                });
+
+            },
+
+            setData: function () {
+                //TODO
+                this.chart.xAxis[0].setCategories(populations, false);
+                this.chart.series[0].setData(values, false);
+                this.chart.redraw();
+            }
         });
-
-
-    }());
-</script>
-
+    </script>
+</polymer-element>

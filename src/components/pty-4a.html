@@ -1,105 +1,81 @@
-<template>
-    <div id="container" style="margin-bottom:20px">
-    </div>
-</template>
-<script>
-    (function () {
-
-        // This document reference
-        var thisDoc = document._currentScript.ownerDocument;
-
-        document.registerElement('pty-4a', {
-            prototype: Object.create(HTMLElement.prototype, {
-                createdCallback: {
-                    value: function () {
-                        var me = this;
-
-                        //Create a copy of the template node.
-                        var template = document.importNode(thisDoc.querySelector('template').content, true);
-                        this.appendChild(template);
-
-
-                        this.chart = new Highcharts.Chart({
-                            chart: {
-                                renderTo: this.querySelector('#container'),
-                                type: 'column'
-                            },
-                            title: {
-//                                text: null,
-                                text: 'Degree of each potyvirus protein'
-                            },
-                            credits: {
-                                enabled: false
-                            },
-                            navigation: {
-                                buttonOptions: {
-                                    enabled: false
-                                }
-                            },
-                            xAxis: {
-                                title: {
-                                    text: 'Potyvirus proteins'
-                                },
-                                categories: this.categories
-                            },
-                            yAxis: {
-                                title: {
-                                    text: 'Protein degree'
-                                }
-                            },
-                            series: [
-                                {
-                                    name: 'Protein degree',
-                                    data: this.data,
-                                    color: '#f79646'
-                                }
-                            ],
-                            legend: {
-                                layout: 'vertical',
-                                align: 'left',
-                                verticalAlign: 'top',
-                                x: 100,
-                                y: 70,
-                                floating: true,
-                                backgroundColor: (Highcharts.theme && Highcharts.theme.legendBackgroundColor) || '#FFFFFF',
-                                borderWidth: 1
-                            },
-                            tooltip: {
-                                headerFormat: '<span style="font-size:10px">{point.key}</span><table>',
-                                pointFormat: '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' +
-                                        '<td style="padding:0"><b>{point.y:.1f}</b></td></tr>',
-                                footerFormat: '</table>',
-                                shared: true,
-                                useHTML: true
-                            }
-                        });
-
-
-                    }
-                },
-                attachedCallback: {
-                    value: function () {
-                        this.chart.reflow();
-                    }
-                },
-                data: {
-                    value: [2, 5, 2, 1, 8, 2, 9, 10, 6, 6, 1]
-                },
-                categories: {
-                    value: ['P1', 'HC-Pro', 'P3', '6K1', 'CI', '6K2', 'VPg', 'Nia-Pro', 'Nib', 'CP', 'P3N-PIPO']
-                },
-                setData:{
-                    value:function(){
-                        //TODO
-                        chart.xAxis[0].setCategories(populations, false);
-                        chart.series[0].setData(values, false);
-                        chart.redraw();
-                    }
+<polymer-element name="pty-4a" attributes="">
+    <template>
+        <div id="container" style="margin-bottom:20px">
+        </div>
+    </template>
+    <script>
+        Polymer({
+            created: function () {
+                this.data = [2, 5, 2, 1, 8, 2, 9, 10, 6, 6, 1];
+                this.categories = ['P1', 'HC-Pro', 'P3', '6K1', 'CI', '6K2', 'VPg', 'Nia-Pro', 'Nib', 'CP', 'P3N-PIPO'];
+            },
+            attached: function () {
+                if (this.chart) {
+                    this.chart.reflow();
                 }
-            })
+            },
+            domReady: function () {
+                this.chart = new Highcharts.Chart({
+                    chart: {
+                        renderTo: this.$.container,
+                        type: 'column'
+                    },
+                    title: {
+//                                text: null,
+                        text: 'Degree of each potyvirus protein'
+                    },
+                    credits: {
+                        enabled: false
+                    },
+                    navigation: {
+                        buttonOptions: {
+                            enabled: false
+                        }
+                    },
+                    xAxis: {
+                        title: {
+                            text: 'Potyvirus proteins'
+                        },
+                        categories: this.categories
+                    },
+                    yAxis: {
+                        title: {
+                            text: 'Protein degree'
+                        }
+                    },
+                    series: [
+                        {
+                            name: 'Protein degree',
+                            data: this.data,
+                            color: '#f79646'
+                        }
+                    ],
+                    legend: {
+                        layout: 'vertical',
+                        align: 'left',
+                        verticalAlign: 'top',
+                        x: 100,
+                        y: 70,
+                        floating: true,
+                        backgroundColor: (Highcharts.theme && Highcharts.theme.legendBackgroundColor) || '#FFFFFF',
+                        borderWidth: 1
+                    },
+                    tooltip: {
+                        headerFormat: '<span style="font-size:10px">{point.key}</span><table>',
+                        pointFormat: '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' +
+                        '<td style="padding:0"><b>{point.y:.1f}</b></td></tr>',
+                        footerFormat: '</table>',
+                        shared: true,
+                        useHTML: true
+                    }
+                });
+            },
+            setData: function () {
+                //TODO
+                this.chart.xAxis[0].setCategories(populations, false);
+                this.chart.series[0].setData(values, false);
+                this.chart.redraw();
+            }
         });
-
-
-    }());
-</script>
-
+    </script>
+</polymer-element>

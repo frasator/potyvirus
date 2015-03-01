@@ -1,169 +1,12 @@
-<template>
-    <div id="container" style="margin-bottom:20px">
-    </div>
-</template>
-
-<script>
-(function () {
-
-    // This document reference
-    var thisDoc = document._currentScript.ownerDocument;
-
-    document.registerElement('pty-4d', {
-        prototype: Object.create(HTMLElement.prototype, {
-            createdCallback: {
-                value: function () {
-                    //Create a copy of the template node.
-                    var template = document.importNode(thisDoc.querySelector('template').content, true);
-                    this.appendChild(template);
-
-                    this.chart = new Highcharts.Chart({
-                        chart: {
-                            renderTo: this.querySelector('#container')
-                        },
-                        title: {
-//                                text: null,
-                            text: 'Topological parameters of each of proteins related with their degree'
-                        },
-                        credits: {
-                            enabled: false
-                        },
-                        navigation: {
-                            buttonOptions: {
-                                enabled: false
-                            }
-                        },
-                        yAxis: {
-                            title: {
-                                text: 'Topological parameters'
-                            },
-                            min: 0,
-                            max: 1
-                        },
-                        xAxis: {
-                            title: {
-                                text: 'Protein degree'
-                            }
-                        },
-                        legend: {
-                            layout: 'vertical',
-                            align: 'left',
-                            verticalAlign: 'top',
-                            x: 80,
-                            y: 25,
-                            floating: true,
-                            backgroundColor: (Highcharts.theme && Highcharts.theme.legendBackgroundColor) || '#FFFFFF',
-                            borderWidth: 1
-                        },
-                        series: [
-                            {
-                                type: 'scatter',
-                                name: 'Clustering coefficient',
-                                marker: {
-                                    symbol: 'circle',
-                                    fillColor: '#4f81bd',
-                                    radius: 5
-                                },
-                                data: this.data.clustering
-                            },
-                            {
-                                type: 'line',
-                                name: 'Clustering regression line',
-                                data: this.calculateRegressionLinePoints(this.data.clustering),
-                                color: '#4f81bd',
-                                marker: {
-                                    enabled: false
-                                },
-                                enableMouseTracking: false
-                            },
-
-
-                            {
-                                type: 'scatter',
-                                name: 'Topological coefficient',
-                                marker: {
-                                    symbol: 'circle',
-                                    fillColor: '#8064a2',
-                                    radius: 5
-                                },
-                                data: this.data.topological
-                            },
-                            {
-                                type: 'line',
-                                name: 'Topological regression line',
-                                data: this.calculateRegressionLinePoints(this.data.topological),
-                                color: '#8064a2',
-                                marker: {
-                                    enabled: false
-                                },
-                                enableMouseTracking: false
-                            },
-
-
-                            {
-                                type: 'scatter',
-                                name: 'Closeness centrality',
-                                marker: {
-                                    symbol: 'circle',
-                                    fillColor: '#c0504d',
-                                    radius: 5
-                                },
-                                data: this.data.closeness
-                            },
-                            {
-                                type: 'line',
-                                name: 'Closeness regression line',
-                                data: this.calculateRegressionLinePoints(this.data.closeness),
-                                color: '#c0504d',
-                                marker: {
-                                    enabled: false
-                                },
-                                enableMouseTracking: false
-                            },
-
-
-                            {
-                                type: 'scatter',
-                                name: 'Betweeness centrality',
-                                marker: {
-                                    symbol: 'circle',
-                                    fillColor: '#9bbb59',
-                                    radius: 5
-                                },
-                                data: this.data.betweeness
-                            },
-                            {
-                                type: 'line',
-                                name: 'Betweeness regression line',
-                                data: this.calculateRegressionLinePoints(this.data.betweeness),
-                                color: '#9bbb59',
-                                marker: {
-                                    enabled: false
-                                },
-                                enableMouseTracking: false
-                            }
-
-                        ],
-                        tooltip: {
-                            headerFormat: '<span style="font-size:10px">{point.key}</span><table>',
-                            pointFormat: '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' +
-                                    '<td style="padding:0"><b>{point.y:.1f}</b></td></tr>',
-                            footerFormat: '</table>',
-                            shared: true,
-                            useHTML: true
-                        }
-                    });
-
-
-                }
-            },
-            attachedCallback: {
-                value: function () {
-                    this.chart.reflow();
-                }
-            },
-            data: {
-                value: {
+<polymer-element name="pty-4d" attributes="">
+    <template>
+        <div id="container" style="margin-bottom:20px">
+        </div>
+    </template>
+    <script>
+        Polymer({
+            created: function () {
+                this.data = {
                     clustering: [
                         {y: 0, x: 1},
                         {y: 0.321, x: 0},
@@ -206,46 +49,191 @@
                         {y: 0.415, x: 11}
                     ]
 
+                };
+            },
+            attached: function () {
+                if (this.chart) {
+                    this.chart.reflow();
                 }
             },
-            calculateRegressionLinePoints: {
-                value: function (data) {
-                    for (var i = 0; i < data.length; i++) {
-                        var v = data[i];
-                        v.xx = v.x * v.x;
-                        v.yy = v.y * v.y;
-                        v.xy = v.x * v.y;
-                    }
-                    var sum = data.reduce(function (a, b) {
-                        return {
-                            x: a.x + b.x,
-                            y: a.y + b.y,
-                            xx: a.xx + b.xx,
-                            yy: a.yy + b.yy,
-                            xy: a.xy + b.xy
+            domReady: function () {
+
+                this.chart = new Highcharts.Chart({
+                    chart: {
+                        renderTo: this.$.container,
+                    },
+                    title: {
+//                                text: null,
+                        text: 'Topological parameters of each of proteins related with their degree'
+                    },
+                    credits: {
+                        enabled: false
+                    },
+                    navigation: {
+                        buttonOptions: {
+                            enabled: false
                         }
-                    });
-                    var n = data.length;
-                    var den = ( (n * sum.xx) - (sum.x * sum.x) );
-                    var a = ((sum.y * sum.xx) - (sum.x * sum.xy)) / den;
-                    var b = ((n * sum.xy) - (sum.x * sum.y)) / den;
+                    },
+                    yAxis: {
+                        title: {
+                            text: 'Topological parameters'
+                        },
+                        min: 0,
+                        max: 1
+                    },
+                    xAxis: {
+                        title: {
+                            text: 'Protein degree'
+                        }
+                    },
+                    legend: {
+                        layout: 'vertical',
+                        align: 'left',
+                        verticalAlign: 'top',
+                        x: 80,
+                        y: 25,
+                        floating: true,
+                        backgroundColor: (Highcharts.theme && Highcharts.theme.legendBackgroundColor) || '#FFFFFF',
+                        borderWidth: 1
+                    },
+                    series: [
+                        {
+                            type: 'scatter',
+                            name: 'Clustering coefficient',
+                            marker: {
+                                symbol: 'circle',
+                                fillColor: '#4f81bd',
+                                radius: 5
+                            },
+                            data: this.data.clustering
+                        },
+                        {
+                            type: 'line',
+                            name: 'Clustering regression line',
+                            data: this.calculateRegressionLinePoints(this.data.clustering),
+                            color: '#4f81bd',
+                            marker: {
+                                enabled: false
+                            },
+                            enableMouseTracking: false
+                        },
 
-                    // y = a + bx
-                    var first = data[0];
-                    var last = data[n - 1];
-                    var yFirst = a + (b * first.x);
-                    var yLast = a + (b * last.x);
 
-                    return [
-                        {x: first.x, y: yFirst},
-                        {x: last.x, y: yLast }
-                    ]
+                        {
+                            type: 'scatter',
+                            name: 'Topological coefficient',
+                            marker: {
+                                symbol: 'circle',
+                                fillColor: '#8064a2',
+                                radius: 5
+                            },
+                            data: this.data.topological
+                        },
+                        {
+                            type: 'line',
+                            name: 'Topological regression line',
+                            data: this.calculateRegressionLinePoints(this.data.topological),
+                            color: '#8064a2',
+                            marker: {
+                                enabled: false
+                            },
+                            enableMouseTracking: false
+                        },
+
+
+                        {
+                            type: 'scatter',
+                            name: 'Closeness centrality',
+                            marker: {
+                                symbol: 'circle',
+                                fillColor: '#c0504d',
+                                radius: 5
+                            },
+                            data: this.data.closeness
+                        },
+                        {
+                            type: 'line',
+                            name: 'Closeness regression line',
+                            data: this.calculateRegressionLinePoints(this.data.closeness),
+                            color: '#c0504d',
+                            marker: {
+                                enabled: false
+                            },
+                            enableMouseTracking: false
+                        },
+
+
+                        {
+                            type: 'scatter',
+                            name: 'Betweeness centrality',
+                            marker: {
+                                symbol: 'circle',
+                                fillColor: '#9bbb59',
+                                radius: 5
+                            },
+                            data: this.data.betweeness
+                        },
+                        {
+                            type: 'line',
+                            name: 'Betweeness regression line',
+                            data: this.calculateRegressionLinePoints(this.data.betweeness),
+                            color: '#9bbb59',
+                            marker: {
+                                enabled: false
+                            },
+                            enableMouseTracking: false
+                        }
+
+                    ],
+                    tooltip: {
+                        headerFormat: '<span style="font-size:10px">{point.key}</span><table>',
+                        pointFormat: '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' +
+                        '<td style="padding:0"><b>{point.y:.1f}</b></td></tr>',
+                        footerFormat: '</table>',
+                        shared: true,
+                        useHTML: true
+                    }
+                });
+            },
+            calculateRegressionLinePoints: function (data) {
+                for (var i = 0; i < data.length; i++) {
+                    var v = data[i];
+                    v.xx = v.x * v.x;
+                    v.yy = v.y * v.y;
+                    v.xy = v.x * v.y;
                 }
+                var sum = data.reduce(function (a, b) {
+                    return {
+                        x: a.x + b.x,
+                        y: a.y + b.y,
+                        xx: a.xx + b.xx,
+                        yy: a.yy + b.yy,
+                        xy: a.xy + b.xy
+                    }
+                });
+                var n = data.length;
+                var den = ( (n * sum.xx) - (sum.x * sum.x) );
+                var a = ((sum.y * sum.xx) - (sum.x * sum.xy)) / den;
+                var b = ((n * sum.xy) - (sum.x * sum.y)) / den;
+
+                // y = a + bx
+                var first = data[0];
+                var last = data[n - 1];
+                var yFirst = a + (b * first.x);
+                var yLast = a + (b * last.x);
+
+                return [
+                    {x: first.x, y: yFirst},
+                    {x: last.x, y: yLast}
+                ]
+            },
+            setData: function () {
+                //TODO
+                this.chart.xAxis[0].setCategories(populations, false);
+                this.chart.series[0].setData(values, false);
+                this.chart.redraw();
             }
-        })
-    });
-
-
-}());
-</script>
+        });
+    </script>
+</polymer-element>
 

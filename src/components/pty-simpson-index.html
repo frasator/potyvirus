@@ -1,127 +1,12 @@
-<template>
-    <div id="container" style="margin-bottom:20px">
-    </div>
-</template>
-
-<script>
-(function () {
-
-    // This document reference
-    var thisDoc = document._currentScript.ownerDocument;
-
-    document.registerElement('pty-simpson-index', {
-        prototype: Object.create(HTMLElement.prototype, {
-            createdCallback: {
-                value: function () {
-                    //Create a copy of the template node.
-                    var template = document.importNode(thisDoc.querySelector('template').content, true);
-                    this.appendChild(template);
-                    this.chart = new Highcharts.Chart({
-                        chart: {
-                            renderTo: this.querySelector('#container'),
-                            type: 'column'
-                        },
-                        title: {
-//                                text: null,
-                            text: 'Simpson index evolution for HC-Pro'
-                        },
-                        credits: {
-                            enabled: false
-                        },
-                        navigation: {
-                            buttonOptions: {
-                                enabled: false
-                            }
-                        },
-                        xAxis: {
-                            allowDecimals: false,
-                            max: 12,
-                            min: 0,
-                            title: {
-                                text: 'Steps'
-                            }
-                        },
-                        yAxis: {
-                            max: 1,
-                            min: 0,
-                            title: {
-                                text: 'Simpson index'
-                            }
-                        },
-                        series: [
-                            {
-                                type: 'line',
-                                name: 'P1',
-                                data: this.data['P1'],
-                                color: '#c0504d',
-                                marker: {
-                                    symbol: 'circle',
-                                    radius: 6
-                                }
-                            },
-                            {
-                                type: 'line',
-                                name: 'P3',
-                                data: this.data['P3'],
-                                color: '#4f81bd',
-                                marker: {
-                                    symbol: 'circle',
-                                    radius: 6
-                                }
-                            },
-                            {
-                                type: 'line',
-                                name: 'VPg',
-                                data: this.data['VPg'],
-                                color: '#9bbb59',
-                                marker: {
-                                    symbol: 'circle',
-                                    radius: 6
-                                }
-                            },
-                            {
-                                type: 'line',
-                                name: 'NIa-Pro',
-                                data: this.data['NIa-Pro'],
-                                color: '#8064a2',
-                                marker: {
-                                    symbol: 'circle',
-                                    radius: 6
-                                }
-                            },
-                            {
-                                type: 'line',
-                                name: 'NIb',
-                                data: this.data['NIb'],
-                                color: '#4bacc6',
-                                marker: {
-                                    symbol: 'circle',
-                                    radius: 6
-                                }
-                            },
-                            {
-                                type: 'line',
-                                name: 'CP',
-                                data: this.data['CP'],
-                                color: '#f79646',
-                                marker: {
-                                    symbol: 'circle',
-                                    radius: 6
-                                }
-                            }
-                        ]
-                    });
-
-
-                }
-            },
-            attachedCallback: {
-                value: function () {
-                    this.chart.reflow();
-                }
-            },
-            data: {
-                value: {
+<polymer-element name="pty-simpson-index" attributes="">
+    <template>
+        <div id="container" style="margin-bottom:20px">
+        </div>
+    </template>
+    <script>
+        Polymer({
+            created: function () {
+                this.data = {
                     'P1': [
                         {x: 1, y: 0},
                         {x: 2, y: 0},
@@ -206,12 +91,117 @@
                         {x: 11, y: 1},
                         {x: 12, y: 1}
                     ]
+                };
+            },
+            attached: function () {
+                if (this.chart) {
+                    this.chart.reflow();
                 }
+            },
+            domReady: function () {
+                this.chart = new Highcharts.Chart({
+                    chart: {
+                        renderTo: this.$.container,
+                        type: 'column'
+                    },
+                    title: {
+//                                text: null,
+                        text: 'Simpson index evolution for HC-Pro'
+                    },
+                    credits: {
+                        enabled: false
+                    },
+                    navigation: {
+                        buttonOptions: {
+                            enabled: false
+                        }
+                    },
+                    xAxis: {
+                        allowDecimals: false,
+                        max: 12,
+                        min: 0,
+                        title: {
+                            text: 'Steps'
+                        }
+                    },
+                    yAxis: {
+                        max: 1,
+                        min: 0,
+                        title: {
+                            text: 'Simpson index'
+                        }
+                    },
+                    series: [
+                        {
+                            type: 'line',
+                            name: 'P1',
+                            data: this.data['P1'],
+                            color: '#c0504d',
+                            marker: {
+                                symbol: 'circle',
+                                radius: 6
+                            }
+                        },
+                        {
+                            type: 'line',
+                            name: 'P3',
+                            data: this.data['P3'],
+                            color: '#4f81bd',
+                            marker: {
+                                symbol: 'circle',
+                                radius: 6
+                            }
+                        },
+                        {
+                            type: 'line',
+                            name: 'VPg',
+                            data: this.data['VPg'],
+                            color: '#9bbb59',
+                            marker: {
+                                symbol: 'circle',
+                                radius: 6
+                            }
+                        },
+                        {
+                            type: 'line',
+                            name: 'NIa-Pro',
+                            data: this.data['NIa-Pro'],
+                            color: '#8064a2',
+                            marker: {
+                                symbol: 'circle',
+                                radius: 6
+                            }
+                        },
+                        {
+                            type: 'line',
+                            name: 'NIb',
+                            data: this.data['NIb'],
+                            color: '#4bacc6',
+                            marker: {
+                                symbol: 'circle',
+                                radius: 6
+                            }
+                        },
+                        {
+                            type: 'line',
+                            name: 'CP',
+                            data: this.data['CP'],
+                            color: '#f79646',
+                            marker: {
+                                symbol: 'circle',
+                                radius: 6
+                            }
+                        }
+                    ]
+                });
+            },
+
+            setData: function () {
+                //TODO
+                this.chart.xAxis[0].setCategories(populations, false);
+                this.chart.series[0].setData(values, false);
+                this.chart.redraw();
             }
-        })
-    });
-
-
-}());
-</script>
-
+        });
+    </script>
+</polymer-element>
