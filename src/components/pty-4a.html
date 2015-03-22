@@ -1,4 +1,4 @@
-<polymer-element name="pty-4a" attributes="">
+<polymer-element name="pty-4a" attributes="data">
     <template>
         <div id="container" style="margin-bottom:20px">
         </div>
@@ -6,15 +6,16 @@
     <script>
         Polymer({
             created: function () {
-                this.data = [2, 5, 2, 1, 8, 2, 9, 10, 6, 6, 1];
-                this.categories = ['P1', 'HC-Pro', 'P3', '6K1', 'CI', '6K2', 'VPg', 'Nia-Pro', 'Nib', 'CP', 'P3N-PIPO'];
             },
             attached: function () {
                 if (this.chart) {
                     this.chart.reflow();
                 }
             },
-            domReady: function () {
+            dataChanged:function(){
+                this.drawChart();
+            },
+            drawChart: function () {
                 this.chart = new Highcharts.Chart({
                     chart: {
                         renderTo: this.$.container,
@@ -36,7 +37,7 @@
                         title: {
                             text: 'Potyvirus proteins'
                         },
-                        categories: this.categories
+                        categories: this.data.categories
                     },
                     yAxis: {
                         title: {
@@ -46,7 +47,7 @@
                     series: [
                         {
                             name: 'Protein degree',
-                            data: this.data,
+                            data: this.data.values,
                             color: '#f79646'
                         }
                     ],
@@ -70,12 +71,13 @@
                     }
                 });
             },
-            setData: function () {
-                //TODO
-                this.chart.xAxis[0].setCategories(populations, false);
-                this.chart.series[0].setData(values, false);
-                this.chart.redraw();
-            }
+//            setData: function (values, categories) {
+//                this.data = values;
+//                this.categories = categories;
+
+//                this.chart.xAxis[0].setCategories(categories, false);
+//                this.chart.series[0].setData(values, false);
+//            },
         });
     </script>
 </polymer-element>

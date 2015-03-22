@@ -115,7 +115,7 @@
                 <div id="stats">
                     <pty-heatmap></pty-heatmap>
                     <pty-simpson-index></pty-simpson-index>
-                    <pty-4a></pty-4a>
+                    <pty-4a data="{{chartDegreeData}}"></pty-4a>
                     <pty-4b></pty-4b>
                     <pty-4c></pty-4c>
                     <pty-4d></pty-4d>
@@ -181,7 +181,12 @@
                 this.rcThreshold = 44;
 
                 this.layout = 'force'
-                this.currentProtein = 'all'
+                this.currentProtein = 'all';
+
+
+                /* stats */
+                this.chartDegreeData = {}
+
             },
             selectedOptionChanged: function () {
                 var me = this;
@@ -338,6 +343,7 @@
                 this.updateNetworkViewerGraph();
             },
             updateNetworkViewerGraph: function () {
+                var me = this;
                 this.$.networkViewer.startOver();
                 for (var i = 0; i < this.datasym.length; i++) {
                     var obj = this.datasym[i];
@@ -348,6 +354,22 @@
                         this.$.networkViewer.createEdge(sourceVertex, targetVertex, 'link');
                     }
                 }
+
+
+                this.$.networkViewer.$.topologicalStudy.retrieveData(function () {
+                    var degree = [];
+                    var categories = [];
+                    var data = me.$.networkViewer.vAttr.data;
+                    for (var i = 0; i < data.length; i++) {
+                        var n = data[i];
+                        categories.push(n.id);
+                        degree.push(parseInt(n.degree));
+                    }
+
+                    me.chartDegreeData = {categories: categories, values: degree};
+                });
+
+
                 this.potyvirusPorteinNameList = [];
                 this.potyvirusPorteinNames = {};
                 for (var i = 0; i < this.$.networkViewer.graph.vertices.length; i++) {
