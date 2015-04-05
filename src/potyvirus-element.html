@@ -136,7 +136,7 @@
                     <div class="button action" on-click="{{handle3dLayout}}" data-v="force">Force layout</div>
                     <div class="button action" on-click="{{handle3dLayout}}" data-v="circle">Circle</div>
                     <div style="margin-top: 20px;">
-                        <div class="button action" on-click="{{handleProteinMenu}}" data-protein="all">All</div>
+                        <!--<div class="button action" on-click="{{handleProteinMenu}}" data-protein="all">All</div>-->
                         <template repeat="{{b in  potyvirusPorteinNameList}}">
                             <div class="button action" on-click="{{handleProteinMenu}}" data-checked="{{currentProtein == b}}" data-protein="{{b}}">{{b}}</div>
                         </template>
@@ -181,8 +181,6 @@
                 this.rcThreshold = 44;
 
                 this.layout = 'force'
-                this.currentProtein = 'all';
-
 
                 /* stats */
                 this.chartDegreeData = {}
@@ -236,7 +234,7 @@
                 var me = this;
                 setTimeout(function () {
 //                    me.getPlantInteractome();
-                    me.testPlantInteractome("force");
+//                    me.testPlantInteractome("force");
                 }, 100);
             },
             rcThresholdChanged: function () {
@@ -377,6 +375,7 @@
                     this.potyvirusPorteinNameList.push(vertex.id);
                     this.potyvirusPorteinNames[vertex.id] = true;
                 }
+                this.currentProtein = this.potyvirusPorteinNameList[0]
             },
 
             handleAppMenu: function (e) {
@@ -457,52 +456,64 @@
                                 var graph = event.sender.parseColumns(0, 1, -1, 'link');
 
                                 var virusVertices = [];
-
                                 var visited = {};
-                                var processNode = function (node, lvl) {
-                                    if (!visited[node.id]) {
-                                        visited[node.id] = lvl;
-                                        for (var i = 0, l = node.edges.length; i < l; i++) {
-                                            processNode(node.edges[i].target, lvl + 1);
+                                var origen;
+                                var destino;
+
+                                var processNode = function (o, lvl) {
+                                    var destino = [];
+                                    for (var i = 0; i < o.length; i++) {
+                                        var node = o[i];
+                                        for (var j = 0, lj = node.edges.length; j < lj; j++) {
+                                            var edge = node.edges[j];
+                                            if (edge.source == node) {
+                                                if (visited[edge.target.id] == null /*&& me.potyvirusPorteinNames[edge.target.id] == null*/) {
+                                                    visited[edge.target.id] = lvl;
+                                                    destino.push(edge.target);
+                                                }
+                                            }
+                                            else if (edge.target == node) {
+                                                if (visited[edge.source.id] == null && me.potyvirusPorteinNames[edge.source.id] == null) {
+                                                    visited[edge.source.id] = lvl;
+                                                    destino.push(edge.source);
+                                                }
+                                            } else {
+                                                console.log("NO DEBE SALIR")
+                                            }
                                         }
+                                    }
+                                    console.log(lvl + ' - ' + o.length + ' - ' + Object.keys(visited).length);
+                                    delete o;
+                                    if (destino.length > 0) {
+                                        processNode(destino, lvl + 1);
                                     }
                                 }
 
-                                if (protein === 'all' || protein == null) {
-                                    var virusGraph = me.$.networkViewer.graph;
-                                    for (var i = 0; i < virusGraph.vertices.length; i++) {
-                                        var virusVertex = virusGraph.vertices[i];
-                                        var v = new Vertex({id: virusVertex.id});
-                                        graph.addVertex(v);
-                                        virusVertices.push(v);
-                                    }
-                                    for (var i = 0; i < virusGraph.edges.length; i++) {
-                                        var virusEdge = virusGraph.edges[i];
-                                        var sv = graph.getVertexById(virusEdge.source.id);
-                                        var tv = graph.getVertexById(virusEdge.target.id);
-                                        var edgeId = sv.id + '_' + 'link' + '_' + tv.id;
-                                        graph.addEdge(new Edge({
-                                            id: edgeId,
-                                            relation: 'link',
-                                            source: sv,
-                                            target: tv
-                                        }));
-                                    }
-
-                                    for (var vp in me.potyvirusPorteinNames) {
-                                        var n = graph.getVertexById(vp);
-                                        if (n) {
-                                            processNode(n, 1);
-                                        }
-                                    }
-                                } else {
-                                    graph.addVertex(new Vertex({id: protein}));
-                                    var n = graph.getVertexById(protein);
-                                    virusVertices.push(n);
-                                    if (n) {
-                                        processNode(n, 1);
-                                    }
+                                var n = graph.getVertexById(protein);
+                                if(!n){
+                                    me.networkViewerWebgl.clean();
+                                    me.networkViewerWebgl.renderScene();
+                                    me.showInfo("Not interact");
+                                    return
                                 }
+                                if (visited[n.id] == null) {
+                                    visited[n.id] = 1;
+                                }
+                                processNode([n], 1);
+
+                                var keys = Object.keys(visited);
+                                var levels = {};
+                                for (var i = 0; i < keys.length; i++) {
+                                    var obj = keys[i];
+                                    var lvl = visited[obj];
+                                    if (levels[lvl] == null) {
+                                        levels[lvl] = 0;
+                                    }
+                                    levels[lvl]++;
+                                }
+                                console.log(levels)
+
+                                console.log(visited)
 
                                 if (layout == "force") {
                                     var r2 = new XMLHttpRequest();
@@ -513,8 +524,8 @@
                                         var v = forceLayoutVertices[i];
                                         var vertex = graph.getVertexById(v.id);
                                         if (vertex) {
-                                            var lvl = visited[vertex.id] || 15;
-                                            var z = 1000 - (500 + lvl * 50);
+                                            var lvl = visited[vertex.id] || 13;
+                                            var z = 1000 - (0 + lvl * 100);
                                             vertex.position.set(v.x, v.y, z);
 
                                             if (vertex.id in me.potyvirusPorteinNames) {
@@ -565,7 +576,7 @@
                                     var levelMap = {};
                                     for (var i = 0, l = graph.vertices.length; i < l; i++) {
                                         var vertex = graph.vertices[i];
-                                        var level = visited[vertex.id] || 15;
+                                        var level = visited[vertex.id] || 13;
                                         if (levelMap[level] == null) {
                                             levelMap[level] = [];
                                         }
@@ -577,7 +588,7 @@
                                     }
                                     for (level in levelMap) {
                                         var lvl = parseInt(level);
-                                        me.circleLevels(levelMap[level], lvl * 80, (1000 - (500 + lvl * 50)))
+                                        me.circleLevels(levelMap[level], lvl * 80, (1000 - (0 + lvl * 100)))
                                     }
 
                                     me.circleLevels(virusVertices, 200, 600);
