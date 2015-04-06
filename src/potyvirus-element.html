@@ -113,8 +113,8 @@
 
             <template if="{{selectedOption == 'stats' }}">
                 <div id="stats">
-                    <pty-heatmap></pty-heatmap>
-                    <pty-simpson-index></pty-simpson-index>
+                    <pty-heatmap steps="{{heatmapSteps}}"></pty-heatmap>
+                    <pty-simpson-index data="{{hcproSimpsonIndexData}}"></pty-simpson-index>
                     <pty-4a data="{{chartDegreeData}}"></pty-4a>
                     <pty-4b></pty-4b>
                     <pty-4c></pty-4c>
@@ -137,7 +137,7 @@
                     <div class="button action" on-click="{{handle3dLayout}}" data-v="circle">Circle</div>
                     <div style="margin-top: 20px;">
                         <!--<div class="button action" on-click="{{handleProteinMenu}}" data-protein="all">All</div>-->
-                        <template repeat="{{b in  potyvirusPorteinNameList}}">
+                        <template repeat="{{b in  potyvirusProteinNameList}}">
                             <div class="button action" on-click="{{handleProteinMenu}}" data-checked="{{currentProtein == b}}" data-protein="{{b}}">{{b}}</div>
                         </template>
                     </div>
@@ -161,20 +161,8 @@
                 this.interactions = [];
                 this.datasym = [];
                 this.userData;
-                this.potyvirusPorteinNames = {
-//                    'P1': true,
-//                    'HC-Pro': true,
-//                    'P3': true,
-//                    '6K1': true,
-//                    'CI': true,
-//                    '6K2': true,
-//                    'VPg': true,
-//                    'NIa-Pro': true,
-//                    'NIb': true,
-//                    'CP': true,
-//                    'P3N-PIPO': true
-                };
-                this.potyvirusPorteinNameList = [];
+                this.allOrdered = ["P1", "HC-Pro", "P3", "6K1", "CI", "6K2", "VPg", "NIa-Pro", "NIb", "CP", "P3N-PIPO"];
+                this.potyvirusProteinNameList = [];
 
                 this.message = "";
 
@@ -184,7 +172,8 @@
 
                 /* stats */
                 this.chartDegreeData = {}
-
+                this.heatmapSteps;
+                this.hcproSimpsonIndexData;
             },
             selectedOptionChanged: function () {
                 var me = this;
@@ -196,12 +185,12 @@
             handle3dLayout: function (e) {
                 this.showInfo("Loading...");
                 this.layout = e.currentTarget.dataset.v;
-                this.testPlantInteractome(this.layout, this.currentProtein);
+                this._processLayout(this.layout, this.currentProtein);
             },
             handleProteinMenu: function (e) {
                 this.showInfo("Loading...");
                 this.currentProtein = e.currentTarget.dataset.protein;
-                this.testPlantInteractome(this.layout, this.currentProtein);
+                this._processLayout(this.layout, this.currentProtein);
             },
             showInfo: function (msg) {
                 if (msg == false) {
@@ -234,7 +223,6 @@
                 var me = this;
                 setTimeout(function () {
 //                    me.getPlantInteractome();
-//                    me.testPlantInteractome("force");
                 }, 100);
             },
             rcThresholdChanged: function () {
@@ -353,7 +341,6 @@
                     }
                 }
 
-
                 this.$.networkViewer.$.topologicalStudy.retrieveData(function () {
                     var degree = [];
                     var categories = [];
@@ -368,19 +355,126 @@
                 });
 
 
-                this.potyvirusPorteinNameList = [];
+                this.potyvirusProteinNameList = [];
                 this.potyvirusPorteinNames = {};
                 for (var i = 0; i < this.$.networkViewer.graph.vertices.length; i++) {
                     var vertex = this.$.networkViewer.graph.vertices[i];
-                    this.potyvirusPorteinNameList.push(vertex.id);
                     this.potyvirusPorteinNames[vertex.id] = true;
                 }
-                this.currentProtein = this.potyvirusPorteinNameList[0]
-            },
 
+                for (var i = 0; i < this.allOrdered.length; i++) {
+                    var pname = this.allOrdered[i];
+                    if (pname in this.potyvirusPorteinNames) {
+                        this.potyvirusProteinNameList.push(pname);
+                    }
+                }
+
+                this.readPlantInteractome(function () {
+                    var processed = {};
+                    for (var i = 0; i < me.allOrdered.length; i++) {
+                        var a = me.allOrdered[i];
+                        for (var j = 0; j < me.allOrdered.length; j++) {
+                            var b = me.allOrdered[j];
+                            var key1 = a + '_' + b;
+                            var key2 = b + '_' + a;
+
+                            if (!(key1 in processed) && !(key2 in processed)) {
+                                var res = me._calculateSimpsonIndex(a, b);
+                                processed[key1] = res;
+                                processed[key2] = res;
+                            }
+
+                        }
+                    }
+
+
+                    //heatmap
+                    var heatmapData = [];
+                    for (var i = 0; i < 12; i++) {
+                        heatmapData.push([]);
+                        for (var j = 0; j < me.allOrdered.length; j++) {
+                            var a = me.allOrdered[j];
+                            for (var k = 0; k < me.allOrdered.length; k++) {
+                                var b = me.allOrdered[k];
+                                var key = a + '_' + b;
+                                heatmapData[i].push(processed[key][i]);
+                            }
+                        }
+                    }
+                    me.heatmapSteps = heatmapData;
+
+
+                    //hcpro simpson index data
+                    var hcproData = {};
+                    var a = "HC-Pro";
+                    for (var i = 0; i < me.allOrdered.length; i++) {
+                        var b = me.allOrdered[i];
+                        var key = a + '_' + b;
+                        hcproData[b] = processed[key];
+                    }
+                    me.hcproSimpsonIndexData = hcproData;
+
+                });
+
+            },
+            _calculateSimpsonIndex: function (a, b) {
+                console.log("----" + a + '-' + b + '----');
+                var result = [];
+                var ra = this.levelResults[a];
+                var rb = this.levelResults[b];
+                if (ra == null || rb == null) {
+                    for (var i = 1; i < 13; i++) {
+                        result.push(0);
+                        console.log(i + ' - ' + 0);
+                    }
+                    return result;
+                }
+
+
+                var la_acc = 0;
+                var lb_acc = 0;
+                var lvla = 0;
+                var lvlb = 0;
+                for (var i = 1; i < 13; i++) {
+                    var key, intersectionCount = 0;
+                    for (var j = 1; j <= i; j++) {
+                        lvla = j;
+                        lvlb = j;
+                        if (!ra[j]) {
+                            lvla = ra.max_level;
+                        }
+                        if (!rb[j]) {
+                            lvlb = rb.max_level;
+                        }
+                        for (key in ra[lvla]) {
+                            if (key in rb.all && rb.all[key] <= i) {
+                                intersectionCount++;
+                            }
+                        }
+                    }
+
+                    if (ra[i]) {
+                        la_acc = la_acc + Object.keys(ra[i]).length;
+                    }
+                    if (rb[i]) {
+                        lb_acc = lb_acc + Object.keys(rb[i]).length;
+                    }
+
+                    var v = (intersectionCount / Math.min(la_acc, lb_acc));
+
+                    var v_round = Math.round(v * 100) / 100;
+
+                    console.log(i + ' - ' + v_round + '    - ' + la_acc + ' - ' + lb_acc);
+
+                    result.push(v_round);
+                }
+                return result;
+            }
+            ,
             handleAppMenu: function (e) {
                 this.$.sidePanel.classList.toggle('side-panel-shown');
-            },
+            }
+            ,
             getPlantInteractome: function () {
                 var me = this;
                 var request = new XMLHttpRequest();
@@ -441,10 +535,10 @@
                 };
                 request.open('GET', 'files/vh0-1.sif', true);
                 request.send();
-            },
-            testPlantInteractome: function (layout, protein) {
+            }
+            ,
+            readPlantInteractome: function (callback) {
                 this.showInfo("Loading...");
-                var start = new Date().getTime();
 
                 var me = this;
                 var request = new XMLHttpRequest();
@@ -454,85 +548,128 @@
                         handlers: {
                             'data:load': function (event) {
                                 var graph = event.sender.parseColumns(0, 1, -1, 'link');
+                                me.graph = graph;
+                                me._processPlantNetwork(graph);
+                                callback();
+                            },
+                            'error:parse': function (event) {
+                                console.log(event);
+                            }
+                        }
+                    });
 
-                                var virusVertices = [];
-                                var visited = {};
-                                var origen;
-                                var destino;
+                };
+                request.onerror = function () {
+                    console.log('error loading file');
+                };
+                request.open('GET', 'files/Ath_Interactome.txt', true);
+                request.send();
+            }
+            ,
+            _processPlantNetwork: function (graph) {
+                var me = this;
+                var results = {};
+                for (var i = 0; i < this.potyvirusProteinNameList.length; i++) {
+                    var protein = this.potyvirusProteinNameList[i];
+                    results[protein] = null;
+                }
 
-                                var processNode = function (o, lvl) {
-                                    var destino = [];
-                                    for (var i = 0; i < o.length; i++) {
-                                        var node = o[i];
-                                        for (var j = 0, lj = node.edges.length; j < lj; j++) {
-                                            var edge = node.edges[j];
-                                            if (edge.source == node) {
-                                                if (visited[edge.target.id] == null /*&& me.potyvirusPorteinNames[edge.target.id] == null*/) {
-                                                    visited[edge.target.id] = lvl;
-                                                    destino.push(edge.target);
-                                                }
-                                            }
-                                            else if (edge.target == node) {
-                                                if (visited[edge.source.id] == null && me.potyvirusPorteinNames[edge.source.id] == null) {
-                                                    visited[edge.source.id] = lvl;
-                                                    destino.push(edge.source);
-                                                }
-                                            } else {
-                                                console.log("NO DEBE SALIR")
-                                            }
-                                        }
+                var visited, protein, visited2;
+                var processNode = function (origen, lvl) {
+                    var destino = [];
+                    for (var i = 0; i < origen.length; i++) {
+                        var node = origen[i];
+                        for (var j = 0, lj = node.edges.length; j < lj; j++) {
+                            var edge = node.edges[j];
+                            if (edge.source == node) {
+                                if (visited[edge.target.id] == null /*&& me.potyvirusPorteinNames[edge.target.id] == null*/) {
+                                    visited[edge.target.id] = lvl;
+                                    destino.push(edge.target);
+
+
+                                    if (!visited2[lvl]) {
+                                        visited2[lvl] = {};
                                     }
-                                    console.log(lvl + ' - ' + o.length + ' - ' + Object.keys(visited).length);
-                                    delete o;
-                                    if (destino.length > 0) {
-                                        processNode(destino, lvl + 1);
+                                    visited2[lvl][edge.target.id] = lvl;
+                                }
+                            }
+                            else if (edge.target == node) {
+                                if (visited[edge.source.id] == null && me.potyvirusPorteinNames[edge.source.id] == null) {
+                                    visited[edge.source.id] = lvl;
+                                    destino.push(edge.source);
+
+
+                                    if (!visited2[lvl]) {
+                                        visited2[lvl] = {};
                                     }
+                                    visited2[lvl][edge.source.id] = lvl;
                                 }
+                            } else {
+                                console.log("NO DEBE SALIR")
+                            }
+                        }
+                    }
+                    console.log(lvl + ' - ' + origen.length + ' - ' + Object.keys(visited).length);
+                    delete origen;
+                    if (destino.length > 0) {
+                        processNode(destino, lvl + 1);
+                    }
+                };
 
-                                var n = graph.getVertexById(protein);
-                                if(!n){
-                                    me.networkViewerWebgl.clean();
-                                    me.networkViewerWebgl.renderScene();
-                                    me.showInfo("Not interact");
-                                    return
-                                }
-                                if (visited[n.id] == null) {
-                                    visited[n.id] = 1;
-                                }
-                                processNode([n], 1);
 
-                                var keys = Object.keys(visited);
-                                var levels = {};
-                                for (var i = 0; i < keys.length; i++) {
-                                    var obj = keys[i];
-                                    var lvl = visited[obj];
-                                    if (levels[lvl] == null) {
-                                        levels[lvl] = 0;
-                                    }
-                                    levels[lvl]++;
-                                }
-                                console.log(levels)
+                for (var i = 0; i < this.potyvirusProteinNameList.length; i++) {
+                    var levels = {};
+                    protein = this.potyvirusProteinNameList[i];
+                    console.log(protein)
+                    var n = graph.getVertexById(protein);
+                    visited = {};
+                    visited2 = {};
+                    if (n) {
+                        visited[n.id] = 1;
+                        visited2[1] = {};
+                        visited2[1][n.id] = 1;
+                        processNode([n], 1);
+                        visited2['max_level'] = Object.keys(visited2).length;
+                        visited2['all'] = visited;
+                        results[protein] = visited2;
+                    }
+                }
+                this.levelResults = results;
 
-                                console.log(visited)
 
-                                if (layout == "force") {
-                                    var r2 = new XMLHttpRequest();
-                                    r2.open('GET', 'files/force-layout.txt', false);
-                                    r2.send();
-                                    var forceLayoutVertices = JSON.parse(r2.response);
-                                    for (var i = 0; i < forceLayoutVertices.length; i++) {
-                                        var v = forceLayoutVertices[i];
-                                        var vertex = graph.getVertexById(v.id);
-                                        if (vertex) {
-                                            var lvl = visited[vertex.id] || 13;
-                                            var z = 1000 - (0 + lvl * 100);
-                                            vertex.position.set(v.x, v.y, z);
+//                if (!n) {
+//                    me.networkViewerWebgl.clean();
+//                    me.networkViewerWebgl.renderScene();
+//                    me.showInfo("Not interact");
+//                    return
+//                }
+//                if (visited[n.id] == null) {
+//                    visited[n.id] = 1;
+//                }
+//                processNode([n], 1);
 
-                                            if (vertex.id in me.potyvirusPorteinNames) {
-                                                vertex.renderer.size = 80;
-                                            }
-                                        }
-                                    }
+            }
+            ,
+            _processLayout: function (layout, protein) {
+                var start = new Date().getTime();
+                if (layout == "force") {
+                    var r2 = new XMLHttpRequest();
+                    r2.open('GET', 'files/force-layout.txt', false);
+                    r2.send();
+                    var forceLayoutVertices = JSON.parse(r2.response);
+                    for (var i = 0; i < forceLayoutVertices.length; i++) {
+                        var v = forceLayoutVertices[i];
+                        var vertex = this.graph.getVertexById(v.id);
+                        if (vertex) {
+                            var lvl = this.levelResults[protein].all[vertex.id] || 13;
+                            var z = 1000 - (0 + lvl * 100);
+                            vertex.position.set(v.x, v.y, z);
+
+                            if (vertex.id in this.potyvirusPorteinNames) {
+                                vertex.renderer.size = 80;
+                            }
+                        }
+                    }
 
 //                                    me.forceDirected(graph.vertices, graph.edges, function (d3Vertices) {
 //                                    var ve = [];
@@ -559,66 +696,54 @@
 //                                        link.dispatchEvent(event);
 //                                    });
 
-                                    me.circleLevels(virusVertices, 200, 600);
-                                    for (var i = 0; i < virusVertices.length; i++) {
-                                        var v = virusVertices[i];
-                                        var vertex = graph.getVertexById(v.id);
-                                        vertex.position.set(v.position.x, v.position.y, v.position.z);
-                                    }
+//                    this.circleLevels(virusVertices, 200, 600);
+//                    for (var i = 0; i < virusVertices.length; i++) {
+//                        var v = virusVertices[i];
+//                        var vertex = graph.getVertexById(v.id);
+//                        vertex.position.set(v.position.x, v.position.y, v.position.z);
+//                    }
 
-                                    me.networkViewerWebgl.renderGraph(graph);
-                                    var end = new Date().getTime();
-                                    var time = end - start;
-                                    me.showInfo("Done in " + (time) + " ms");
-                                }
+                    this.networkViewerWebgl.renderGraph(this.graph);
+                    var end = new Date().getTime();
+                    var time = end - start;
+                    this.showInfo("Done in " + (time) + " ms");
+                }
 
-                                if (layout == "circle") {
-                                    var levelMap = {};
-                                    for (var i = 0, l = graph.vertices.length; i < l; i++) {
-                                        var vertex = graph.vertices[i];
-                                        var level = visited[vertex.id] || 13;
-                                        if (levelMap[level] == null) {
-                                            levelMap[level] = [];
-                                        }
-                                        levelMap[level].push(vertex);
-
-                                        if (vertex.id in me.potyvirusPorteinNames) {
-                                            vertex.renderer.size = vertex.renderer.size * 3
-                                        }
-                                    }
-                                    for (level in levelMap) {
-                                        var lvl = parseInt(level);
-                                        me.circleLevels(levelMap[level], lvl * 80, (1000 - (0 + lvl * 100)))
-                                    }
-
-                                    me.circleLevels(virusVertices, 200, 600);
-                                    for (var i = 0; i < virusVertices.length; i++) {
-                                        var v = virusVertices[i];
-                                        var vertex = graph.getVertexById(v.id);
-                                        vertex.position.set(v.position.x, v.position.y, v.position.z);
-                                    }
-
-                                    me.networkViewerWebgl.renderGraph(graph);
-                                    var end = new Date().getTime();
-                                    var time = end - start;
-                                    me.showInfo("Done in " + (time) + " ms");
-                                }
-
-
-                            },
-                            'error:parse': function (event) {
-                                console.log(event);
-                            }
+                if (layout == "circle") {
+                    var levelMap = {};
+                    for (var i = 0, l = this.graph.vertices.length; i < l; i++) {
+                        var vertex = this.graph.vertices[i];
+                        var level = this.levelResults[protein].all[vertex.id] || 13;
+                        if (levelMap[level] == null) {
+                            levelMap[level] = [];
                         }
-                    });
+                        levelMap[level].push(vertex);
 
-                };
-                request.onerror = function () {
-                    console.log('error loading file');
-                };
-                request.open('GET', 'files/Ath_Interactome.txt', true);
-                request.send();
-            },
+                        if (vertex.id in this.potyvirusPorteinNames) {
+                            vertex.renderer.size = vertex.renderer.size * 3
+                        }
+                    }
+                    for (level in levelMap) {
+                        var lvl = parseInt(level);
+                        this.circleLevels(levelMap[level], lvl * 80, (1000 - (0 + lvl * 100)))
+                    }
+
+//                    this.circleLevels(virusVertices, 200, 600);
+//                    for (var i = 0; i < virusVertices.length; i++) {
+//                        var v = virusVertices[i];
+//                        var vertex = graph.getVertexById(v.id);
+//                        vertex.position.set(v.position.x, v.position.y, v.position.z);
+//                    }
+
+                    this.networkViewerWebgl.renderGraph(this.graph);
+                    var end = new Date().getTime();
+                    var time = end - start;
+                    this.showInfo("Done in " + (time) + " ms");
+                }
+
+            }
+            ,
+
             /* ** */
             /* ** */
             /* layout */
@@ -637,7 +762,8 @@
                         vertex.position.set(x, y, z);
                     }
                 }
-            },
+            }
+            ,
 
             sphereSurface: function (vertices, radius, offsetZ) {
 
@@ -653,7 +779,8 @@
                     vertex.position.setY(radius * Math.sin(theta) * Math.sin(phi));
                     vertex.position.setZ(radius * Math.cos(phi) + offsetZ);
                 }
-            },
+            }
+            ,
 
 
             forceDirected: function (vertices, edges, endFunction) {
@@ -720,6 +847,7 @@
 //    force.start();
 
             }
-        });
+        })
+        ;
     </script>
 </polymer-element>
