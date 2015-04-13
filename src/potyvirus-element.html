@@ -330,6 +330,8 @@
             },
             updateNetworkViewerGraph: function () {
                 var me = this;
+
+                //Update network viewer virus graph
                 this.$.networkViewer.startOver();
                 for (var i = 0; i < this.datasym.length; i++) {
                     var obj = this.datasym[i];
@@ -341,20 +343,7 @@
                     }
                 }
 
-                this.$.networkViewer.$.topologicalStudy.retrieveData(function () {
-                    var degree = [];
-                    var categories = [];
-                    var data = me.$.networkViewer.vAttr.data;
-                    for (var i = 0; i < data.length; i++) {
-                        var n = data[i];
-                        categories.push(n.id);
-                        degree.push(parseInt(n.degree));
-                    }
-
-                    me.chartDegreeData = {categories: categories, values: degree};
-                });
-
-
+                //VIRUS PROTEINS
                 this.potyvirusProteinNameList = [];
                 this.potyvirusPorteinNames = {};
                 for (var i = 0; i < this.$.networkViewer.graph.vertices.length; i++) {
@@ -369,6 +358,30 @@
                     }
                 }
 
+
+                //STATS Degree - Call topological analysis
+                this.$.networkViewer.$.topologicalStudy.retrieveData(function () {
+                    var degree = [];
+                    var categories = [];
+                    var data = me.$.networkViewer.vAttr.data;
+                    for (var i = 0; i < data.length; i++) {
+                        var n = data[i];
+                        categories.push(n.id);
+                        degree.push(parseInt(n.degree));
+                    }
+
+                    me.chartDegreeData = {categories: categories, values: degree};
+
+                    /* fix clustering coefficient */
+                    me._clusteringCoefficient();
+                    /*add neighborhood Connectivity*/
+                    me._neighborhoodConnectivity();
+                    /*add topological coefficient*/
+                    me._topologicalCoefficient();
+                });
+
+
+                // Simpson Index processing
                 this.readPlantInteractome(function () {
                     var processed = {};
                     for (var i = 0; i < me.allOrdered.length; i++) {
@@ -388,7 +401,7 @@
                     }
 
 
-                    //heatmap
+                    //STATS heatmap data
                     var heatmapData = [];
                     for (var i = 0; i < 12; i++) {
                         heatmapData.push([]);
@@ -404,7 +417,7 @@
                     me.heatmapSteps = heatmapData;
 
 
-                    //hcpro simpson index data
+                    //STATS hcpro simpson index data
                     var hcproData = {};
                     var a = "HC-Pro";
                     for (var i = 0; i < me.allOrdered.length; i++) {
@@ -415,6 +428,154 @@
                     me.hcproSimpsonIndexData = hcproData;
 
                 });
+
+            },
+            _clusteringCoefficient: function () {
+//                http://en.wikipedia.org/wiki/Clustering_coefficient
+//                https://www.udacity.com/course/viewer#!/c-cs215/l-48311840/m-48725187
+                /** Clustering coefficient for each node **/
+                for (var i = 0; i < this.$.networkViewer.graph.vertices.length; i++) {
+                    var vertex = this.$.networkViewer.graph.vertices[i];
+                    //find neighbors
+                    var neighborsMap = {};
+                    var neighborsArray = [];
+                    for (var j = 0; j < vertex.edges.length; j++) {
+                        var edge = vertex.edges[j];
+                        if (edge.source != vertex && neighborsMap[edge.source.id] == null) {
+                            neighborsMap[edge.source.id] = edge.source;
+                            neighborsArray.push(edge.source);
+                        } else if (edge.target != vertex && neighborsMap[edge.target.id] == null) {
+                            neighborsMap[edge.target.id] = edge.target;
+                            neighborsArray.push(edge.target);
+                        }
+                    }
+                    //count edges connected between neighbors
+                    var edgeCount = 0;
+                    for (var j = 0; j < neighborsArray.length; j++) {
+                        var neighborVertex = neighborsArray[j];
+                        for (var k = 0; k < neighborVertex.edges.length; k++) {
+                            var neighborEdge = neighborVertex.edges[k];
+                            if (
+                                    neighborEdge.source.id != neighborEdge.target.id &&
+                                    neighborsMap[neighborEdge.source.id] != null &&
+                                    neighborsMap[neighborEdge.target.id] != null
+                            ) {
+                                edgeCount++;
+                            }
+                        }
+                    }
+                    edgeCount = edgeCount / 2;
+
+                    var k = neighborsArray.length;
+                    var clustering_coefficient = (2 * edgeCount) / (k * (k - 1));
+                    if (isNaN(clustering_coefficient)) {
+                        clustering_coefficient = 0;
+                    }
+                    console.log(vertex.id + " - Clustering coefficient: " + clustering_coefficient);
+                    this.$.networkViewer.vAttr.getRow(vertex.id)['clusteringCoefficient'] = clustering_coefficient;
+                }
+            },
+            _topologicalCoefficient: function () {
+//                http://med.bioinf.mpi-inf.mpg.de/netanalyzer/help/2.7/#topCoefs
+                /** Topological coefficient for each node **/
+                this.$.networkViewer.vAttr.addColumn({
+                    defaultValue: "",
+                    name: "topologicalCoefficient",
+                    title: "Topological coefficient",
+                    type: "string",
+                    cellTemplate: "inputTemplate"
+                });
+                var neighborsArraysMap = {};
+                var neighborsMapsMap = {};
+                for (var i = 0; i < this.$.networkViewer.graph.vertices.length; i++) {
+                    var vertex = this.$.networkViewer.graph.vertices[i];
+                    //find neighbors
+                    var neighborsMap = {};
+                    var neighborsArray = [];
+                    for (var j = 0; j < vertex.edges.length; j++) {
+                        var edge = vertex.edges[j];
+                        if (edge.source != vertex && neighborsMap[edge.source.id] == null) {
+                            neighborsMap[edge.source.id] = edge.source;
+                            neighborsArray.push(edge.source);
+                        } else if (edge.target != vertex && neighborsMap[edge.target.id] == null) {
+                            neighborsMap[edge.target.id] = edge.target;
+                            neighborsArray.push(edge.target);
+                        }
+                    }
+                    neighborsArraysMap[vertex.id] = neighborsArray;
+                    neighborsMapsMap[vertex.id] = neighborsMap;
+                }
+                for (var i = 0; i < this.$.networkViewer.graph.vertices.length; i++) {
+                    var vertex_n = this.$.networkViewer.graph.vertices[i];
+
+                    var nmSharedCountSum = 0;
+                    var aux = 0;
+                    for (var j = 0; j < this.$.networkViewer.graph.vertices.length; j++) {
+                        var vertex_m = this.$.networkViewer.graph.vertices[j];
+                        var nmSharedCount = 0;
+                        var shareAtLeastOneNeighbor = false;
+                        if (vertex_n != vertex_m) {
+                            for (var k = 0; k < neighborsArraysMap[vertex_n.id].length; k++) {
+                                var v = neighborsArraysMap[vertex_n.id][k];
+                                if (v.id in neighborsMapsMap[vertex_m.id]) {
+                                    nmSharedCount++;
+                                    shareAtLeastOneNeighbor = true;
+                                }
+                            }
+                            if (shareAtLeastOneNeighbor == true) {
+                                if (vertex_n.id in neighborsMapsMap[vertex_m.id]) {
+                                    nmSharedCount++;
+                                }
+                                aux++;
+                            }
+                        }
+                        nmSharedCountSum += nmSharedCount;
+                    }
+                    var avg = nmSharedCountSum / aux;
+                    var topologicalCoefficient = avg / neighborsArraysMap[vertex_n.id].length;
+                    if (neighborsArraysMap[vertex_n.id].length <= 1) {
+                        topologicalCoefficient = 0;
+                    }
+                    this.$.networkViewer.vAttr.getRow(vertex_n.id)['topologicalCoefficient'] = topologicalCoefficient;
+                }
+            },
+            _neighborhoodConnectivity: function () {
+                /** Neighborhood connectivity of each node **/
+                this.$.networkViewer.vAttr.addColumn({
+                    defaultValue: "",
+                    name: "neighborhoodConnectivity",
+                    title: "Neighborhood connectivity",
+                    type: "string",
+                    cellTemplate: "inputTemplate"
+                });
+                var neighbors = {};
+                for (var i = 0; i < this.$.networkViewer.graph.vertices.length; i++) {
+                    var vertex = this.$.networkViewer.graph.vertices[i];
+                    //find neighbors
+                    var neighborsMap = {};
+                    var neighborsArray = [];
+                    for (var j = 0; j < vertex.edges.length; j++) {
+                        var edge = vertex.edges[j];
+                        if (edge.source != vertex && neighborsMap[edge.source.id] == null) {
+                            neighborsMap[edge.source.id] = edge.source;
+                            neighborsArray.push(edge.source);
+                        } else if (edge.target != vertex && neighborsMap[edge.target.id] == null) {
+                            neighborsMap[edge.target.id] = edge.target;
+                            neighborsArray.push(edge.target);
+                        }
+                    }
+                    neighbors[vertex.id] = neighborsArray;
+                }
+                for (var i = 0; i < this.$.networkViewer.graph.vertices.length; i++) {
+                    var vertex = this.$.networkViewer.graph.vertices[i];
+                    var sum = 0;
+                    for (var j = 0; j < neighbors[vertex.id].length; j++) {
+                        var vertexNeighbor = neighbors[vertex.id][j];
+                        sum += neighbors[vertexNeighbor.id].length;
+                    }
+                    var neighborhoodConnectivity = sum / neighbors[vertex.id].length;
+                    this.$.networkViewer.vAttr.getRow(vertex.id)['neighborhoodConnectivity'] = neighborhoodConnectivity;
+                }
 
             },
             _calculateSimpsonIndex: function (a, b) {
@@ -469,12 +630,10 @@
                     result.push(v_round);
                 }
                 return result;
-            }
-            ,
+            },
             handleAppMenu: function (e) {
                 this.$.sidePanel.classList.toggle('side-panel-shown');
-            }
-            ,
+            },
             getPlantInteractome: function () {
                 var me = this;
                 var request = new XMLHttpRequest();
@@ -535,8 +694,7 @@
                 };
                 request.open('GET', 'files/vh0-1.sif', true);
                 request.send();
-            }
-            ,
+            },
             readPlantInteractome: function (callback) {
                 this.showInfo("Loading...");
 
