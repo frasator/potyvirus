@@ -1,4 +1,4 @@
-<polymer-element name="pty-4e" attributes="">
+<polymer-element name="pty-4e" attributes="data">
     <template>
         <div id="container" style="margin-bottom:20px">
         </div>
@@ -6,25 +6,45 @@
     <script>
         Polymer({
             created: function () {
-                this.data = [
-                    {x: 1, y: 0.182},
-                    {x: 2, y: 0.455},
-                    {x: 3, y: 0.455},
-                    {x: 4, y: 0.455},
-                    {x: 5, y: 0.545},
-                    {x: 6, y: 0.727},
-                    {x: 7, y: 0.727},
-                    {x: 8, y: 0.818},
-                    {x: 9, y: 0.909},
-                    {x: 10, y: 1}
-                ];
+//                this.data = [
+//                    {x: 1, y: 0.182},
+//                    {x: 2, y: 0.455},
+//                    {x: 3, y: 0.455},
+//                    {x: 4, y: 0.455},
+//                    {x: 5, y: 0.545},
+//                    {x: 6, y: 0.727},
+//                    {x: 7, y: 0.727},
+//                    {x: 8, y: 0.818},
+//                    {x: 9, y: 0.909},
+//                    {x: 10, y: 1}
+//                ];
             },
             attached: function () {
                 if (this.chart) {
                     this.chart.reflow();
                 }
             },
-            domReady: function () {
+            dataChanged: function () {
+                var l = this.data.length;
+                var map = {};
+                for (var i = 1; i < l; i++) {
+                    map[i] = 0;
+                }
+                for (var i = 0; i < this.data.length; i++) {
+                    var degree = this.data[i];
+                    map[degree]++;
+                }
+                for (var i = 2; i < l; i++) {
+                    map[i] = map[i] + map[i - 1];
+                }
+                var data = [];
+                for (var i = 1; i < l; i++) {
+                    data.push({x: i, y: map[i] / l});
+                }
+                this.internalData = data;
+                this.drawChart();
+            },
+            drawChart: function () {
 
                 this.chart = new Highcharts.Chart({
                     chart: {
@@ -57,7 +77,7 @@
                         {
                             type: 'line',
                             name: 'Probability',
-                            data: this.data,
+                            data: this.internalData,
                             color: '#f79646',
                             marker: {
                                 symbol: 'circle',
@@ -66,14 +86,6 @@
                         }
                     ]
                 });
-
-            },
-
-            setData: function () {
-                //TODO
-                this.chart.xAxis[0].setCategories(populations, false);
-                this.chart.series[0].setData(values, false);
-                this.chart.redraw();
             }
         });
     </script>

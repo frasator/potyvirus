@@ -1,4 +1,4 @@
-<polymer-element name="pty-4b" attributes="">
+<polymer-element name="pty-4b" attributes="data">
     <template>
         <div id="container" style="margin-bottom:20px">
         </div>
@@ -6,23 +6,49 @@
     <script>
         Polymer({
             created: function () {
-                this.data = [
-                    {x: 1, y: 7},
-                    {x: 2, y: 6.667},
-                    {x: 3, y: 7},
-                    {x: 4, y: 5.750},
-                    {x: 6, y: 4.160},
-                    {x: 7, y: 4.140},
-                    {x: 8, y: 3.620}
-                ];
-
+//                this.data = [
+//                    {x: 1, y: 7},
+//                    {x: 2, y: 6.667},
+//                    {x: 3, y: 7},
+//                    {x: 4, y: 5.750},
+//                    {x: 6, y: 4.160},
+//                    {x: 7, y: 4.140},
+//                    {x: 8, y: 3.620}
+//                ];
             },
             attached: function () {
                 if (this.chart) {
                     this.chart.reflow();
                 }
             },
-            domReady: function () {
+            dataChanged: function () {
+                var map = {};
+                for (var i = 0; i < this.data.length; i++) {
+                    var item = this.data[i];
+                    var key = [item.x];
+                    if (map[key] == null) {
+                        map[key] = [];
+                    }
+                    map[key].push(item.y);
+                }
+                var data = [];
+                for (key in map) {
+                    var y = 0;
+                    for (var i = 0; i < map[key].length; i++) {
+                        var value = map[key][i];
+                        y += value;
+                    }
+                    y = y / map[key].length;
+                    data.push({
+                        x: parseFloat(key),
+                        y: y
+                    })
+                }
+
+                this.internalData = data;
+                this.drawChart();
+            },
+            drawChart: function () {
 
                 this.chart = new Highcharts.Chart({
                     chart: {
@@ -67,7 +93,7 @@
                         {
                             type: 'scatter',
                             name: 'Average neighborhood connectivity',
-                            data: this.data,
+                            data: this.internalData,
                             marker: {
                                 symbol: 'circle',
                                 fillColor: '#4bacc6',
@@ -102,13 +128,13 @@
                 });
             },
             calculateRegressionLinePoints: function () {
-                for (var i = 0; i < this.data.length; i++) {
-                    var v = this.data[i];
+                for (var i = 0; i < this.internalData.length; i++) {
+                    var v = this.internalData[i];
                     v.xx = v.x * v.x;
                     v.yy = v.y * v.y;
                     v.xy = v.x * v.y;
                 }
-                var sum = this.data.reduce(function (a, b) {
+                var sum = this.internalData.reduce(function (a, b) {
                     return {
                         x: a.x + b.x,
                         y: a.y + b.y,
@@ -117,14 +143,14 @@
                         xy: a.xy + b.xy
                     }
                 });
-                var n = this.data.length;
+                var n = this.internalData.length;
                 var den = ( (n * sum.xx) - (sum.x * sum.x) );
                 var a = ((sum.y * sum.xx) - (sum.x * sum.xy)) / den;
                 var b = ((n * sum.xy) - (sum.x * sum.y)) / den;
 
                 // y = a + bx
-                var first = this.data[0];
-                var last = this.data[n - 1];
+                var first = this.internalData[0];
+                var last = this.internalData[n - 1];
                 var yFirst = a + (b * first.x);
                 var yLast = a + (b * last.x);
 
@@ -133,12 +159,12 @@
                     {x: last.x, y: yLast}
                 ]
             },
-            setData: function () {
-                //TODO
-                this.chart.xAxis[0].setCategories(populations, false);
-                this.chart.series[0].setData(values, false);
-                this.chart.redraw();
-            }
+//            setData: function () {
+//                //TODO
+//                this.chart.xAxis[0].setCategories(populations, false);
+//                this.chart.series[0].setData(values, false);
+//                this.chart.redraw();
+//            }
         });
     </script>
 </polymer-element>

@@ -1,4 +1,4 @@
-<polymer-element name="pty-4d" attributes="">
+<polymer-element name="pty-4d" attributes="data">
     <template>
         <div id="container" style="margin-bottom:20px">
         </div>
@@ -6,58 +6,89 @@
     <script>
         Polymer({
             created: function () {
-                this.data = {
-                    clustering: [
-                        {y: 0, x: 1},
-                        {y: 0.321, x: 0},
-                        {y: 0.4, x: 0},
-                        {y: 0.429, x: 5},
-                        {y: 0.667, x: 6},
-                        {y: 0.833, x: 7},
-                        {y: 1, x: 11}
-                    ],
-
-                    topological: [
-                        {y: 0, x: 2},
-                        {y: 0.389, x: 3},
-                        {y: 0.414, x: 4},
-                        {y: 0.444, x: 5},
-                        {y: 0.583, x: 6},
-                        {y: 0.625, x: 7},
-                        {y: 0.700, x: 8},
-                        {y: 0.750, x: 9},
-                        {y: 0.812, x: 10},
-                        {y: 0.833, x: 11}
-                    ],
-                    closeness: [
-                        {y: 0.435, x: 1},
-                        {y: 0.476, x: 2},
-                        {y: 0.500, x: 4},
-                        {y: 0.526, x: 5},
-                        {y: 0.588, x: 7},
-                        {y: 0.625, x: 8},
-                        {y: 0.714, x: 9},
-                        {y: 0.769, x: 10},
-                        {y: 0.833, x: 11}
-                    ],
-                    betweeness: [
-                        {y: 0, x: 6},
-                        {y: 0.015, x: 7},
-                        {y: 0.030, x: 8},
-                        {y: 0.193, x: 9},
-                        {y: 0.259, x: 10},
-                        {y: 0.415, x: 11}
-                    ]
-
-                };
+//                this.data = {
+//                    clustering: [
+//                        {y: 0, x: 1},
+//                        {y: 0.321, x: 0},
+//                        {y: 0.4, x: 0},
+//                        {y: 0.429, x: 5},
+//                        {y: 0.667, x: 6},
+//                        {y: 0.833, x: 7},
+//                        {y: 1, x: 11}
+//                    ],
+//
+//                    topological: [
+//                        {y: 0, x: 2},
+//                        {y: 0.389, x: 3},
+//                        {y: 0.414, x: 4},
+//                        {y: 0.444, x: 5},
+//                        {y: 0.583, x: 6},
+//                        {y: 0.625, x: 7},
+//                        {y: 0.700, x: 8},
+//                        {y: 0.750, x: 9},
+//                        {y: 0.812, x: 10},
+//                        {y: 0.833, x: 11}
+//                    ],
+//                    closeness: [
+//                        {y: 0.435, x: 1},
+//                        {y: 0.476, x: 2},
+//                        {y: 0.500, x: 4},
+//                        {y: 0.526, x: 5},
+//                        {y: 0.588, x: 7},
+//                        {y: 0.625, x: 8},
+//                        {y: 0.714, x: 9},
+//                        {y: 0.769, x: 10},
+//                        {y: 0.833, x: 11}
+//                    ],
+//                    betweeness: [
+//                        {y: 0, x: 6},
+//                        {y: 0.015, x: 7},
+//                        {y: 0.030, x: 8},
+//                        {y: 0.193, x: 9},
+//                        {y: 0.259, x: 10},
+//                        {y: 0.415, x: 11}
+//                    ]
+//
+//                };
             },
             attached: function () {
                 if (this.chart) {
                     this.chart.reflow();
                 }
             },
-            domReady: function () {
-
+            _uniques: function (data) {
+                var map = {};
+                for (var i = 0; i < data.length; i++) {
+                    var item = data[i];
+                    var key = [item.x];
+                    if (map[key] == null) {
+                        map[key] = [];
+                    }
+                    map[key].push(item.y);
+                }
+                var data = [];
+                for (key in map) {
+                    var y = 0;
+                    for (var i = 0; i < map[key].length; i++) {
+                        var value = map[key][i];
+                        y += value;
+                    }
+                    y = y / map[key].length;
+                    data.push({
+                        x: parseFloat(key),
+                        y: y
+                    })
+                }
+                return data;
+            },
+            dataChanged: function () {
+                this.data.clustering = this._uniques(this.data.clustering);
+                this.data.topological = this._uniques(this.data.topological);
+                this.data.closeness = this._uniques(this.data.closeness);
+                this.data.betweeness = this._uniques(this.data.betweeness);
+                this.drawChart();
+            },
+            drawChart: function () {
                 this.chart = new Highcharts.Chart({
                     chart: {
                         renderTo: this.$.container,
@@ -226,12 +257,6 @@
                     {x: first.x, y: yFirst},
                     {x: last.x, y: yLast}
                 ]
-            },
-            setData: function () {
-                //TODO
-                this.chart.xAxis[0].setCategories(populations, false);
-                this.chart.series[0].setData(values, false);
-                this.chart.redraw();
             }
         });
     </script>
