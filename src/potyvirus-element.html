@@ -91,6 +91,14 @@
                 min-height: inherit !important;
             }
 
+            #menu3dnodeinfo {
+                margin: 10px;
+                position: fixed;
+                top: 60px;
+                right: 0px;
+                min-height: inherit !important;
+            }
+
             jso-footer {
                 height: 50px;
             }
@@ -133,7 +141,11 @@
                     <div class="text">Options</div>
                 </div>
                 <div class="container" style="padding:10px;">
-                    <div class="button action" on-click="{{handle3dLayout}}" data-v="force">Force layout</div>
+                    <!--<div class="button action" on-click="{{handleShowCommunities}}">Show communities</div>-->
+                    <!--<div class="button action" on-click="{{handleHideCommunities}}">Hide communities</div>-->
+                    <div class="button action" on-click="{{handleHideEdges}}">Hide edges</div>
+                    <div class="button action" on-click="{{handleShowEdges}}">Show edges</div>
+                    <div style="margin-top: 20px;" class="button action" on-click="{{handle3dLayout}}" data-v="force">Force layout</div>
                     <div class="button action" on-click="{{handle3dLayout}}" data-v="circle">Circle</div>
                     <div style="margin-top: 20px;">
                         <!--<div class="button action" on-click="{{handleProteinMenu}}" data-protein="all">All</div>-->
@@ -143,7 +155,15 @@
                     </div>
                 </div>
             </div>
-            <div id="nvwebgl" hidden?="{{selectedOption != 'vhpi3d'}}">
+            <div class="panel panel-shadow" id="menu3dnodeinfo" hidden?="{{selectedOption != 'vhpi3d'}}">
+                <div class="header" horizontal layout>
+                    <div class="text">Node information</div>
+                </div>
+                <div class="container" style="padding:10px;">
+                    {{vertex.id}}
+                </div>
+            </div>
+            <div id="nvwebgl" hidden?="{{selectedOption != 'vhpi3d'}}" style="background-color:#333">
             </div>
 
             <div id="info" hidden?="{{selectedOption != 'vhpi3d'}}">{{message}}</div>
@@ -186,12 +206,32 @@
             handle3dLayout: function (e) {
                 this.showInfo("Loading...");
                 this.layout = e.currentTarget.dataset.v;
-                this._processLayout(this.layout, this.currentProtein);
+                this._processLayout();
+            },
+            handleShowEdges: function (e) {
+                this.hideEdges = false;
+                this.showInfo("Loading...");
+                this._processLayout();
+            },
+            handleHideEdges: function (e) {
+                this.hideEdges = true;
+                this.showInfo("Loading...");
+                this._processLayout();
+            },
+            handleShowCommunities: function (e) {
+                this.showCommunities = true;
+                this.showInfo("Loading...");
+                this._processLayout();
+            },
+            handleHideCommunities: function (e) {
+                this.showCommunities = false;
+                this.showInfo("Loading...");
+                this._processLayout();
             },
             handleProteinMenu: function (e) {
                 this.showInfo("Loading...");
                 this.currentProtein = e.currentTarget.dataset.protein;
-                this._processLayout(this.layout, this.currentProtein);
+                this._processLayout();
             },
             showInfo: function (msg) {
                 if (msg == false) {
@@ -209,6 +249,7 @@
                 this.$.networkViewer.hideEdgeSimpleRendering = true;
             },
             domReady: function () {
+                var me = this;
 //                this.getInteractionsSif();
 
                 this.getInteractions();
@@ -218,7 +259,12 @@
                 this.networkViewerWebgl = new NetworkViewerWebgl({
                     target: this.$.nvwebgl,
                     width: width,
-                    height: height
+                    height: height,
+                    handlers:{
+                        vertexhover:function(e){
+                            me.vertex = e.vertex
+                        }
+                    }
                 });
 
                 var me = this;
@@ -334,15 +380,25 @@
 
                 //Update network viewer virus graph
                 this.$.networkViewer.startOver();
+                //set rc attribute
+                this.$.networkViewer.eAttr.addColumn({
+                    defaultValue: "",
+                    name: "rc",
+                    title: "Relevance coefficient",
+                    type: "string",
+                    cellTemplate: "inputTemplate"
+                });
                 for (var i = 0; i < this.datasym.length; i++) {
                     var obj = this.datasym[i];
                     if (obj.rc >= this.rcThreshold) {
                         var sourceVertex = this.$.networkViewer.createVertex(0, 0, obj.p1);
                         var targetVertex = this.$.networkViewer.createVertex(0, 0, obj.p2);
 
-                        this.$.networkViewer.createEdge(sourceVertex, targetVertex, 'link');
+                        var e = this.$.networkViewer.createEdge(sourceVertex, targetVertex, 'link');
+                        this.$.networkViewer.eAttr.getRow(e.id)['rc'] = obj.rc;
                     }
                 }
+
 
                 //Claculate neighbours
                 this.neighborsArraysMap = {};
@@ -408,9 +464,13 @@
                     var data = me.$.networkViewer.vAttr.data;
                     for (var i = 0; i < data.length; i++) {
                         var n = data[i];
-                        n.betweenness = parseFloat(n.betweenness) / 45;
-                        n.closenessCentrality = parseFloat(n.closenessCentrality) * 10;
+
                         /*  FIX betweenness */
+                        n.betweenness = parseFloat(n.betweenness) / 45;
+
+                        /*  FIX closenessCentrality */
+                        n.closenessCentrality = parseFloat(n.closenessCentrality) * 10;
+
                         categories.push(n.id);
                         degree.push(parseInt(n.degree));
                         clustering.push(parseFloat(n.clusteringCoefficient));
@@ -452,8 +512,8 @@
                 });
 
 
-                // Simpson Index processing
                 this.readPlantInteractome(function () {
+                    // Simpson Index processing
                     var processed = {};
                     for (var i = 0; i < me.allOrdered.length; i++) {
                         var a = me.allOrdered[i];
@@ -497,6 +557,11 @@
                         hcproData[b] = processed[key];
                     }
                     me.hcproSimpsonIndexData = hcproData;
+
+
+                    me.currentProtein = me.$.networkViewer.graph.vertices[0].id;
+                    me._processLayout();
+
 
                 });
 
@@ -650,14 +715,14 @@
 
             },
             _calculateSimpsonIndex: function (a, b) {
-                console.log("----" + a + '-' + b + '----');
+//                console.log("----" + a + '-' + b + '----');
                 var result = [];
                 var ra = this.levelResults[a];
                 var rb = this.levelResults[b];
                 if (ra == null || rb == null) {
                     for (var i = 1; i < 13; i++) {
                         result.push(0);
-                        console.log(i + ' - ' + 0);
+//                        console.log(i + ' - ' + 0);
                     }
                     return result;
                 }
@@ -696,7 +761,7 @@
 
                     var v_round = Math.round(v * 100) / 100;
 
-                    console.log(i + ' - ' + v_round + '    - ' + la_acc + ' - ' + lb_acc);
+//                    console.log(i + ' - ' + v_round + '    - ' + la_acc + ' - ' + lb_acc);
 
                     result.push(v_round);
                 }
@@ -793,8 +858,7 @@
                 };
                 request.open('GET', 'files/Ath_Interactome.txt', true);
                 request.send();
-            }
-            ,
+            },
             _processPlantNetwork: function (graph) {
                 var me = this;
                 var results = {};
@@ -838,7 +902,7 @@
                             }
                         }
                     }
-                    console.log(lvl + ' - ' + origen.length + ' - ' + Object.keys(visited).length);
+//                    console.log(lvl + ' - ' + origen.length + ' - ' + Object.keys(visited).length);
                     delete origen;
                     if (destino.length > 0) {
                         processNode(destino, lvl + 1);
@@ -877,27 +941,73 @@
 //                }
 //                processNode([n], 1);
 
-            }
-            ,
-            _processLayout: function (layout, protein) {
+            },
+            _processLayout: function () {
+                var me = this;
                 var start = new Date().getTime();
-                if (layout == "force") {
+                var virusNodeSize = 80;
+                if (this.layout == "force") {
                     var r2 = new XMLHttpRequest();
                     r2.open('GET', 'files/force-layout.txt', false);
                     r2.send();
                     var forceLayoutVertices = JSON.parse(r2.response);
-                    for (var i = 0; i < forceLayoutVertices.length; i++) {
-                        var v = forceLayoutVertices[i];
-                        var vertex = this.graph.getVertexById(v.id);
-                        if (vertex) {
-                            var lvl = this.levelResults[protein].all[vertex.id] || 13;
-                            var z = 1000 - (0 + lvl * 100);
-                            vertex.position.set(v.x, v.y, z);
+                    if(this.showCommunities != true){
+                        for (var i = 0; i < forceLayoutVertices.length; i++) {
+                            var v = forceLayoutVertices[i];
+                            var vertex = this.graph.getVertexById(v.id);
+                            if (vertex) {
+                                var lvl = this.levelResults[this.currentProtein].all[vertex.id] || 13;
+                                var z = 1000 - (0 + lvl * 100);
+                                vertex.position.set(v.x, v.y, z);
+                                var aux = Math.round(50 + ((14 - lvl) * 10)).toString(16);
+                                vertex.renderer.color = "#" + "00"  + "00" + aux;
+//                                console.log(vertex.renderer.color);
 
-                            if (vertex.id in this.potyvirusPorteinNames) {
-                                vertex.renderer.size = 80;
+                                if (vertex.id in this.potyvirusPorteinNames) {
+                                    vertex.renderer.size = virusNodeSize;
+                                    vertex.renderer.color = "#00FF00";
+                                }
                             }
                         }
+                    }else{
+                        this.message = "Calculating communities..."
+                        var sif = this.graph.getAsSIFNoRelation();
+                        var formData = new FormData();
+                        formData.append("sif", sif);
+                        formData.append("directed", "F");
+                        formData.append("weighted", "F");
+                        formData.append("method", "fastgreedy");
+                        var request = new XMLHttpRequest();
+                        request.onload = function () {
+                            var response;
+                            var contentType = this.getResponseHeader('Content-Type');
+                            if (contentType === 'application/json') {
+                                response = JSON.parse(this.response);
+                            } else {
+                                response = this.response;
+                            }
+                            if (response.error === "") {
+                                var results = response.response[0].results;
+                                var lines = response.response[0].attributes.split("\n");
+                                var line, fields;
+                                var row;
+                                for (var i = 0; i < lines.length; i++) {
+                                    line = lines[i];
+                                    if (line !== "") {
+                                        fields = line.split("\t");
+                                        var vertex = me.graph.getVertexById(fields[0]);
+                                        vertex.renderer.color = fields[2];
+                                    }
+                                }
+                            }
+                            me.message = "Done"
+                        };
+                        request.onerror = function () {
+                            console.log("request error");
+                            me.message = "Done"
+                        };
+                        request.open("POST", OpencgaManager.host + '/util/network/community', true);
+                        request.send(formData);
                     }
 
 //                                    me.forceDirected(graph.vertices, graph.edges, function (d3Vertices) {
@@ -932,24 +1042,24 @@
 //                        vertex.position.set(v.position.x, v.position.y, v.position.z);
 //                    }
 
-                    this.networkViewerWebgl.renderGraph(this.graph);
+                    this.networkViewerWebgl.renderGraph(this.graph, this.hideEdges);
                     var end = new Date().getTime();
                     var time = end - start;
                     this.showInfo("Done in " + (time) + " ms");
                 }
 
-                if (layout == "circle") {
+                if (this.layout == "circle") {
                     var levelMap = {};
                     for (var i = 0, l = this.graph.vertices.length; i < l; i++) {
                         var vertex = this.graph.vertices[i];
-                        var level = this.levelResults[protein].all[vertex.id] || 13;
+                        var level = this.levelResults[this.currentProtein].all[vertex.id] || 13;
                         if (levelMap[level] == null) {
                             levelMap[level] = [];
                         }
                         levelMap[level].push(vertex);
 
                         if (vertex.id in this.potyvirusPorteinNames) {
-                            vertex.renderer.size = vertex.renderer.size * 3
+                            vertex.renderer.size = virusNodeSize;
                         }
                     }
                     for (level in levelMap) {
@@ -964,14 +1074,13 @@
 //                        vertex.position.set(v.position.x, v.position.y, v.position.z);
 //                    }
 
-                    this.networkViewerWebgl.renderGraph(this.graph);
+                    this.networkViewerWebgl.renderGraph(this.graph, this.hideEdges);
                     var end = new Date().getTime();
                     var time = end - start;
                     this.showInfo("Done in " + (time) + " ms");
                 }
 
-            }
-            ,
+            },
 
             /* ** */
             /* ** */
