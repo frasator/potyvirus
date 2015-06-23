@@ -97,7 +97,7 @@
             <div class="header" horizontal layout>
                 <div class="text" flex>Symetric interactions</div>
                 <div class="text">RC Threshold: </div>
-                <input style="width:75px;color:#333;" type="text" max="100" min="0" value="{{rcThreshold}}">
+                <input id="rcinput" style="width:75px;color:#333;" type="text" max="100" min="0" on-keypress="{{handleKeyPress}}">
             </div>
             <div class="container">
                 <div class="tablewrap" on-wheel="{{handleScrollSym}}">
@@ -214,8 +214,18 @@
                 });
                 this.table = this.$.table;
                 this.tablesym = this.$.tablesym;
+
             },
             domReady: function () {
+                this.$.rcinput.value = this.rcThreshold;
+            },
+            handleKeyPress:function(e){
+                if(event.keyCode == 13){
+                    var num =  parseInt(e.currentTarget.value);
+                    if(!isNaN(num)){
+                        this.rcThreshold = num;
+                    }
+                }
             },
             handleResize: function () {
                 this.pageSize = Math.floor(this.getBoundingClientRect().height / 26) - 2;

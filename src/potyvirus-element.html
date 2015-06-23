@@ -159,8 +159,22 @@
                 <div class="header" horizontal layout>
                     <div class="text">Node information</div>
                 </div>
-                <div class="container" style="padding:10px;">
-                    {{vertex.id}}
+                <div class="container" style="padding:10px;" hidden?="{{vertexinfo == null}}">
+                    {{vertexinfo.type}}<br>
+                    Name: <b>{{vertexinfo.vertex.id}}</b><br>
+                    Level: <b>{{vertexinfo.level}}</b><br>
+                    Position: <b>{{vertexinfo.x}}, {{vertexinfo.y}}, {{vertexinfo.z}}</b><br>
+                    <!--<template if="{{vertexinfo.type == 'Virus protein'}}">-->
+                        <!--<br>-->
+                        <!--Simpson index:<br>-->
+                        <!--<template repeat="{{item in vertexinfo.simpson}}">-->
+                            <!--{{item.protein}}<br>-->
+                            <!--<template repeat="{{value , i in item.values}}">-->
+                                <!--Level:{{i}},Value:{{value}}<br>-->
+                            <!--</template>-->
+                        <!--</template>-->
+                    <!--</template>-->
+
                 </div>
             </div>
             <div id="nvwebgl" hidden?="{{selectedOption != 'vhpi3d'}}" style="background-color:#333">
@@ -245,8 +259,9 @@
             ready: function () {
                 this.selectedOption = 'vhpi3d';
                 this.$.networkViewer.selectedMenu = '';
-                this.$.networkViewer.hideNodeSimpleRendering = true;
-                this.$.networkViewer.hideEdgeSimpleRendering = true;
+
+                this.$.networkViewer.$.nodeRender.setAttribute('hidden', '');
+                this.$.networkViewer.$.edgeRender.setAttribute('hidden', '');
             },
             domReady: function () {
                 var me = this;
@@ -260,9 +275,32 @@
                     target: this.$.nvwebgl,
                     width: width,
                     height: height,
-                    handlers:{
-                        vertexhover:function(e){
-                            me.vertex = e.vertex
+                    handlers: {
+                        vertexhover: function (e) {
+                            var vertex = e.vertex;
+                            var type = 'Plant protein';
+                            if (me.potyvirusPorteinNames[vertex.id] != null) {
+                                type = 'Virus protein';
+//                                var simpson = [];
+//                                for (var key in me.processed) {
+//                                    if (key.indexOf(vertex.id) == 0 && key != (vertex.id + "_" + vertex.id)) {
+//                                        simpson.push({
+//                                            protein: key.split("_")[1],
+//                                            values: me.processed[key]
+//                                        })
+//                                    }
+//                                }
+                            }
+                            me.vertexinfo = {
+                                vertex: vertex,
+                                level: me.levelResults[me.currentProtein].all[vertex.id] || 13,
+                                x: parseInt(vertex.position.x),
+                                y: parseInt(vertex.position.y),
+                                z: parseInt(vertex.position.z),
+                                type: type,
+//                                simpson: simpson
+                            };
+
                         }
                     }
                 });
@@ -514,7 +552,7 @@
 
                 this.readPlantInteractome(function () {
                     // Simpson Index processing
-                    var processed = {};
+                    me.processed = {};
                     for (var i = 0; i < me.allOrdered.length; i++) {
                         var a = me.allOrdered[i];
                         for (var j = 0; j < me.allOrdered.length; j++) {
@@ -522,10 +560,10 @@
                             var key1 = a + '_' + b;
                             var key2 = b + '_' + a;
 
-                            if (!(key1 in processed) && !(key2 in processed)) {
+                            if (!(key1 in me.processed) && !(key2 in me.processed)) {
                                 var res = me._calculateSimpsonIndex(a, b);
-                                processed[key1] = res;
-                                processed[key2] = res;
+                                me.processed[key1] = res;
+                                me.processed[key2] = res;
                             }
 
                         }
@@ -541,7 +579,7 @@
                             for (var k = 0; k < me.allOrdered.length; k++) {
                                 var b = me.allOrdered[k];
                                 var key = a + '_' + b;
-                                heatmapData[i].push(processed[key][i]);
+                                heatmapData[i].push(me.processed[key][i]);
                             }
                         }
                     }
@@ -554,7 +592,7 @@
                     for (var i = 0; i < me.allOrdered.length; i++) {
                         var b = me.allOrdered[i];
                         var key = a + '_' + b;
-                        hcproData[b] = processed[key];
+                        hcproData[b] = me.processed[key];
                     }
                     me.hcproSimpsonIndexData = hcproData;
 
@@ -758,10 +796,9 @@
                     }
 
                     var v = (intersectionCount / Math.min(la_acc, lb_acc));
-
-                    var v_round = Math.round(v * 100) / 100;
-
-//                    console.log(i + ' - ' + v_round + '    - ' + la_acc + ' - ' + lb_acc);
+//                    var v_round = Math.round(v * 100) / 100;
+                    var v_round = v.toFixed(2);
+                    console.log(i + ' - ' + v + ' - ' + v_round + '    - ' + la_acc + ' - ' + lb_acc);
 
                     result.push(v_round);
                 }
@@ -951,7 +988,7 @@
                     r2.open('GET', 'files/force-layout.txt', false);
                     r2.send();
                     var forceLayoutVertices = JSON.parse(r2.response);
-                    if(this.showCommunities != true){
+                    if (this.showCommunities != true) {
                         for (var i = 0; i < forceLayoutVertices.length; i++) {
                             var v = forceLayoutVertices[i];
                             var vertex = this.graph.getVertexById(v.id);
@@ -960,7 +997,7 @@
                                 var z = 1000 - (0 + lvl * 100);
                                 vertex.position.set(v.x, v.y, z);
                                 var aux = Math.round(50 + ((14 - lvl) * 10)).toString(16);
-                                vertex.renderer.color = "#" + "00"  + "00" + aux;
+                                vertex.renderer.color = "#" + "00" + "00" + aux;
 //                                console.log(vertex.renderer.color);
 
                                 if (vertex.id in this.potyvirusPorteinNames) {
@@ -969,7 +1006,7 @@
                                 }
                             }
                         }
-                    }else{
+                    } else {
                         this.message = "Calculating communities..."
                         var sif = this.graph.getAsSIFNoRelation();
                         var formData = new FormData();
