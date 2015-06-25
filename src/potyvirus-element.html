@@ -103,6 +103,22 @@
                 height: 50px;
             }
 
+            table {
+                border-collapse: collapse;
+            }
+
+            table, th, td {
+                border: 1px solid lightgrey;
+            }
+
+            td, th {
+                padding: 2px 4px;
+                text-align: center;
+            }
+
+            th {
+                background-color: #f0f0f0;
+            }
         </style>
         <jso-header selectedOption="{{selectedOption}}"
                     userData="{{userData}}"
@@ -164,16 +180,22 @@
                     Name: <b>{{vertexinfo.vertex.id}}</b><br>
                     Level: <b>{{vertexinfo.level}}</b><br>
                     Position: <b>{{vertexinfo.x}}, {{vertexinfo.y}}, {{vertexinfo.z}}</b><br>
-                    <!--<template if="{{vertexinfo.type == 'Virus protein'}}">-->
-                        <!--<br>-->
-                        <!--Simpson index:<br>-->
-                        <!--<template repeat="{{item in vertexinfo.simpson}}">-->
-                            <!--{{item.protein}}<br>-->
-                            <!--<template repeat="{{value , i in item.values}}">-->
-                                <!--Level:{{i}},Value:{{value}}<br>-->
-                            <!--</template>-->
-                        <!--</template>-->
-                    <!--</template>-->
+                    <template if="{{vertexinfo.type == 'Virus protein'}}">
+                        <br>
+                        <table style="width:150px;">
+                            <caption>Effect propagation count</caption>
+                            <tr>
+                                <th>Level</th>
+                                <th>Count</th>
+                            </tr>
+                            <template repeat="{{item in vertexinfo.propagation}}">
+                                <tr>
+                                    <td>{{item.level}}</td>
+                                    <td>{{item.count}}</td>
+                                </tr>
+                            </template>
+                        </table>
+                    </template>
 
                 </div>
             </div>
@@ -298,6 +320,7 @@
                                 y: parseInt(vertex.position.y),
                                 z: parseInt(vertex.position.z),
                                 type: type,
+                                propagation: me.levelResults[me.currentProtein].levelCount
 //                                simpson: simpson
                             };
 
@@ -961,6 +984,17 @@
                         processNode([n], 1);
                         visited2['max_level'] = Object.keys(visited2).length;
                         visited2['all'] = visited;
+
+                        var acc = 0;
+                        var levelCount = [];
+                        for (var j = 1; j < 13; j++) {
+                            if (visited2[j]) {
+                                acc = acc + Object.keys(visited2[j]).length;
+                                levelCount.push({level: j, count: acc});
+                            }
+                        }
+                        visited2['levelCount'] = levelCount;
+
                         results[protein] = visited2;
                     }
                 }
@@ -1137,8 +1171,7 @@
                         vertex.position.set(x, y, z);
                     }
                 }
-            }
-            ,
+            },
 
             sphereSurface: function (vertices, radius, offsetZ) {
 
@@ -1154,8 +1187,7 @@
                     vertex.position.setY(radius * Math.sin(theta) * Math.sin(phi));
                     vertex.position.setZ(radius * Math.cos(phi) + offsetZ);
                 }
-            }
-            ,
+            },
 
 
             forceDirected: function (vertices, edges, endFunction) {
@@ -1222,7 +1254,6 @@
 //    force.start();
 
             }
-        })
-        ;
+        });
     </script>
 </polymer-element>

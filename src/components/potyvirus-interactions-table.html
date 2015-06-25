@@ -23,7 +23,7 @@
             }
 
             .right {
-                margin-top: 20px;
+                margin-left: 20px;
             }
 
             .tablewrap {
@@ -32,7 +32,7 @@
             }
 
             sortable-table {
-                height: 495px;
+                height: 500px;
             }
 
             .table {
@@ -60,74 +60,90 @@
             }
         </style>
 
-        <div class="panel panel-shadow left">
-            <div class="header" horizontal layout>
-                <div class="text">Interactions</div>
-            </div>
-            <div class="container" flex>
-                <div class="tablewrap" on-wheel="{{handleScroll}}">
-                    <div class="customPagerScroll"
-                         style="height:calc(100% / {{table.lastPage}}); top:{{ (table.page-1) / table.lastPage * 100}}%"></div>
-                    <sortable-table id="table" class="table" flex
-                                    data="{{interactions}}"
-                                    columns="{{columns}}"
-                                    rowselection="{{rowSelection}}"
-                                    multiselect="{{multiSelect}}"
-                                    page="{{page}}"
-                                    pageSize="{{pageSize}}">
-                        <template id="inputTemplate">
-                            <td class="edit">
-                                <input type="text" value="{{row[column.name]}}">
-                            </td>
-                        </template>
-                    </sortable-table>
-                </div>
-                <div class="customPager" horizontal layout>
-                    <div class="text">{{table.dataSize}} {{type}}{{table.dataSize != 1 ? 's' : ''}}</div>
-                    <div class="button action" disabled?="{{table.page<=1}}" on-click="{{moveToPreviousPage}}">
-                        &lt;</div>
-                    <div class="text"> {{table.page}} of {{table.lastPage}}</div>
-                    <div class="button action" disabled?="{{table.page>=table.lastPage}}"
-                         on-click="{{moveToNextPage}}">&gt;</div>
-                </div>
-            </div>
-        </div>
 
-        <div class="panel panel-shadow right">
-            <div class="header" horizontal layout>
-                <div class="text" flex>Symetric interactions</div>
-                <div class="text">RC Threshold: </div>
-                <input id="rcinput" style="width:75px;color:#333;" type="text" max="100" min="0" on-keypress="{{handleKeyPress}}">
-            </div>
-            <div class="container">
-                <div class="tablewrap" on-wheel="{{handleScrollSym}}">
-                    <div class="customPagerScroll"
-                         style="height:calc(100% / {{tablesym.lastPage}}); top:{{ (tablesym.page - 1) / tablesym.lastPage * 100}}%"></div>
-                    <sortable-table id="tablesym" class="table" flex
-                                    data="{{datasym}}"
-                                    columns="{{columnssym}}"
-                                    rowselection="{{rowSelection}}"
-                                    multiselect="{{multiSelect}}"
-                                    page="{{pagesym}}"
-                                    pageSize="{{pageSizeSym}}">
-                        <template id="inputTemplate">
-                            <td class="edit">
-                                <input type="text" value="{{row[column.name]}}">
-                            </td>
-                        </template>
-                    </sortable-table>
-                </div>
-                <div class="customPager" horizontal layout>
-                    <div class="text">{{tablesym.dataSize}} {{type}}{{tablesym.dataSize != 1 ? 's' : ''}}</div>
-                    <div class="button action" disabled?="{{tablesym.page<=1}}" on-click="{{moveToPreviousPageSym}}">
-                        &lt;</div>
-                    <div class="text"> {{tablesym.page}} of {{tablesym.lastPage}}</div>
-                    <div class="button action" disabled?="{{tablesym.page>=tablesym.lastPage}}"
-                         on-click="{{moveToNextPageSym}}">&gt;</div>
-                </div>
-            </div>
-        </div>
+        <div horizontal layout center-justified>
 
+            <div class="panel panel-shadow left">
+                <div class="header" horizontal layout>
+                    <div class="text">Interactions</div>
+                </div>
+                <div class="container" flex>
+                    <div class="tablewrap" on-wheel="{{handleScroll}}">
+                        <div class="customPagerScroll"
+                             style="height:calc(100% / {{table.lastPage}}); top:{{ (table.page-1) / table.lastPage * 100}}%"></div>
+                        <sortable-table id="table" class="table" flex
+                                        data="{{interactions}}"
+                                        columns="{{columns}}"
+                                        rowselection="{{rowSelection}}"
+                                        multiselect="{{multiSelect}}"
+                                        page="{{page}}"
+                                        pageSize="{{pageSize}}">
+                            <template id="inputTemplate">
+                                <td class="edit">
+                                    <input type="text" value="{{row[column.name]}}">
+                                </td>
+                            </template>
+                        </sortable-table>
+                    </div>
+                    <div class="customPager" horizontal layout>
+                        <div class="text">{{table.dataSize}} {{type}}{{table.dataSize != 1 ? 's' : ''}}</div>
+                        <div class="button action" disabled?="{{table.page<=1}}" on-click="{{moveToPreviousPage}}">
+                            &lt;</div>
+                        <div class="text"> {{table.page}} of {{table.lastPage}}</div>
+                        <div class="button action" disabled?="{{table.page>=table.lastPage}}"
+                             on-click="{{moveToNextPage}}">&gt;</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel panel-shadow right">
+                <div class="header" horizontal layout>
+                    <div class="text" flex>Symetric interactions</div>
+                </div>
+                <div class="container">
+                    <div class="tablewrap" on-wheel="{{handleScrollSym}}">
+                        <div class="customPagerScroll"
+                             style="height:calc(100% / {{tablesym.lastPage}}); top:{{ (tablesym.page - 1) / tablesym.lastPage * 100}}%"></div>
+                        <sortable-table id="tablesym" class="table" flex
+                                        data="{{datasym}}"
+                                        columns="{{columnssym}}"
+                                        rowselection="{{rowSelection}}"
+                                        multiselect="{{multiSelect}}"
+                                        page="{{pagesym}}"
+                                        pageSize="{{pageSizeSym}}">
+                            <template id="inputTemplate">
+                                <td class="edit">
+                                    <input type="text" value="{{row[column.name]}}">
+                                </td>
+                            </template>
+                        </sortable-table>
+                    </div>
+                    <div class="customPager" horizontal layout>
+                        <div class="text">{{tablesym.dataSize}} {{type}}{{tablesym.dataSize != 1 ? 's' : ''}}</div>
+                        <div class="button action" disabled?="{{tablesym.page<=1}}" on-click="{{moveToPreviousPageSym}}">
+                            &lt;</div>
+                        <div class="text"> {{tablesym.page}} of {{tablesym.lastPage}}</div>
+                        <div class="button action" disabled?="{{tablesym.page>=tablesym.lastPage}}"
+                             on-click="{{moveToNextPageSym}}">&gt;</div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <br>
+
+        <div horizontal layout center-justified>
+
+            <div class="panel panel-shadow">
+                <div class="header" horizontal layout>
+                    <div class="text">RC Threshold</div>
+                </div>
+                <div class="container" style="width:120px">
+                    <input id="rcinput" style="width:100%;color:#333;" type="text" max="100" min="0" on-keypress="{{handleKeyPress}}">
+                </div>
+            </div>
+
+        </div>
 
     </template>
     <script>
@@ -219,10 +235,10 @@
             domReady: function () {
                 this.$.rcinput.value = this.rcThreshold;
             },
-            handleKeyPress:function(e){
-                if(event.keyCode == 13){
-                    var num =  parseInt(e.currentTarget.value);
-                    if(!isNaN(num)){
+            handleKeyPress: function (e) {
+                if (event.keyCode == 13) {
+                    var num = parseInt(e.currentTarget.value);
+                    if (!isNaN(num)) {
                         this.rcThreshold = num;
                     }
                 }
