@@ -23,7 +23,7 @@
             }
 
             .right {
-                margin-left: 20px;
+                /*margin-left: 20px;*/
             }
 
             .tablewrap {
@@ -96,6 +96,15 @@
                 </div>
             </div>
 
+            <div class="panel panel-shadow" style="margin:0 5px;height:56px">
+                <div class="header" horizontal layout>
+                    <div class="text">RC Threshold</div>
+                </div>
+                <div class="container" style="width:120px">
+                    <input id="rcinput" style="width:100%;color:#333;" type="text" max="100" min="0" on-keypress="{{handleKeyPress}}">
+                </div>
+            </div>
+
             <div class="panel panel-shadow right">
                 <div class="header" horizontal layout>
                     <div class="text" flex>Symetric interactions</div>
@@ -134,14 +143,6 @@
 
         <div horizontal layout center-justified>
 
-            <div class="panel panel-shadow">
-                <div class="header" horizontal layout>
-                    <div class="text">RC Threshold</div>
-                </div>
-                <div class="container" style="width:120px">
-                    <input id="rcinput" style="width:100%;color:#333;" type="text" max="100" min="0" on-keypress="{{handleKeyPress}}">
-                </div>
-            </div>
 
         </div>
 
