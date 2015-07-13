@@ -79,13 +79,15 @@
                 return data;
             },
             dataChanged: function () {
-                this.data.clustering = this._process(this.data.clustering);
-                this.data.topological = this._process(this.data.topological);
-                this.data.closeness = this._process(this.data.closeness);
-                this.data.betweeness = this._process(this.data.betweeness);
-                this.drawChart();
+                var data = {
+                    'clustering': this._process(this.data.clustering),
+                    'topological': this._process(this.data.topological),
+                    'closeness': this._process(this.data.closeness),
+                    'betweeness': this._process(this.data.betweeness),
+                }
+                this.drawChart(data);
             },
-            drawChart: function () {
+            drawChart: function (data) {
 
                 this.chart = new Highcharts.Chart({
                     chart: {
@@ -127,7 +129,7 @@
                         {
                             type: 'line',
                             name: 'Clustering coefficient',
-                            data: this.data.clustering,
+                            data: data.clustering,
                             color: '#4f81bd',
                             marker: {
                                 symbol: 'circle',
@@ -137,7 +139,7 @@
                         {
                             type: 'line',
                             name: 'Topological coefficient',
-                            data: this.data.topological,
+                            data: data.topological,
                             color: '#8064a2',
                             marker: {
                                 symbol: 'circle',
@@ -147,7 +149,7 @@
                         {
                             type: 'line',
                             name: 'Closeness centrality',
-                            data: this.data.closeness,
+                            data: data.closeness,
                             color: '#c0504d',
                             marker: {
                                 symbol: 'circle',
@@ -157,7 +159,7 @@
                         {
                             type: 'line',
                             name: 'Betweeness centrality',
-                            data: this.data.betweeness,
+                            data: data.betweeness,
                             color: '#9bbb59',
                             marker: {
                                 symbol: 'circle',
