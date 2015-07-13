@@ -13,7 +13,20 @@
                     this.chart.reflow();
                 }
             },
-            domReady: function () {
+            dataChanged: function () {
+                var key;
+                var data = {};
+                for (key in this.data) {
+                    var arr = [];
+                    for (var i = 0; i < this.data[key].length; i++) {
+                        var v = this.data[key][i];
+                        arr.push({x: i, y: parseFloat(v)});
+                    }
+                    data[key] = arr;
+                }
+                this.drawChart(data);
+            },
+            drawChart: function (data) {
                 this.chart = new Highcharts.Chart({
                     chart: {
                         renderTo: this.$.container,
@@ -50,7 +63,7 @@
                         {
                             type: 'line',
                             name: 'P1',
-                            data: this.data['P1'],
+                            data: data['P1'],
                             color: '#c0504d',
                             marker: {
                                 symbol: 'circle',
@@ -60,7 +73,7 @@
                         {
                             type: 'line',
                             name: 'P3',
-                            data: this.data['P3'],
+                            data: data['P3'],
                             color: '#4f81bd',
                             marker: {
                                 symbol: 'circle',
@@ -70,7 +83,7 @@
                         {
                             type: 'line',
                             name: 'VPg',
-                            data: this.data['VPg'],
+                            data: data['VPg'],
                             color: '#9bbb59',
                             marker: {
                                 symbol: 'circle',
@@ -80,7 +93,7 @@
                         {
                             type: 'line',
                             name: 'NIa-Pro',
-                            data: this.data['NIa-Pro'],
+                            data: data['NIa-Pro'],
                             color: '#8064a2',
                             marker: {
                                 symbol: 'circle',
@@ -90,7 +103,7 @@
                         {
                             type: 'line',
                             name: 'NIb',
-                            data: this.data['NIb'],
+                            data: data['NIb'],
                             color: '#4bacc6',
                             marker: {
                                 symbol: 'circle',
@@ -100,7 +113,7 @@
                         {
                             type: 'line',
                             name: 'CP',
-                            data: this.data['CP'],
+                            data: data['CP'],
                             color: '#f79646',
                             marker: {
                                 symbol: 'circle',
@@ -110,7 +123,7 @@
                     ]
                 });
             },
-            dataChanged: function (oldValue, newValue) {
+//            dataChanged: function (oldValue, newValue) {
 //                var key;
 //                for(key in this.data){
 //                    var arr = [];
@@ -120,8 +133,9 @@
 //                    }
 //                    this.data[key] = arr;
 //                }
+//                this.drawChart();
 
-                //                    'P1': [
+            //                    'P1': [
 //                        {x: 1, y: 0},
 //                        {x: 2, y: 0},
 //                        {x: 3, y: 0},
@@ -206,7 +220,7 @@
 //                        {x: 12, y: 1}
 //                    ]
 //                };
-            }
+//            }
         });
     </script>
 </polymer-element>
